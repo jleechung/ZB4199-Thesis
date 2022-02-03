@@ -53,7 +53,7 @@
 \glsaddall
 
 %% References
-\usepackage[sorting=none]{biblatex}
+\usepackage[sorting=none, style=numeric-comp]{biblatex}
 \addbibresource{references.bib}
 
 %% Figures
@@ -68,6 +68,8 @@
 
 \begin{document}
 
+\pagenumbering{gobble}
+
 \input{titlepage}
 
 \chapter*{Abstract}
@@ -75,11 +77,15 @@
 
 \tableofcontents
 
+\pagenumbering{roman}
+
 \listoffigures
 
 \listoftables
 
 \printglossaries
+
+\pagenumbering{arabic}
 
 \chapter{Introduction}
 \input{chapters/1-introduction}
@@ -97,10 +103,9 @@
 \input{chapters/n-conclusion}
 
 \appendix
-
 \chapter{Appendix}
 \input{chapters/appendix}
 
-\printbibliography
+\printbibliography[heading=bibintoc]
 
 \end{document}
