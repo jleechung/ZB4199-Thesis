@@ -1,0 +1,106 @@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Requirements 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% (a) Organisation and Presentation of Thesis (i.e. clarity and logical sequence)
+% (b) Coverage (i.e. including literature)
+% (c) Depth and Quality of research, originality and critical ability shown (i.e scientific hypothesis,
+% computational method and validation design, if the conclusion is justifiable by results obtained)
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Packages 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[12pt, twoside]{report}
+\usepackage[utf8]{inputenc}
+\usepackage[a4paper, left=20mm, right=20mm, top=30mm, bottom=25mm]{geometry}
+\usepackage{lipsum}
+\setlength{\headheight}{15pt}
+\linespread{1.25}
+\raggedbottom
+
+%% Header and footer formatting
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[R]{\thepage}
+\renewcommand{\chaptermark}[1]{\markboth{#1}{}}
+\fancyhead[L]{\chaptername~\thechapter.~\leftmark}
+\renewcommand{\headrulewidth}{0pt}
+
+%% TOC
+\usepackage[nottoc]{tocbibind}
+
+%% Chapters
+\usepackage{titlesec}
+\titleformat{\chapter}[display]
+{\normalfont\huge\bfseries}{\chaptertitlename~\thechapter}{20pt}{\huge}
+\titlespacing*{\chapter}{0pt}{-40pt}{10pt}
+\titlespacing*{name=\chapter,numberless}{0pt}{-40pt}{10pt}
+
+%% Glossaries
+\usepackage[toc, nonumberlist]{glossaries}
+\newglossarystyle{modsuper}{%
+  \glossarystyle{super}%
+  \renewcommand{\glsgroupskip}{}%
+  \renewcommand*{\glossaryentryfield}[5]{%
+    \glsentryitem{##1}\glstarget{##1}{##2} & ##3\glspostdescription\space ##5\\[5pt]}%
+}
+\setglossarystyle{modsuper}
+\makeglossaries
+\loadglsentries{glossaries}
+\glsaddall
+
+%% References
+\usepackage[sorting=none]{biblatex}
+\addbibresource{references.bib}
+
+%% Figures
+\usepackage{graphicx}
+\graphicspath{{figures/}}
+\usepackage{caption}
+\usepackage{subcaption}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Document starts here
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+\input{titlepage}
+
+\chapter*{Abstract}
+\input{chapters/0-abstract}
+
+\tableofcontents
+
+\listoffigures
+
+\listoftables
+
+\printglossaries
+
+\chapter{Introduction}
+\input{chapters/1-introduction}
+
+\chapter{Evaluating RNA-seq quantification}
+\input{chapters/2-evaluation}
+
+\chapter{Generating novel transcript models}
+\input{chapters/3-simulation}
+
+\chapter{Bias modeling}
+\input{chapters/4-bias}
+
+\chapter{Conclusion}
+\input{chapters/n-conclusion}
+
+\appendix
+
+\chapter{Appendix}
+\input{chapters/appendix}
+
+\printbibliography
+
+\end{document}
