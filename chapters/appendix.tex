@@ -1,11 +1,31 @@
 
+\chapter{Generating novel isoform models}
+
+In this appendix, we describe our approach for generating novel gene isoform models. As a supplement, we also describe an experimental generative approach developed along the course of this work.   
+
+\section{Modifications from reference isoforms}
+
+To generate novel isoform models, we select a set of seed reference isoforms and introduce modifications that are well known to occur via alternative isoform regulation \textit{in vivo}. These modifications include the use of alternative 5' start sites, alternative 3' end sites, alternative splice donors and acceptors, exon skipping, intron retention, and the introduction of new exons and introns. In addition, we also introduce a new modification, termed \textit{subset} isoform, that drops exons from the reference isoform from the 5' end. Introduction of these novel subset isoforms increases the number of multi-mapping mapping reads, making the process of assigning these reads to the correct isoform more complex. 
+
+%<Insert figure here describing novel isoform models>
+
+Because the \texttt{minimap2} aligner uses splice site signals to map reads, we ensure that the generated novel isoform models conform to these splice site signals. We do so by performing splice site correction whenever necessary, i.e., for the alternative splice donor, alternative splice acceptor, new exon and new intron modifications. 
+
+%<Insert figure here showing splice site correction>
+
+Software for generating novel isoform models was written in \texttt{python} and can be found at \url{https://github.com/jleechung/}.
+
+\section{Generative adversarial modeling}
+
+While the approach detailed above provides precise control over the novel isoform models generated, the resultant models may not be 'biologically' realistic.  
+
+\chapter{Simulating degraded reads}
+
+In this appendix, we describe our approach for simulating reads based on constant expected degradation.
+
 \chapter{Proof of concavity of log-likelihood function}
 
 \lipsum[77]
-
-\chapter{Simulation data}
-
-\lipsum[82]
 
 \chapter{Evaluation metrics}
 

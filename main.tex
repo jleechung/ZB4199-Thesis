@@ -62,6 +62,9 @@
 \usepackage{caption}
 \usepackage{subcaption}
 
+%% Hyperlinks
+\usepackage{hyperref}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Document starts here
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -103,10 +106,10 @@
 
 \appendix
 \titleformat{\chapter}[display]
-  {\normalfont\large\bfseries}% <- font for label "Appendix A", default \huge
+  {\normalfont\huge\bfseries}% <- font for label "Appendix A", default \huge
   {\chaptertitlename\ \thechapter}
   {20pt}
-  {\large}% <- font for title, default \Huge
+  {\huge}% <- font for title, default \Huge
 \input{chapters/appendix}
 
 \printbibliography[heading=bibintoc]
