@@ -8,32 +8,3 @@ To evaluate quantification estimates from \gls{rnaseq}, experimental datasets wi
 
 Here, we review various concepts and existing literature relevant to our aim of modeling bias in long-read \gls{rnaseq}. We first examine (i) biases in short-read \gls{rnaseq} technologies and how they are accounted for by existing methods, which provide some ideas on how to handle biases in long-read \gls{rnaseq}. Next, we review (ii) long-read \gls{rnaseq} technologies and how they mitigate biases in (i), and (iii) biases that long-read technologies themselves possess. 
 
-\subsection{Bias in short-read \gls{rnaseq}}
-
-Short-read \gls{rnaseq} technologies enable deep sequencing of highly accurate short reads, and has been the dominant technology for profiling the transcriptome since its popularisation in the early 2010s \cite{Lowe2017}. Typically, library preparation protocol for an \gls{rnaseq} experiment following \gls{rna} extraction involves \gls{rna} fragmentation, followed by the use of random hexamer primers for priming of the fragments to synthesize one strand of \gls{cdna}. After second strand synthesis, the resulting double stranded \gls{cdna} are size-selected and amplified via \gls{pcr} amplification to generate enough \gls{cdna} for sequencing \cite{Marguerat2010}.  
-
-Biases in short-read \gls{rnaseq} have been extensively studied \cite{Hansen2010, Li2010, Li2011, Zhengpeng2010, Roberts2011, Benjamini2012, Lahens2014, Love2016}, and can often be traced back to specific steps in the protocol described above. For instance, \cite{Hansen2010} showed that priming with random hexamer primers induces bias in the nucleotide composition of the reads and results in non-uniform representation of reads across the length of the transcript. Next, size selection of fragments results in an over-representation of fragments of a certain length, while \gls{rna} degradation and \gls{mrna} selection can lead to over-representation of fragments that are located towards either the beginning or end of the transcript \cite{Roberts2011, Lahens2014, Love2016}. \gls{pcr} amplification before sequencing also introduces bias by preferential amplification of fragments with certain GC content \cite{Benjamini2012, Love2016}. The combination of these biases affect quantification estimates, and if not corrected for, leads to erroneous estimates \cite{Roberts2011, Love2016}. 
-
-Methods to address these biases can be categorised into two broad classes. The first class of methods involve innovations in library preparation methods to reduce bias from their source of origin \cite{Vandijk2014}. For instance, an amplification-free \gls{rnaseq} protocol was proposed in \cite{Mamanova2010}, while thermostable polymerases that exhibit relatively lower GC bias were identified in \cite{Quail2012}. However, reducing bias through new protocols is not always feasible, and thus we focus on the second class of methods that involve modeling and correcting for the bias \textit{in silico}. While there are many computational methods that fall under this class, here we select two approaches that are most relevant to our aim, namely \textit{alpine} and non-uniform read distribution models, and explicate them in detail. 
-
-\textit{alpine} was proposed in \cite{Love2016} to model \gls{rnaseq} fragment sequence bias.
-
-A non-uniform read distribution model was proposed in \cite{Zhengpeng2010} to model non-uniform read distribution of reads over the length of the transcript for improved isoform expression inference.  
-
-\subsection{Long-read technologies}
-
-\lipsum[1]
-
-\subsection{Bias in long-read \gls{rnaseq}}
-
-\lipsum[3]
-
-\section{Organisation}
-
-The chapters of this thesis are organised as follows:
-\begin{itemize}
-    \item In Chapter 2, we describe methods to evaluate \gls{rnaseq} quantification, including reference-based metrics where the ground truth is known, and reference-free metrics which describe the variance of estimates across technical replicates. 
-    \item In Chapter 3, we develop methods to generate novel transcript models for simulation, including a handcrafting approach that is splice-aware, and an experimental approach that involves deep generative modeling.
-    \item In Chapter 4, we examine and characterise degradation bias in long-read \gls{rnaseq} across multiple samples and protocols, demonstrating how it can lead to erroneous quantification estimates. We develop a model that corrects for degradation bias, and demonstrate that it improves quantification estimates on data simulated with approaches in Chapter 3 based on evaluation metrics in Chapter 2. 
-    \item In Chapter $n$, we summarise the ideas of the thesis and discuss potential directions of future work. 
-\end{itemize}

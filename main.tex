@@ -85,25 +85,28 @@
 
 \printglossaries
 
-\pagenumbering{arabic}
-
 \chapter{Introduction}
+\pagenumbering{arabic}
 \input{chapters/1-introduction}
 
-\chapter{Evaluating RNA-seq quantification}
-\input{chapters/2-evaluation}
+\chapter{Characterising degradation bias}
+\input{chapters/2-character}
 
-\chapter{Generating novel transcript models}
-\input{chapters/3-simulation}
+\chapter{Modeling degradation bias}
+\input{chapters/3-model}
 
-\chapter{Bias modeling}
-\input{chapters/4-bias}
+\chapter{Model evaluation}
+\input{chapters/4-evaluation}
 
 \chapter{Conclusion}
 \input{chapters/n-conclusion}
 
 \appendix
-\chapter{Appendix}
+\titleformat{\chapter}[display]
+  {\normalfont\large\bfseries}% <- font for label "Appendix A", default \huge
+  {\chaptertitlename\ \thechapter}
+  {20pt}
+  {\large}% <- font for title, default \Huge
 \input{chapters/appendix}
 
 \printbibliography[heading=bibintoc]
