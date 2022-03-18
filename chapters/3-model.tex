@@ -3,9 +3,15 @@ In this chapter, we specify a generative model for transcript quantification fro
 
 \section{Model assumptions}
 
-Our model takes as input 
+Our model takes as input reads obtained from sequencing transcripts with the \gls{ont} direct \gls{rnaseq} protocol. We assume there is a bijective mapping between reads and transcript, i.e., each read originates from only one transcript, and each transcript generates only one read. Reads are generated independently and identically distributed (iid) from a distribution to be specified, and the 3' end of each read aligns within some region close to the 3' end of the isoform it originated.
+
+We make two assumptions on the degradation rate $d$. First, we assume that degradation of a transcript does not depend on the expression level or biotype of the isoform it originated from. Second, we assume that the expected degradation rate is constant, i.e, $\mathbb{E}[d]=c\in(0,1)$. 
 
 \section{Generative model}
+
+We observe $N$ reads $\bm{R}=(r_1,...,r_n)$, with $r_i$ representing the $i$\ts{th} read. The variable $r_i$ can be thought of as a collection of properties about the $i$\ts{th} read that are relevant for quantification, such as length, start and end positions or GC content. The reads are generated from $M$ isoforms, with unknown relative abundances $\bm{\theta}=(\theta_1,...\theta_M)$. These relative abundances sum to one and are non-negative, i.e., $\Sigma_j\theta_j=1, \theta_j\geq0$ $\forall j$. 
+
+The goal of transcript quantification is to infer $\bm{\theta}$ given $\bm{R}$.
 
 \section{Parameter inference}
 
