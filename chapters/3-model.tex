@@ -71,7 +71,7 @@ We specify the read length-isoform agreement model with the assumption that the 
 \begin{equation}
     -c\cdot \ell_\mathrm{max} + 1 = 0 \implies \ell_\mathrm{max} = 1/c
 \end{equation}
-For example, a $\mathbb{E}[d]=0.2$ implies that $\ell_\mathrm{max}=5$ kb. This is an unrealistic assumption, given that \gls{ont} devices are capable of sequencing reads upwards of $10$ kb in length. Nevertheless, this simplifying assumption enables us to test a simpler read length-isoform agreement model on simulated datasets. We develop a more flexible model allowing for variable degradation in the following section.  
+For instance, a $\mathbb{E}[d]=0.2$ implies that $\ell_\mathrm{max}=5$ kb. The assumption made here is unrealistic, given that \gls{ont} devices are capable of sequencing reads upwards of $10$ kb in length. Nevertheless, this simplifying assumption enables us to test a simpler read length-isoform agreement model on simulated datasets. We develop a more flexible model allowing for variable degradation in the following section.  
 
 Let the length of isoform $j$ be len$(j)$. For constant expected degradation, we have
 \begin{equation}
@@ -84,7 +84,7 @@ Let the length of isoform $j$ be len$(j)$. For constant expected degradation, we
 
 \subsection{Likelihood formulation}\label{likelihood-formulation}
 
-The marginal distribution of $r_i$ is obtained by summing the joint distribution (Eq. \ref{eq:joint-dist}) over all $j$ possible stats of $z_i$. From Eqs. \ref{eq:latent-dist}, \ref{eq:cond-dist} and \ref{eq:read-iso-agreement}, we obtain
+The marginal distribution of $r_i$ is obtained by summing the joint distribution (Eq. \ref{eq:joint-dist}) over all $j$ possible states of $z_i$. From Eqs. \ref{eq:latent-dist}, \ref{eq:cond-dist} and \ref{eq:read-iso-agreement}, we obtain
 \begin{equation}
     p(r_i)=\sum_{z_i}p(z_i)\cdot p(r_i\mid z_i)=\sum_{j=1}^M \theta_j\cdot a_{ij}\cdot p(\ell_i\mid d_j, z_{ij}=1)
 \end{equation}
@@ -130,11 +130,11 @@ where
 \begin{equation}
     \mathrm{argmax}_{\bm\theta}\sum_i\sum_j\gamma_{ij}\cdot\log\theta_{ij}
 \end{equation}
-The Lagrangian is:
+The Lagrangian is
 \begin{equation}
     \mathcal{L}(\theta_j,\lambda)=\sum_i\sum_j\gamma_{ij}\cdot\theta_j + \lambda\left[\sum_j\theta_j-1\right]
 \end{equation}
-Taking the derivative with respect to $\theta_j$ and setting to $0$ we obtain
+Taking the derivative with respect to $\theta_j$ and setting to $0$ we have
 \begin{equation}
     \frac{\partial\mathcal{L}(\theta_j,\lambda)}{\partial\theta_j}=\sum_i\frac{\gamma_{ij}}{\theta_j}+\lambda=0\implies\theta_j=-\frac{\sum_i\gamma_{ij}}{\lambda}\label{eq:derivative}
 \end{equation}
@@ -142,7 +142,7 @@ Obtain $\lambda$ by observing that
 \begin{equation}
     1=\sum_j\theta_j=\sum_j-\frac{\sum_i\gamma_{ij}}{\lambda}=\sum_i-\frac{\sum_j\gamma_{ij}}{\lambda}=\sum_i-\frac{1}{\lambda}=-\frac{N}{\lambda}\implies\lambda=-N\label{eq:lambda}
 \end{equation}
-From Eqs. \ref{eq:derivative} and \ref{eq:lambda} we obtain
+From Eqs. \ref{eq:derivative} and \ref{eq:lambda} we find that
 \begin{equation}
     \theta_j=\frac{\sum_i\gamma_{ij}}{N}\label{eq:thetaj}
 \end{equation}
@@ -151,11 +151,11 @@ An intuitive interpretation of Eq. \ref{eq:thetaj} is that the relative abundanc
     \item Initialize $\bm{\theta}^{(0)}$
     \item E-step: compute $\gamma_{ij}^{(t)}=\frac{\theta_j^{(t)}\cdot a_{ij}\cdot p(\ell_i\mid d_j, z_{ij}=1)}{\sum_{j'}\theta_{j'}^{(t)}\cdot a_{ij'}\cdot p(\ell_i\mid d_{j'}, z_{ij'}=1)}$
     \item M-step: compute $\theta_j^{(t+1)}=\frac{\sum_i\gamma_{ij}^{(t)}}{N}$
-    \item Evaluate the log-likelihood in Eq. \ref{eq:log-lik}
-    \item Check for convergence in the parameters or log-likelihood. If convergence criterion is not satisfied, return to step 2.
+    \item Repeat steps 2 and 3 until convergence.
 \end{enumerate}
+To initialize $\bm\theta$, we assign equal relative abundances to all isoforms by setting $\theta_j=1/N$ $\forall j$. We test for convergence by computing changes in the parameters or the log likelihood in Eq. \ref{eq:log-lik} after each iteration of the algorithm.   
 
-
+\newpage
 
 \subsection{Variational inference}
 
