@@ -1,15 +1,15 @@
 
-In this chapter, we specify a generative model for transcript quantification from long-read direct \gls{rnaseq} that accounts for bias due to degradation of \gls{mrna} transcripts. We detail the assumptions of our model, formulate the generative process and develop statistical algorithms for inference of the parameters of the model.  
+In this chapter, we specify a generative model for transcript quantification from long-read direct \gls{rnaseq} that accounts for bias due to degradation of \gls{mrna} transcripts. We detail the assumptions of our model, formulate the generative process and derive statistical algorithms for inference of the parameters of the model.  
 
 \section{Model assumptions}\label{model-assumptions}
 
 Our model takes as input reads obtained from sequencing transcripts with the \gls{ont} direct \gls{rnaseq} protocol aligned to the reference transcriptome. We assume there is a bijective mapping between reads and transcript, i.e., each read originates from only one transcript, and each transcript generates only one read. Reads are generated independently and identically distributed (iid) from a distribution to be specified, and the 3' end of each read aligns within some region close to the 3' end of the isoform it originated from.
 
-We make two assumptions on the degradation rate $d$. First, we assume that the degradation of a transcript does not depend on the expression level or biotype of the isoform it originated from. Second, we assume that the expected degradation rate is constant, i.e, $\mathbb{E}[d]=c\in(0,1)$. Even though the second assumption is relatively strong (see section \ref{read-length-isoform-agreement}), we make this simplifying assumption to show that our model works on simulated data, and relax this assumption to allow our model to generalize to real datasets. 
+We make two assumptions on the degradation rate $d$. First, we assume that the degradation of a transcript does not depend on the expression level or biotype of the isoform it originated from. Second, we assume that the expected degradation rate is constant, i.e, $\mathbb{E}[d]=c\in(0,1)$. Even though the second assumption is relatively strong (see Section \ref{read-length-isoform-agreement}), we make this simplifying assumption to show that our model works on simulated data, and relax this assumption to allow our model to generalize to real datasets. 
 
 \section{Generative model}\label{generative-model}
 
-We introduce notation for formulating the model and derive the complete data log likelihood for maximum likelihood estimation of the model parameters. 
+Our model aims to capture the generative process of the observed degraded reads from their isoforms of origin. Here, we formalize our model and derive the complete data log likelihood for maximum likelihood estimation of the model parameters. 
 
 \subsection{Notation and terminology}\label{notation-and-terminology}
 
@@ -26,9 +26,9 @@ Let $N$ be the number of observed reads and $M$ be the number of isoforms the re
         \end{cases}
     \end{equation}
 \end{itemize} 
-The directed graphical model in figure \ref{fig:graphical-model-1} illustrates the relationship between the variables $\bm{R}, \bm{Z}$ and parameters $\bm{\theta}$, and provides an easy way to read off the factorization of the joint distribution over the observed and latent variables:
+The directed graphical model in Figure \ref{fig:graphical-model-1} illustrates the relationship between the variables $\bm{R}, \bm{Z}$ and parameters $\bm{\theta}$, and provides an easy way to read off the factorization of the joint distribution over the observed and latent variables:
 \begin{equation}
-    p(\bm{R},\bm{Z})=p(\bm{R}\mid\bm{Z})\cdot p(\bm{Z})
+    p(\bm{R},\bm{Z})=p(\bm{R}\mid\bm{Z})\cdot p(\bm{Z})\label{eq:joint-dist}
 \end{equation}
 \begin{figure}[H]
     \centering
@@ -40,16 +40,16 @@ The directed graphical model in figure \ref{fig:graphical-model-1} illustrates t
         \edge{z}{r}; %
         \plate[inner sep=0.4cm, xshift = -0.1cm]{plate1}{(z)(r)}{$i=1,...,N$}; %
     \end{tikzpicture}
-    \caption{Directed graphical model for generative model for long-read RNA-seq}
+    \caption{Graphical model representation of a generative model for long-read RNA-seq}
     \label{fig:graphical-model-1}
 \end{figure}
 \noindent The distribution over the latent variables is categorical:
 \begin{equation}
-    p(z_i)=\prod_{j=1}^M \theta_j^{z_{ij}}
+    p(z_i)=\prod_{j=1}^M \theta_j^{z_{ij}}\label{eq:latent-dist}
 \end{equation}
 The conditional distribution of observing the read $r_i$ given $z_i$ is
 \begin{equation}
-    p(r_i\mid z_i)=\prod_{j=1}^M p(r_i\mid z_{ij})^{z_{ij}}
+    p(r_i\mid z_i)=\prod_{j=1}^M p(r_i\mid z_{ij})^{z_{ij}}\label{eq:cond-dist}
 \end{equation}
 We now model the probability that read $i$ originated from isoform $j$, i.e., $p(r_i\mid z_{ij}=1)$. This probability is proportional to:
 \begin{itemize}
@@ -57,32 +57,105 @@ We now model the probability that read $i$ originated from isoform $j$, i.e., $p
     \begin{equation}
         a_{ij} = \frac{{\textrm{AS}}_{ij}}{\max_{j'} {\textrm{AS}}_{ij'}}
     \end{equation}
-    \item The probability of observing a read of length $\ell_i$ given the degradation rate $d_j$ and length $\mathrm{len}(j)$ of isoform $j$, i.e., $p(\ell_i\mid d_j, \mathrm{len}(j), z_{ij}=1)$, where $\ell_i$ is the length of $r_i$. We refer to this probability as the \textit{read length-isoform agreement} model.      
+    \item The probability of observing a read of length $\ell_i$ given the degradation rate $d_j$ of isoform $j$, i.e., $p(\ell_i\mid d_j, \mathrm{len}(j), z_{ij}=1)$, where $\ell_i$ is the length of $r_i$. We refer to this probability as the \textit{read length-isoform agreement} model.      
 \end{itemize}
 Combining alignment compatibility and the read length-isoform agreement model, we have 
 \begin{equation}
-    p(r_i\mid z_{ij}=1) = a_{ij}\cdot p(\ell_i\mid d_j, \mathrm{len}(j), z_{ij}=1)\label{eq:read-iso-agreement}
+    p(r_i\mid z_{ij}=1) = a_{ij}\cdot p(\ell_i\mid d_j, z_{ij}=1)\label{eq:read-iso-agreement}
 \end{equation}
-We make some remarks on equation \ref{eq:read-iso-agreement}. First, $a_{ij}$ measures how well read $i$ aligns to isoform $j$ compared to its best alignment. Note that if we do not observe an alignment between read $i$ and isoform $j$, then $\mathrm{AS}_{ij}=0$, $a_{ij}=0$, and thus $p(r_i\mid z_{ij}=1)=0$ as expected. Second, the read length-isoform agreement model captures the expected read length distribution for isoform $j$ given its degradation rate and length. In the absence of degradation and assuming we have perfect reads, we expect that the lengths of all reads originating from isoform $j$ will be equal to the length of isoform $j$, i.e., $p(\ell_i=\mathrm{len}(j)\mid d_j, \mathrm{len}(j), z_{ij}=1)=1$ and $0$ otherwise.   
+We make some remarks on equation \ref{eq:read-iso-agreement}. First, $a_{ij}$ measures how well read $i$ aligns to isoform $j$ compared to its best alignment. Note that if we do not observe an alignment between read $i$ and isoform $j$, then $\mathrm{AS}_{ij}=0$, $a_{ij}=0$, and thus $p(r_i\mid z_{ij}=1)=0$ as expected. Second, the read length-isoform agreement model captures the expected read length distribution for isoform $j$ given its degradation rate and length. In the absence of degradation, we expect that the lengths of all reads originating from isoform $j$ will be equal to the length len$(j)$ of isoform $j$, i.e., $p(\ell_i=\mathrm{len}(j)\mid d_j, z_{ij}=1)=1$ and $0$ otherwise.   
 
 \subsection{Read length-isoform agreement}\label{read-length-isoform-agreement}
 
-We specify the read length-isoform agreement model with the assumption the the expected degradation is constant, i.e., $\mathbb{E}[d]=c\in(0,1)$. For example, if the degradation rate for all transcripts is $d_j=0.2$, then for every kb from the 3' end, we expect 20\% less reads. A constant expected degradation rate  implies that the maximum possible sequenced read length $\ell_\mathrm{max}$ is bounded, and is given by:
+We specify the read length-isoform agreement model with the assumption that the expected degradation is constant, i.e., $\mathbb{E}[d]=c\in(0,1)$. For example, if the degradation rate for all transcripts is $d_j=0.2$, then for every kb from the 3' end, we expect 20\% less reads. A constant expected degradation rate  implies that the maximum possible sequenced read length $\ell_\mathrm{max}$ is bounded, and is given by:
 \begin{equation}
     -c\cdot \ell_\mathrm{max} + 1 = 0 \implies \ell_\mathrm{max} = 1/c
 \end{equation}
-Thus, for constant expected degradation, we have
+For example, a $\mathbb{E}[d]=0.2$ implies that $\ell_\mathrm{max}=5$ kb. This is an unrealistic assumption, given that \gls{ont} devices are capable of sequencing reads upwards of $10$ kb in length. Nevertheless, this simplifying assumption enables us to test a simpler read length-isoform agreement model on simulated datasets. We develop a more flexible model allowing for variable degradation in the following section.  
+
+Let the length of isoform $j$ be len$(j)$. For constant expected degradation, we have
 \begin{equation}
-    p(\ell_i\mid d_j, \mathrm{len}(j), z_{ij}=1) = 
+    p(\ell_i\mid d_j, z_{ij}=1) = 
     \begin{cases}
         d_j\cdot\ell_i & \textrm{if } \ell_i<\min(\mathrm{len}(j), \ell_\mathrm{max})\\
         1-d_j\cdot\ell_i & \textrm{if } \ell_i=\mathrm{len}(j)
     \end{cases}
 \end{equation}
 
+\subsection{Likelihood formulation}\label{likelihood-formulation}
+
+The marginal distribution of $r_i$ is obtained by summing the joint distribution (Eq. \ref{eq:joint-dist}) over all $j$ possible stats of $z_i$. From Eqs. \ref{eq:latent-dist}, \ref{eq:cond-dist} and \ref{eq:read-iso-agreement}, we obtain
+\begin{equation}
+    p(r_i)=\sum_{z_i}p(z_i)\cdot p(r_i\mid z_i)=\sum_{j=1}^M \theta_j\cdot a_{ij}\cdot p(\ell_i\mid d_j, z_{ij}=1)
+\end{equation}
+Since we assume the reads are generated iid, the likelihood is a product over $N$ reads:
+\begin{equation}
+    p(\bm{R}\mid\bm{\theta}) = \prod_{i=1}^N \sum_{j=1}^M \theta_j\cdot a_{ij}\cdot p(\ell_i\mid d_j, z_{ij}=1)\label{eq:lik}
+\end{equation}
+The corresponding log-likelihood is 
+\begin{equation}
+    \log p(\bm{R}\mid\bm{\theta}) = \sum_{i=1}^N \log \left[\sum_{j=1}^M \theta_j\cdot a_{ij}\cdot p(\ell_i\mid d_j, z_{ij}=1)\right]\label{eq:log-lik}
+\end{equation}
+It is difficult to maximize Eq. \ref{eq:lik} with respect to $\bm{\theta}$ because the log acts on the sum. Assuming the latent variables $\bm{Z}$ are observed, the likelihood will decompose. We can write the complete data likelihood as
+\begin{equation}
+    p(\bm{R},\bm{Z}\mid\bm{\theta})=\prod_{i=1}^N\prod_{j=1}^M \theta_j^{z_{ij}}\cdot\left[a_{ij}\cdot p(\ell_i\mid d_j, z_{ij}=1)\right]^{z_{ij}}\label{eq:comp-lik}
+\end{equation}
+The corresponding complete data log-likelihood is 
+\begin{equation}
+    \log p(\bm{R},\bm{Z}\mid\bm{\theta})=\sum_{i=1}^N\sum_{j=1}^M z_{ij}\cdot\log \left[\theta_j\cdot a_{ij}\cdot p(\ell_i\mid d_j, z_{ij}=1)\right]\label{eq:comp-log-lik}
+\end{equation}
+
 \section{Parameter inference}
 
+We describe two strategies to infer the parameters $\bm{\theta}$ that maximize the likelihood of the observed data: expectation maximization and variational inference.  
+
 \subsection{Expectation maximization}
+
+The EM algorithm is a powerful method for finding maximum likelihood estimates of parameters in latent variable models. It consists of a two-stage iterative optimization procedure for maximizing the likelihood. In our setting, we seek to maximize the complete data log-likelihood with respect to $\bm{\theta}$. However, we observe only the incomplete data $\bm{R}$. Since we cannot obtain the complete data log-likelihood (Eq. \ref{eq:comp-log-lik}), we take its expectation under the posterior of the latent variables $\bm{Z}$ given some setting of the parameters $\bm{\theta}^{(t)}$: this corresponds to the E step of the EM algorithm. In the M step, we maximize this expectation with respect to the parameters $\bm{\theta}$ to obtain a new estimate of the parameters $\bm{\theta}^{(t+1)}$.   
+
+We obtain the posterior of the latent variables $\bm{Z}$ from Eqs. \ref{eq:latent-dist} and \ref{eq:joint-dist}:
+\begin{equation}
+    p(\bm{Z}\mid\bm{R},\bm{\theta})\propto\prod_{i=1}^N\prod_{j=1}^M\left[\theta_j\cdot a_{ij}\cdot p(\ell_i\mid d_j,z_{ij})\right]^{z_{ij}=1}\label{eq:post}
+\end{equation}
+\paragraph{E-step} We take the expectation of the complete data log-likelihood (Eq. \ref{eq:comp-log-lik}) with respect to the posterior distribution of the latent variables (Eq. \ref{eq:post}):
+\begin{equation}
+    \mathbb{E}_{\bm{Z}\mid\bm{R},\bm{\theta}}\left[\log p(\bm{R},\bm{Z}\mid\bm{\theta})\right]=\sum_{i=1}^N\sum_{j=1}^M \mathbb{E}[z_{ij}]\cdot\log \left[\theta_j\cdot a_{ij}\cdot p(\ell_i\mid d_j, z_{ij}=1)\right]\label{eq:e-step}
+\end{equation}
+where 
+\begin{equation}
+    \mathbb{E}[z_{ij}]=\frac{\theta_j\cdot a_{ij}\cdot p(\ell_i\mid d_j, z_{ij}=1)}{\sum_{j'}\theta_j'\cdot a_{ij'}\cdot p(\ell_i\mid d_{j'}, z_{ij'}=1)}=\gamma_{ij}
+\end{equation}
+
+\paragraph{M-step} We maximize the expression in Eq. \ref{eq:e-step} with respect to $\bm\theta$ constrained by $\sum_j\theta_j=1$, which is equivalent to the following:
+\begin{equation}
+    \mathrm{argmax}_{\bm\theta}\sum_i\sum_j\gamma_{ij}\cdot\log\theta_{ij}
+\end{equation}
+The Lagrangian is:
+\begin{equation}
+    \mathcal{L}(\theta_j,\lambda)=\sum_i\sum_j\gamma_{ij}\cdot\theta_j + \lambda\left[\sum_j\theta_j-1\right]
+\end{equation}
+Taking the derivative with respect to $\theta_j$ and setting to $0$ we obtain
+\begin{equation}
+    \frac{\partial\mathcal{L}(\theta_j,\lambda)}{\partial\theta_j}=\sum_i\frac{\gamma_{ij}}{\theta_j}+\lambda=0\implies\theta_j=-\frac{\sum_i\gamma_{ij}}{\lambda}\label{eq:derivative}
+\end{equation}
+Obtain $\lambda$ by observing that
+\begin{equation}
+    1=\sum_j\theta_j=\sum_j-\frac{\sum_i\gamma_{ij}}{\lambda}=\sum_i-\frac{\sum_j\gamma_{ij}}{\lambda}=\sum_i-\frac{1}{\lambda}=-\frac{N}{\lambda}\implies\lambda=-N\label{eq:lambda}
+\end{equation}
+From Eqs. \ref{eq:derivative} and \ref{eq:lambda} we obtain
+\begin{equation}
+    \theta_j=\frac{\sum_i\gamma_{ij}}{N}\label{eq:thetaj}
+\end{equation}
+An intuitive interpretation of Eq. \ref{eq:thetaj} is that the relative abundance of isoform $j$ is the fraction of all reads that are soft-assigned to isoform $j$ by the EM algorithm. In summary, the EM algorithm for our model is as follows:
+\begin{enumerate}
+    \item Initialize $\bm{\theta}^{(0)}$
+    \item E-step: compute $\gamma_{ij}^{(t)}=\frac{\theta_j^{(t)}\cdot a_{ij}\cdot p(\ell_i\mid d_j, z_{ij}=1)}{\sum_{j'}\theta_{j'}^{(t)}\cdot a_{ij'}\cdot p(\ell_i\mid d_{j'}, z_{ij'}=1)}$
+    \item M-step: compute $\theta_j^{(t+1)}=\frac{\sum_i\gamma_{ij}^{(t)}}{N}$
+    \item Evaluate the log-likelihood in Eq. \ref{eq:log-lik}
+    \item Check for convergence in the parameters or log-likelihood. If convergence criterion is not satisfied, return to step 2.
+\end{enumerate}
+
+
 
 \subsection{Variational inference}
 

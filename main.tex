@@ -14,7 +14,7 @@
 
 \documentclass[12pt, twoside]{report}
 \usepackage[utf8]{inputenc}
-\usepackage[a4paper, left=20mm, right=20mm, top=30mm, bottom=25mm]{geometry}
+\usepackage[a4paper, left=22mm, right=22mm, top=30mm, bottom=25mm]{geometry}
 \usepackage{lipsum}
 \setlength{\headheight}{15pt}
 \linespread{1.25}
@@ -74,10 +74,14 @@
 \newcommand{\irow}[1]{% inline row vector
   \begin{smallmatrix}(#1)\end{smallmatrix}%
 }
+\DeclareMathOperator*{\argmax}{arg\,max}
 
 %% Graphical models
 \usepackage{tikz}
 \usetikzlibrary{bayesnet}
+
+%% Line numbers
+\usepackage[switch, modulo]{lineno}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Document starts here
