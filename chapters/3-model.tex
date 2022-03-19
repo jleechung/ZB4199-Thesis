@@ -1,17 +1,84 @@
 
 In this chapter, we specify a generative model for transcript quantification from long-read direct \gls{rnaseq} that accounts for bias due to degradation of \gls{mrna} transcripts. We detail the assumptions of our model, formulate the generative process and develop statistical algorithms for inference of the parameters of the model.  
 
-\section{Model assumptions}
+\section{Model assumptions}\label{model-assumptions}
 
-Our model takes as input reads obtained from sequencing transcripts with the \gls{ont} direct \gls{rnaseq} protocol. We assume there is a bijective mapping between reads and transcript, i.e., each read originates from only one transcript, and each transcript generates only one read. Reads are generated independently and identically distributed (iid) from a distribution to be specified, and the 3' end of each read aligns within some region close to the 3' end of the isoform it originated.
+Our model takes as input reads obtained from sequencing transcripts with the \gls{ont} direct \gls{rnaseq} protocol aligned to the reference transcriptome. We assume there is a bijective mapping between reads and transcript, i.e., each read originates from only one transcript, and each transcript generates only one read. Reads are generated independently and identically distributed (iid) from a distribution to be specified, and the 3' end of each read aligns within some region close to the 3' end of the isoform it originated from.
 
-We make two assumptions on the degradation rate $d$. First, we assume that degradation of a transcript does not depend on the expression level or biotype of the isoform it originated from. Second, we assume that the expected degradation rate is constant, i.e, $\mathbb{E}[d]=c\in(0,1)$. 
+We make two assumptions on the degradation rate $d$. First, we assume that the degradation of a transcript does not depend on the expression level or biotype of the isoform it originated from. Second, we assume that the expected degradation rate is constant, i.e, $\mathbb{E}[d]=c\in(0,1)$. Even though the second assumption is relatively strong (see section \ref{read-length-isoform-agreement}), we make this simplifying assumption to show that our model works on simulated data, and relax this assumption to allow our model to generalize to real datasets. 
 
-\section{Generative model}
+\section{Generative model}\label{generative-model}
 
-We observe $N$ reads $\bm{R}=(r_1,...,r_n)$, with $r_i$ representing the $i$\ts{th} read. The variable $r_i$ can be thought of as a collection of properties about the $i$\ts{th} read that are relevant for quantification, such as length, start and end positions or GC content. The reads are generated from $M$ isoforms, with unknown relative abundances $\bm{\theta}=(\theta_1,...\theta_M)$. These relative abundances sum to one and are non-negative, i.e., $\Sigma_j\theta_j=1, \theta_j\geq0$ $\forall j$. 
+We introduce notation for formulating the model and derive the complete data log likelihood for maximum likelihood estimation of the model parameters. 
 
-The goal of transcript quantification is to infer $\bm{\theta}$ given $\bm{R}$.
+\subsection{Notation and terminology}\label{notation-and-terminology}
+
+Let $N$ be the number of observed reads and $M$ be the number of isoforms the reads were generated from. 
+\begin{itemize}
+    \item We observe a set of reads $\bm{R}=\{r_1,...,r_N\}$, with $r_i$ representing the $i$\ts{th} read. The variable $r_i$ can be thought of as a collection of properties about the $i$\ts{th} read that are relevant for quantification, such as length, start and end positions or GC content.
+    \item We would like to infer the unknown relative abundances of the isoforms $\bm{\theta}=\{\theta_1,...\theta_M\}$. These relative abundances sum to one and are non-negative, i.e., $\Sigma_j\theta_j=1, \theta_j\geq0$ $\forall j$. 
+    \item We introduce $N$ latent variables $\bm{Z}=\{z_1,...,z_N\}$, where $z_i=(z_{i1}$ $...$ $z_{iM})^T$ is a binary vector in $M$-dimensions with $\Sigma_jz_{ij}=1$. $z_i$ describes the assignment of $r_i$ to one of $M$ isoforms, where
+    \begin{equation}
+        z_{ij} = 
+        \begin{cases}
+        1 & \text{if } r_i \text{ originated from isoform } j\\
+        0 & \text{otherwise }
+        \end{cases}
+    \end{equation}
+\end{itemize} 
+The directed graphical model in figure \ref{fig:graphical-model-1} illustrates the relationship between the variables $\bm{R}, \bm{Z}$ and parameters $\bm{\theta}$, and provides an easy way to read off the factorization of the joint distribution over the observed and latent variables:
+\begin{equation}
+    p(\bm{R},\bm{Z})=p(\bm{R}\mid\bm{Z})\cdot p(\bm{Z})
+\end{equation}
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[scale=1.25, every node/.style={transform shape}]
+        \node[const](theta){$\bm{\theta}$}; % 
+        \node[latent, right=of theta](z){$z_i$}; %
+        \node[obs, right=of z](r){$r_i$}; %
+        \edge{theta}{z}; %
+        \edge{z}{r}; %
+        \plate[inner sep=0.4cm, xshift = -0.1cm]{plate1}{(z)(r)}{$i=1,...,N$}; %
+    \end{tikzpicture}
+    \caption{Directed graphical model for generative model for long-read RNA-seq}
+    \label{fig:graphical-model-1}
+\end{figure}
+\noindent The distribution over the latent variables is categorical:
+\begin{equation}
+    p(z_i)=\prod_{j=1}^M \theta_j^{z_{ij}}
+\end{equation}
+The conditional distribution of observing the read $r_i$ given $z_i$ is
+\begin{equation}
+    p(r_i\mid z_i)=\prod_{j=1}^M p(r_i\mid z_{ij})^{z_{ij}}
+\end{equation}
+We now model the probability that read $i$ originated from isoform $j$, i.e., $p(r_i\mid z_{ij}=1)$. This probability is proportional to:
+\begin{itemize}
+    \item The alignment compatibility $a_{ij}\in(0,1)$ between read $i$ and isoform $j$, which measures the alignment score (AS) of read $i$ against isoform $j$ scaled by the best alignment score of read $i$ against all isoforms:
+    \begin{equation}
+        a_{ij} = \frac{{\textrm{AS}}_{ij}}{\max_{j'} {\textrm{AS}}_{ij'}}
+    \end{equation}
+    \item The probability of observing a read of length $\ell_i$ given the degradation rate $d_j$ and length $\mathrm{len}(j)$ of isoform $j$, i.e., $p(\ell_i\mid d_j, \mathrm{len}(j), z_{ij}=1)$, where $\ell_i$ is the length of $r_i$. We refer to this probability as the \textit{read length-isoform agreement} model.      
+\end{itemize}
+Combining alignment compatibility and the read length-isoform agreement model, we have 
+\begin{equation}
+    p(r_i\mid z_{ij}=1) = a_{ij}\cdot p(\ell_i\mid d_j, \mathrm{len}(j), z_{ij}=1)\label{eq:read-iso-agreement}
+\end{equation}
+We make some remarks on equation \ref{eq:read-iso-agreement}. First, $a_{ij}$ measures how well read $i$ aligns to isoform $j$ compared to its best alignment. Note that if we do not observe an alignment between read $i$ and isoform $j$, then $\mathrm{AS}_{ij}=0$, $a_{ij}=0$, and thus $p(r_i\mid z_{ij}=1)=0$ as expected. Second, the read length-isoform agreement model captures the expected read length distribution for isoform $j$ given its degradation rate and length. In the absence of degradation and assuming we have perfect reads, we expect that the lengths of all reads originating from isoform $j$ will be equal to the length of isoform $j$, i.e., $p(\ell_i=\mathrm{len}(j)\mid d_j, \mathrm{len}(j), z_{ij}=1)=1$ and $0$ otherwise.   
+
+\subsection{Read length-isoform agreement}\label{read-length-isoform-agreement}
+
+We specify the read length-isoform agreement model with the assumption the the expected degradation is constant, i.e., $\mathbb{E}[d]=c\in(0,1)$. For example, if the degradation rate for all transcripts is $d_j=0.2$, then for every kb from the 3' end, we expect 20\% less reads. A constant expected degradation rate  implies that the maximum possible sequenced read length $\ell_\mathrm{max}$ is bounded, and is given by:
+\begin{equation}
+    -c\cdot \ell_\mathrm{max} + 1 = 0 \implies \ell_\mathrm{max} = 1/c
+\end{equation}
+Thus, for constant expected degradation, we have
+\begin{equation}
+    p(\ell_i\mid d_j, \mathrm{len}(j), z_{ij}=1) = 
+    \begin{cases}
+        d_j\cdot\ell_i & \textrm{if } \ell_i<\min(\mathrm{len}(j), \ell_\mathrm{max})\\
+        1-d_j\cdot\ell_i & \textrm{if } \ell_i=\mathrm{len}(j)
+    \end{cases}
+\end{equation}
 
 \section{Parameter inference}
 
