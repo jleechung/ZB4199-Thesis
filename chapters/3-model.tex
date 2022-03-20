@@ -220,3 +220,22 @@ From Eqs. \ref{eq:opt-z-1} and \ref{eq:opt-theta-1}, we perform coordinate ascen
     \item Repeat steps 2 and 3 until convergence. 
 \end{enumerate}
 One option for setting hyperparameters $\bm{\alpha_0}$ for the prior $p(\bm\theta\mid\bm{\alpha_0})$ is by setting all $\alpha_{0j}$ to some constant $\alpha_0$, yielding a symmetric Dirichlet prior. Small values of $\alpha_0$ result in a sparser $\bm\theta$, while larger values result in a more uniform $\bm\theta$.   
+
+\section{Model evaluation}
+
+In this section, we evaluate our quantification model and inference algorithms on simulated datasets with a constant expected degradation rate. 
+
+\subsection{Simulated data}
+
+To evaluate our model's ability to correct for degradation bias, we simulate five datasets for a range of degradation rates $\mathbb{E}[d]\in\{0.05,0.1,0.2,0.4,0.5\}$. We refer to a dataset with degradation rate of $x$ as \textbf{DEG}-$x$ for ease of reference. In addition, we simulate reads for artificial novel isoforms that are modified by dropping exons from the 5' end of selected reference isoforms, termed \textit{subset} isoforms. This increases the proportion of multi-mapping reads and makes correcting for degradation bias crucial for accurate transcript quantification. See Appendices \ref{ap:gen-novl-iso} and \ref{ap:sim-deg-reads} for more details on novel isoform and degraded read simulation. 
+
+\subsection{Benchmarking}
+
+We benchmark our model against existing methods for transcript quantification from long-read RNA-seq:
+\begin{itemize}
+    \item Nanocount
+    \item Bambu
+\end{itemize}
+
+\subsection{Results}
+
