@@ -36,7 +36,7 @@
 %% Chapters
 \usepackage{titlesec}
 \titleformat{\chapter}[display]
-{\normalfont\huge\bfseries}{\chaptertitlename~\thechapter}{20pt}{\huge}
+{\LARGE\bfseries}{\chaptertitlename~\thechapter}{10pt}{\LARGE}
 \titlespacing*{\chapter}{0pt}{-40pt}{10pt}
 \titlespacing*{name=\chapter,numberless}{0pt}{-40pt}{10pt}
 
@@ -68,9 +68,12 @@
 
 %% Maths
 \usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
 \usepackage{bm}
 \newcommand{\ts}{\textsuperscript}
-\usepackage{amsmath}
 \newcommand{\irow}[1]{% inline row vector
   \begin{smallmatrix}(#1)\end{smallmatrix}%
 }
@@ -110,10 +113,10 @@
 \pagenumbering{arabic}
 \input{chapters/1-introduction}
 
-\chapter{Characterising degradation bias}
+\chapter{Characterising degradation}
 \input{chapters/2-character}
 
-\chapter{Modeling degradation bias}
+\chapter{Bias-aware quantification}
 \input{chapters/3-model}
 
 \chapter{Model evaluation}

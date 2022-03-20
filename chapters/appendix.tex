@@ -23,9 +23,19 @@ While the approach detailed above provides precise control over the novel isofor
 
 In this appendix, we describe our approach for simulating reads based on constant expected degradation.
 
-\chapter{Proof of concavity of log-likelihood function}
+\chapter{Proof of concavity of log-likelihood function}\label{sec:proof-log-lik}
 
 \lipsum[77]
+
+\chapter{Derivations for variational distributions}\label{sec:variational-dist}
+
+\begin{equation}
+\begin{split}
+    \log q(\bm{Z}) & = \mathbb{E}_{\bm\theta}\left[\log p(\bm{R},\bm{Z},\bm{\theta})\right] + \textrm{const.} \\
+    & = \mathbb{E}_{\bm\theta}\left[\log p(\bm{R}\mid\bm{Z})\right] + \mathbb{E}_{\bm\theta}\left[\log p(\bm{Z}\mid\bm{\theta})\right] + \textrm{const.} \\
+    & = \sum_i\sum_j z_{ij}\log\left[a_{ij}\cdot p(\ell_i\mid d_j,z_{ij}=1)\right] + \sum_i\sum_j z_{ij}\mathbb{E}_{\bm\theta}\left[\log\theta_j\right] + \textrm{const.}
+\end{split}
+\end{equation}
 
 \chapter{Evaluation metrics}
 
