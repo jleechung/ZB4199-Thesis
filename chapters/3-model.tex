@@ -219,40 +219,14 @@ From Eqs. \ref{eq:opt-z-1} and \ref{eq:opt-theta-1}, we perform coordinate ascen
     \item Update $q(\bm\theta)$: compute $\alpha_{j}^{(t+1)}$  with $\gamma_{ij}^{(t)}$ from Eq. \ref{eq:opt-theta-2}
     \item Repeat steps 2 and 3 until convergence. 
 \end{enumerate}
+Upon convergence, the abundance estimate for the $j$\ts{th} isoform can be obtained by taking the expectation of $\theta_j$ under the posterior distribution:
+\begin{equation}
+    \mathbb{E}[\theta_j] = \frac{\alpha_{0j}+\sum_i\gamma_{ij}}{\sum_j\alpha_{0j}+N}
+\end{equation}
+
 One option for setting hyperparameters $\bm{\alpha_0}$ for the prior $p(\bm{\theta}\mid\bm{\alpha_0})$ is by setting all $\alpha_{0j}$ to some constant $\alpha_0$, yielding a symmetric Dirichlet prior. Small values of $\alpha_0$ result in a sparser $\bm\theta$, while larger values result in a more uniform $\bm\theta$. Another option is to place a hyperprior on $\bm{\alpha_0}$. Since $\bm{\alpha_0}>0$, we can consider
 \begin{equation}
     \alpha_{0j}\sim\textrm{Gamma}(a,b)
 \end{equation}
 We evaluate the choice of priors on transcript quantification in the following section. 
 
-\section{Model and inference evaluation}
-
-In this section, we evaluate our quantification model and inference algorithms on simulated datasets with constant expected degradation rates. 
-
-\subsection{Simulated data}
-
-To evaluate our model's ability to correct for degradation bias, we simulate five datasets for a range of degradation rates $\mathbb{E}[d]\in\{0.05,0.1,0.2,0.4,0.5\}$. We refer to a dataset with degradation rate of $x$ as \textbf{DEG}-$x$ for ease of reference. In addition, we simulate reads for artificial novel isoforms that are modified by dropping exons from the 5' end of selected reference isoforms, termed \textit{subset} isoforms. This increases the proportion of multi-mapping reads and makes correcting for degradation bias crucial for accurate transcript quantification. See Appendices \ref{ap:gen-novl-iso} and \ref{ap:sim-deg-reads} for more details on novel isoform and degraded read simulation. 
-
-\subsection{Benchmarking}
-
-We benchmark our model against existing methods for transcript quantification from long-read RNA-seq:
-\begin{itemize}
-    \item Nanocount
-    \item Bambu
-\end{itemize}
-
-\subsection{Results}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=\textwidth]{figures/sec-3-scc-nrmse.png}
-    \caption{Caption}
-    \label{fig:my_label}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.7\textwidth]{figures/sec-3-deg-est.png}
-    \caption{Caption}
-    \label{fig:my_label}
-\end{figure}

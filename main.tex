@@ -87,6 +87,14 @@
 \usepackage[switch, modulo]{lineno}
 
 %% Font
+\renewcommand{\familydefault}{\sfdefault} 
+\usepackage{caption}
+\captionsetup{font=footnotesize}
+
+%% Tables
+\usepackage{array}
+\newcolumntype{P}[1]{>{\centering\arraybackslash}p{#1}}
+\usepackage{bigstrut}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Document starts here
@@ -118,11 +126,11 @@
 \chapter{Characterising degradation}
 \input{chapters/2-character}
 
-\chapter{Bias-aware quantification}
+\chapter{Bias-aware quantification model}
 \input{chapters/3-model}
 
-\chapter{Modeling variable degradation}
-\input{chapters/4-flex}
+\chapter{Model evaluation and results}
+\input{chapters/4-eval}
 
 \chapter{Conclusion}
 \input{chapters/n-conclusion}
