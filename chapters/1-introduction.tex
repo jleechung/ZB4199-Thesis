@@ -5,5 +5,30 @@ This project focuses on a particular bias present in long-read \gls{rnaseq} refe
 
 \section{Review}
 
-Here, we review various concepts and existing literature relevant to our aim of modeling bias in long-read \gls{rnaseq}. We first examine (i) biases in short-read \gls{rnaseq} technologies and how they are accounted for by existing methods, which provide some ideas on how to handle biases in long-read \gls{rnaseq}. Next, we review (ii) long-read \gls{rnaseq} technologies and how they mitigate biases in (i), and (iii) biases that long-read technologies themselves possess. 
+Here, we review various concepts and existing literature relevant to our aim of modeling bias in long-read \gls{rnaseq}. We first examine (i) biases in short-read \gls{rnaseq} technologies and how they are accounted for by existing methods, which provide useful ideas on how to handle biases in long-read \gls{rnaseq}. Next, we review (ii) long-read \gls{rnaseq} technologies and how they mitigate biases in (i), and (iii) biases that long-read technologies themselves possess. 
+
+\subsection{Bias modeling in short-read RNA-seq}
+
+Short-read \gls{rnaseq} technologies enable deep sequencing of highly accurate short reads, and has been the dominant technology for profiling the transcriptome since its popularisation in the early 2010s \cite{Lowe2017}. Typically, library preparation protocol for an \gls{rnaseq} experiment following \gls{rna} extraction involves \gls{rna} fragmentation, followed by the use of random hexamer primers for priming of the fragments to synthesize one strand of \gls{cdna}. After second strand synthesis, the resulting double stranded \gls{cdna} are size-selected and amplified via \gls{pcr} amplification to generate enough \gls{cdna} for sequencing \cite{Marguerat2010}.  
+
+Biases in short-read \gls{rnaseq} have been extensively studied \cite{Hansen2010, Li2010, Li2011, Zhengpeng2010, Roberts2011, Benjamini2012, Lahens2014, Love2016}, and can often be traced back to specific steps in the protocol described above. For instance, \cite{Hansen2010} showed that priming with random hexamer primers induces bias in the nucleotide composition of the reads and results in non-uniform representation of reads across the length of the transcript. In addition, size selection of fragments results in an over-representation of fragments of a certain length, while \gls{rna} degradation and \gls{mrna} selection can lead to over-representation of fragments that are located towards either the beginning or end of the transcript \cite{Roberts2011, Lahens2014, Love2016}. \gls{pcr} amplification before sequencing also introduces bias by preferential amplification of fragments with certain GC content \cite{Benjamini2012, Love2016}. The combination of these biases affect quantification estimates, and if not corrected for, leads to erroneous estimates \cite{Roberts2011, Love2016}. 
+
+Existing methods to address these biases can be categorised into two broad classes. The first class of methods involve innovations in library preparation methods to reduce bias from their source of origin \cite{Vandijk2014}. For instance, an amplification-free \gls{rnaseq} protocol was proposed in \cite{Mamanova2010} to reduce amplification bias, while thermostable polymerases that exhibit relatively lower GC bias were identified in \cite{Quail2012}. However, reducing bias through new protocols is not always feasible, and thus we focus on the second class of methods that involve modeling and correcting for the bias \textit{in silico}. In particular, here we focus on the approaches in the literature that are most relevant to our aim. 
+
+\subsection{Long-read technologies}
+
+Long-read sequencing has been made possible by the development of biochemistry / biophysical techniques to capture full-length RNA / cDNA [https://f1000research.com/articles/6-100/v2]. Two of the most widely used platforms for long-read sequencing include \gls{pacbio} and \gls{ont}.    
+
+- Inception / history of long reads
+- Library preparation protocols
+- Improvements over short-read (mitigated biases)
+
+\subsection{Biases in long-read RNA-seq}
+
+
+Factors that influence transcript degradation can be broadly classified as being intra-cellular or extra-cellular. 
+
+\paragraph{Intra-cellular degradation} Degradation of transcripts can occur within the cell due to the action of both exo- and endoribonucleases. Exoribonuclease cleavage from the 5’ or 3’ ends of the transcript. Co-transcriptional processes such as 5’-capping or 3’-polyadenylation help to stabilise the transcript for translation initiation. The removal of these modifications can initiate transcript degradation. Exoribonuclease-mediated degradation can occur in both the 5’-3’ or 3’-5’ directions. Endoribonuclease cleavage within the body of the transcript (this occurs to a lesser extent). Cleavage within the transcript body exposes unprotected 5’ and 3’ ends of the distal and proximal segments of the cleaved transcript, which then expose these segments to degradation by exoribonucleases. 
+
+\paragraph{Extra-cellular degradation} Steps in the library preparation and sequencing can also affect the degradation of transcripts. Fragmentation of transcripts from library preparation. Truncation of transcripts from the 5’ end due to artifacts of nanopore sequencing (e.g. pore blocking). Since polyA+ transcripts are sequenced from the 3’ end, sequencing artifacts result in truncation from the 5’ end.
 
