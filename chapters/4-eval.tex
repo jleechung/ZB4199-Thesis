@@ -1,33 +1,32 @@
 
 In this chapter, we evaluate our quantification model and inference algorithms on simulated datasets with constant expected degradation rates and real direct RNA-seq datasets with sequencing spike-ins. 
 
-\section{Existing methods}
+\section{Methods for benchmarking}
 
-We benchmark our model against existing methods for transcript quantification from long-read RNA-seq:
-\begin{itemize}
-    \item Bambu
-    \item Flair
-    \item Nanocount
-\end{itemize}
+We benchmark our model against three existing methods for transcript quantification from long-read RNA-seq. 
+
+\paragraph{bambu} Reference guided transcript discovery and quantification for long read RNA-seq data.
+\paragraph{FLAIR} Full-Length Alternative Isoform analysis of RNA.
+\paragraph{NanoCount} EM based transcript abundance from nanopore reads.
 
 \section{Simulated data}
 
-To evaluate our model's ability to correct for degradation bias, we simulate five datasets for a range of degradation rates $\mathbb{E}[d]\in\{0.05,0.1,0.2,0.4,0.5\}$. In addition, we simulate reads for artificial novel isoforms that are modified by dropping exons from the 5' end of selected reference isoforms, termed \textit{subset} isoforms. This increases the proportion of multi-mapping reads and makes correcting for degradation bias crucial for accurate transcript quantification. See Appendices \ref{ap:gen-novl-iso} and \ref{ap:sim-deg-reads} for more details on novel isoform and degraded read simulation. 
+To evaluate our model's ability to correct for degradation bias, we simulated five datasets for a range of degradation rates $\mathbb{E}[d]\in\{0.05,0.1,0.2,0.4,0.5\}$. In addition, we simulated reads for artificial novel isoforms that are modified by dropping exons from the 5' end of selected reference isoforms, termed \textit{subset} isoforms. This increases the proportion of multi-mapping reads and makes correcting for degradation bias crucial for accurate transcript quantification. See Appendices \ref{ap:gen-novl-iso} and \ref{ap:sim-deg-reads} for more details on novel isoform and degraded read simulation. 
 
 \subsection{Empirical results}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\textwidth]{figures/sec-3-scc-nrmse.png}
+    \includegraphics[width=\textwidth]{figures/sec-4-scc-nrmse.png}
     \caption[Empirical results for SCC and NRMSE on simulated datasets]{Spearman correlation coefficient (SCC) and normalized root-mean-squared error (NRMSE) on simulated datasets with different degradation rates $\mathbb{E}[d]=\{0.05,0.1,0.2,0.4,0.5\}$. \textbf{a.} SCC across all simulated isoforms. \textbf{b.} SCC across subset isoforms. \textbf{c.} NRMSE across all simulated isoforms. \textbf{d.} NRMSE across all subset isoforms.}
-    \label{fig:sec-3-scc-nrmse}
+    \label{fig:sec-4-scc-nrmse}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.7\textwidth]{figures/sec-3-deg-est.png}
-    \caption[Empirical results for degradation rate estimation on simulated datasets]{Comparison of the degradation rates estimated by bambu and our model on simulated datasets with different degradation rates $\mathbb{E}[d]=\{0.05,0.1,0.2,0.4,0.5\}$.}
-    \label{fig:sec-3-deg-est}
+    \includegraphics[width=0.7\textwidth]{figures/sec-4-deg-est.png}
+    \caption[Empirical results for degradation rate estimation on simulated datasets]{Comparison of the degradation rates estimated by bambu and our model on simulated datasets with different degradation rates $\mathbb{E}[d]=\{0.05,0.1,0.2,0.4,0.5\}$. The diagonal is indicated by the dotted line.}
+    \label{fig:sec-4-deg-est}
 \end{figure}
 
 
@@ -51,7 +50,7 @@ To evaluate our model's ability to correct for degradation bias, we simulate fiv
     nanocount & 0.778 & 0.536 & 0.466 & 0.987 \bigstrut\\
     \hline
     \end{tabular}%
-    \caption[Empirical results for mean SCC and NRMSE on simulated datasets]{Mean spearman correlation coefficient (SCC) and normalized root-mean-squared error (NRMSE) across simulated datasets with different degradation rates $\mathbb{E}[d]=\{0.05,0.1,0.2,0.4,0.5\}$.}
+    \caption[Empirical results for mean SCC and NRMSE on simulated datasets]{Mean spearman correlation coefficient (SCC) and normalized root-mean-squared error (NRMSE) across simulated datasets with different degradation rates $\mathbb{E}[d]=\{0.05,0.1,0.2,0.4,0.5\}$. Bold values in each column represent the best result for the corresponding metric.}
   \label{tab:addlabel}%
 
 \end{table}%
