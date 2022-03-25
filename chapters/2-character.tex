@@ -13,13 +13,15 @@ Let $\mathrm{ncov}$ be the normalized coverage over an isoform, and $x$ be the d
 \end{equation}
 The degradation rate of an isoform at a base $b$ with distance $x_b$ away from the 3' end is the value of this limit evaluated at $x=x_b$. 
 \end{definition}
-To illustrate the concept of degradation rate, we visualise three different degradation rates for a hypothetical isoform of length 2 kb (Fig. \ref{fig:sec-2-hypo}).  
+Intuitively, the degradation rate can be interpreted as the gradient of the plot of normalized coverage against distance from the 3' end. To illustrate this, we visualise the normalized coverage plots for a hypothetical isoform of length 2 kb with different degradation rates (Fig. \ref{fig:sec-2-hypo}).  
 \begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{figures/sec-2-hypo.png}
-    \caption[Degradation rates for a hypothetical isoform]{Degradation rates for a hypothetical isoform of length 2 kb.}
+    \caption[Normalized coverage plots for a hypothetical isoform]{Normalized coverage plots for a hypothetical isoform of length 2 kb illustrating different degradation rates. \textbf{a.} Degradation rate is 0. \textbf{b.} Degradation rate is constant (0.2). \textbf{c.} Degradation rate is variable.}
     \label{fig:sec-2-hypo}
 \end{figure}
+In Fig. \ref{fig:sec-2-hypo}a, the degradation rate is 0, implying that all reads from the isoform are full-length, and there is no drop in coverage over the isoform body. Conversely, in Fig. \ref{fig:sec-2-hypo}b, the degradation rate (gradient) is a constant value of 0.2 over the isofrom body, implying that for every 1 kb from the 3' end, normalized coverage drops by 0.2. The last plot in Fig. \ref{fig:sec-2-hypo}c shows variable degradation over the isoform body. In particular, the degradation rate is low towards the 3' end and increases with distance from the 3' end.  
+
 In the following sections, we describe our approach for estimating the degradation rate and present findings based on ONT long-read RNA-seq data from common cancer cell lines (A549, Hct116, HepG2, MCF7 and K562) as part of the SG-NEx project and a human embryonic stem cell line (H9). 
 
 \section{Degradation rate estimation}
