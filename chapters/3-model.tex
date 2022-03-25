@@ -73,12 +73,12 @@ We specify the read length-isoform agreement model with the assumption that the 
 \end{equation}
 For instance, a $\mathbb{E}[d]=0.2$ implies that $\ell_\mathrm{max}=5$ kb. The assumption made here is unrealistic, given that \gls{ont} devices are capable of sequencing reads upwards of $10$ kb in length. Nevertheless, this simplifying assumption enables us to test a simpler read length-isoform agreement model on simulated datasets. We develop a more flexible model allowing for variable degradation in the following section.  
 
-Let the length of isoform $j$ be len$(j)$. For constant expected degradation, we have
+Let the length of isoform $j$  in kb be len$(j)$. For constant expected degradation, we have
 \begin{equation}
     p(\ell_i\mid d_j, z_{ij}=1) = 
     \begin{cases}
-        d_j\cdot\ell_i & \textrm{if } \ell_i<\min(\mathrm{len}(j), \ell_\mathrm{max})\\
-        1-d_j\cdot\ell_i & \textrm{if } \ell_i=\mathrm{len}(j)
+        \dfrac{d_j}{\mathrm{len}(j)\cdot10^3} & \textrm{if } \ell_i<\min(\mathrm{len}(j), \ell_\mathrm{max})\\
+        1-d_j\cdot\mathrm{len}(j) & \textrm{if } \ell_i=\mathrm{len}(j)
     \end{cases}
 \end{equation}
 
