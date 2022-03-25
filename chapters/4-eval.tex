@@ -24,11 +24,10 @@ To evaluate our model's ability to correct for degradation bias, we simulated fi
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.7\textwidth]{figures/sec-4-deg-est.png}
-    \caption[Empirical results for degradation rate estimation on simulated datasets]{Comparison of the degradation rates estimated by bambu and our model on simulated datasets with different degradation rates $\mathbb{E}[d]=\{0.05,0.1,0.2,0.4,0.5\}$. The diagonal is indicated by the dotted line.}
-    \label{fig:sec-4-deg-est}
+    \includegraphics[width=0.9\textwidth]{figures/sec-4-scatter-hard.png}
+    \caption[Scatter plots on subset isoforms in a simulated dataset with $\mathbb{E}d=0.2$]{Scatter plots on subset isoforms in a simulated dataset with $\mathbb{E}[d]=0.2$ across the methods. Counts are $\log_2$ transformed with the addition of 1 pseudocount. A kernel density (KDE) is fitted to show the density of points. No KDE is fitted for flair due to the abundance of zeroes. The diagonal is indicated by the dotted line.}
+    \label{fig:sec-4-scatter-hard}
 \end{figure}
-
 
 \begin{table}[htbp]
   \centering
@@ -52,9 +51,17 @@ To evaluate our model's ability to correct for degradation bias, we simulated fi
     \end{tabular}%
     \caption[Empirical results for mean SCC and NRMSE on simulated datasets]{Mean spearman correlation coefficient (SCC) and normalized root-mean-squared error (NRMSE) across simulated datasets with different degradation rates $\mathbb{E}[d]=\{0.05,0.1,0.2,0.4,0.5\}$. Bold values in each column represent the best result for the corresponding metric.}
   \label{tab:addlabel}%
-
 \end{table}%
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{figures/sec-4-deg-est.png}
+    \caption[Empirical results for degradation rate estimation on simulated datasets]{Comparison of the degradation rates estimated by bambu and our model on simulated datasets with different degradation rates $\mathbb{E}[d]=\{0.05,0.1,0.2,0.4,0.5\}$. The diagonal is indicated by the dotted line.}
+    \label{fig:sec-4-deg-est}
+\end{figure}
+
 \section{Real data}
+
+Six H9 samples (600ng mRNA + 1\% spike-in of 6ng SIRV-4) sequenced with direct RNA-seq.
 
 \subsection{Empirical results}
