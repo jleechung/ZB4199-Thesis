@@ -7,7 +7,12 @@ In this appendix, we describe our approach for generating novel gene isoform mod
 
 Because the \texttt{minimap2} aligner uses splice site signals to map reads, we ensure that the generated novel isoform models conform to these splice site signals. We do so by performing splice site correction whenever necessary, i.e., for the alternative splice donor, alternative splice acceptor, new exon and new intron modifications. 
 
-
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{figures/app-a-1.png}
+    \caption[Splice site correction for novel isoform models]{Splice site correction for novel isoform models for the GT-AG motif. \textbf{a.} Alternative donor splice site. \textbf{b.} Alternative accept split site. \textbf{c.} New exon introduction.}
+    \label{fig:app-a-1}
+\end{figure}
 
 Software for generating novel isoform models was written in \texttt{python} and can be found at \url{https://github.com/jleechung/noviso}.
 
