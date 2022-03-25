@@ -7,17 +7,27 @@ In this appendix, we describe our approach for generating novel gene isoform mod
 
 Because the \texttt{minimap2} aligner uses splice site signals to map reads, we ensure that the generated novel isoform models conform to these splice site signals. We do so by performing splice site correction whenever necessary, i.e., for the alternative splice donor, alternative splice acceptor, new exon and new intron modifications. 
 
-%<Insert figure here showing splice site correction>
 
-Software for generating novel isoform models was written in \texttt{python} and can be found at \url{https://github.com/jleechung/}.
+
+Software for generating novel isoform models was written in \texttt{python} and can be found at \url{https://github.com/jleechung/noviso}.
 
 \chapter{Simulating degraded reads}\label{ap:sim-deg-reads}
 
-In this appendix, we describe our approach for simulating reads based on constant expected degradation.
+In this appendix, we describe our approach for simulating reads based on constant expected degradation. We select protein-coding isoforms and processed transcripts from GRCh38 annotation to simulate reads for. The distribution of counts follows a negative binomial distribution (parameterised here by the mean and rate), which is commonly used along with the Poisson distribution for modeling count data in RNA-seq. The negative binomial distribution has an added advantage of modeling overdispersion in the data, where the variance is greater than the mean. We note that the negative binomial distribution is equivalent to a mixture of Poisson distributions where the rate parameter is distributed according to a gamma distribution. 
+
+To generate reads for a transcript of length $\mathrm{len}(j)$ given a degradation rate $d$, we first compute the maximum read length $\ell_\mathrm{max}=1/d$. The probability of generating a degraded read is $p_d=\min(\mathrm{len}(j)/\ell_\mathrm{max}, 1)$ and the probability of generating a full-length read is $1-p_d$. We now generate a read length with the following algorithm:
+\begin{enumerate}
+    \item Generate $U\sim Unif(0,1)$.
+    \item If $U<p_d$, generate read length $\ell_i\sim Unif(0,\min(\mathrm{len}(j),\ell_\mathrm{max}))$.
+    \item Otherwise, generate read length $\ell_i=\mathrm{len}(j)$
+\end{enumerate}
+For constant degradation, degraded reads follow a uniform distribution upper bounded by the length of the transcript isoform or the maximum read length, whichever is smaller. Once the read length $\ell_i$ is generated, we simply slice the transcript isoform sequence from the 3' end such that the resulting sequence is of length $\ell_i$. The reads simulated are thus perfect reads with 0\% error rate and no indels. 
+
+Software for generating novel isoform models was written in \texttt{python} and can be found at \url{https://github.com/jleechung/shamread}.
 
 \chapter{Proof of concavity of log-likelihood function}\label{sec:proof-log-lik}
 
-\lipsum[77]
+Hello world.
 
 \chapter{Derivations for variational distributions}\label{sec:variational-dist}
 

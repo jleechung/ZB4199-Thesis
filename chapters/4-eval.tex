@@ -9,11 +9,13 @@ We benchmark our model against three existing methods for transcript quantificat
 \paragraph{FLAIR} Full-Length Alternative Isoform analysis of RNA.
 \paragraph{NanoCount} EM based transcript abundance from nanopore reads.
 
-\section{Simulated data}
+\section{Evaluations on simulated data}
 
 To evaluate our model's ability to correct for degradation bias, we simulated five datasets for a range of degradation rates $\mathbb{E}[d]\in\{0.05,0.1,0.2,0.4,0.5\}$. In addition, we simulated reads for artificial novel isoforms that are modified by dropping exons from the 5' end of selected reference isoforms, termed \textit{subset} isoforms. This increases the proportion of multi-mapping reads and makes correcting for degradation bias crucial for accurate transcript quantification. See Appendices \ref{ap:gen-novl-iso} and \ref{ap:sim-deg-reads} for more details on novel isoform and degraded read simulation. 
 
-\subsection{Empirical results}
+\subsection{Comparisons between model variations}
+
+\subsection{Comparisons with existing methods}
 
 \begin{figure}[H]
     \centering
@@ -60,8 +62,8 @@ To evaluate our model's ability to correct for degradation bias, we simulated fi
     \label{fig:sec-4-deg-est}
 \end{figure}
 
-\section{Real data}
+\section{Evaluations on real data}
 
 Six H9 samples (600ng mRNA + 1\% spike-in of 6ng SIRV-4) sequenced with direct RNA-seq.
 
-\subsection{Empirical results}
+\subsection{Comparisons with existing methods}
