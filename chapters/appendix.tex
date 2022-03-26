@@ -1,20 +1,23 @@
 
 \chapter{Generating novel isoform models}\label{ap:gen-novl-iso}
 
-In this appendix, we describe our approach for generating novel gene isoform models. We first select a set of seed reference isoforms and introduce modifications that are well known to occur via alternative isoform regulation \textit{in vivo}. These modifications include the use of alternative 5' start sites, alternative 3' end sites, alternative splice donors and acceptors, exon skipping, intron retention, and the introduction of new exons and introns. In addition, we also introduce a new modification, termed \textit{subset} isoform, that drops exons from the reference isoform from the 5' end. Introduction of these novel subset isoforms increases the number of multi-mapping reads, making the process of assigning these reads to the correct isoform more complex. 
-
-%<Insert figure here describing novel isoform models>
-
-Because the \texttt{minimap2} aligner uses splice site signals to map reads, we ensure that the generated novel isoform models conform to these splice site signals. We do so by performing splice site correction whenever necessary, i.e., for the alternative splice donor, alternative splice acceptor, new exon and new intron modifications. 
+In this appendix, we describe our approach for generating novel gene isoform models. We first select a set of seed reference isoforms and introduce modifications that are well known to occur via alternative isoform regulation \textit{in vivo}. These modifications include the use of alternative 5' start sites, alternative 3' end sites, alternative splice donors and acceptors, exon skipping, intron retention, and the introduction of new exons and introns. In addition, we also introduce a new modification, termed \textit{subset} isoform, that drops exons from the reference isoform from the 5' end (Fig. \ref{fig:app-a-1}). Introduction of these novel subset isoforms increases the number of multi-mapping reads, making the process of assigning these reads to the correct isoform more complex. 
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{figures/app-a-1.png}
-    \caption[Splice site correction for novel isoform models]{Splice site correction for novel isoform models for the GT-AG motif. \textbf{a.} Alternative donor splice site. \textbf{b.} Alternative accept split site. \textbf{c.} New exon introduction.}
+    \caption[Subset isoform modification]{Subset isoform modification. Exons from the 5' end of the reference isoform (blue) are removed to produce a truncated isoform comprising a subset of the exons of the original isoform.}
     \label{fig:app-a-1}
 \end{figure}
 
-Software for generating novel isoform models was written in \texttt{python} and can be found at \url{https://github.com/jleechung/noviso}.
+Because the \texttt{minimap2} aligner uses splice site signals to map reads, we ensure that the generated novel isoform models conform to these splice site signals. We do so by performing splice site correction whenever necessary, i.e., for the alternative splice donor, alternative splice acceptor, new exon and new intron modifications (Fig. \ref{fig:app-a-2}). 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{figures/app-a-2.png}
+    \caption[Splice site correction for novel isoform models]{Splice site correction for novel isoform models for the GT-AG motif. \textbf{a.} Alternative donor splice site. \textbf{b.} Alternative accept split site. \textbf{c.} New exon introduction.}
+    \label{fig:app-a-2}
+\end{figure}
 
 \chapter{Simulating degraded reads}\label{ap:sim-deg-reads}
 
@@ -27,8 +30,6 @@ To generate reads for a transcript of length $\mathrm{len}(j)$ given a degradati
     \item Otherwise, generate read length $\ell_i=\mathrm{len}(j)$
 \end{enumerate}
 For constant degradation, degraded reads follow a uniform distribution upper bounded by the length of the transcript isoform or the maximum read length, whichever is smaller. Once the read length $\ell_i$ is generated, we simply slice the transcript isoform sequence from the 3' end such that the resulting sequence is of length $\ell_i$. The reads simulated are thus perfect reads with 0\% error rate and no indels. 
-
-Software for generating novel isoform models was written in \texttt{python} and can be found at \url{https://github.com/jleechung/shamread}.
 
 \chapter{Proof of concavity of log-likelihood function}\label{sec:proof-log-lik}
 
@@ -47,3 +48,13 @@ Hello world.
 \chapter{Evaluation metrics}
 
 \lipsum[32]
+
+\chapter{Data and code availability}
+
+We used long-read RNA-seq data from the SG-NEx project. Data is available at \url{https://github.com/GoekeLab/sg-nex-data}. 
+
+Software for generating novel isoform models was written in \texttt{python} and is available at \url{https://github.com/jleechung/noviso}.
+
+Software for simulating degraded reads was written in \texttt{python} and is available at \url{https://github.com/jleechung/shamread}. 
+
+Software for our model for degradation-aware isoform quantification was written in \texttt{python} and is available at \url{https://github.com/jleechung/daiso}. 
