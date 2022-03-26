@@ -11,50 +11,152 @@ In this appendix, we describe our approach for generating novel gene isoform mod
 \end{figure}
 
 Because the \texttt{minimap2} aligner uses splice site signals to map reads, we ensure that the generated novel isoform models conform to these splice site signals. We do so by performing splice site correction whenever necessary, i.e., for the alternative splice donor, alternative splice acceptor, new exon and new intron modifications (Fig. \ref{fig:app-a-2}). 
-
+% SLOW COMPILING
 \begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{figures/app-a-2.png}
-    \caption[Splice site correction for novel isoform models]{Splice site correction for novel isoform models for the GT-AG motif. \textbf{a.} Alternative donor splice site. \textbf{b.} Alternative accept split site. \textbf{c.} New exon introduction.}
+    \caption[Splice site correction for novel isoform models]{Splice site correction for novel isoform models for the GT-AG motif. Motifs are highlighted in red. Genomic sequence is reverse complemented where necessary.\textbf{a.} Alternative donor splice site. \textbf{b.} Alternative acceptor splice site. \textbf{c.} New exon introduction.}
     \label{fig:app-a-2}
 \end{figure}
 
 \chapter{Simulating degraded reads}\label{ap:sim-deg-reads}
 
-In this appendix, we describe our approach for simulating reads based on constant expected degradation. We select protein-coding isoforms and processed transcripts from GRCh38 annotation to simulate reads for. The distribution of counts follows a negative binomial distribution (parameterised here by the mean and rate), which is commonly used along with the Poisson distribution for modeling count data in RNA-seq. The negative binomial distribution has an added advantage of modeling overdispersion in the data, where the variance is greater than the mean. We note that the negative binomial distribution is equivalent to a mixture of Poisson distributions where the rate parameter is distributed according to a gamma distribution. 
+In this appendix, we describe our approach for simulating reads based on constant expected degradation. We simulate reads for protein-coding isoforms and processed transcripts from GRCh38 annotation. The distribution of read counts follows a negative binomial distribution (parameterised here by the mean and rate), which is commonly used along with the Poisson distribution for modeling count data in RNA-seq. The negative binomial distribution has an added advantage of modeling overdispersion in the data, where the variance is greater than the mean. We note that the negative binomial distribution is equivalent to a mixture of Poisson distributions where the rate parameter is distributed according to a gamma distribution. 
 
-To generate reads for a transcript of length $\mathrm{len}(j)$ given a degradation rate $d$, we first compute the maximum read length $\ell_\mathrm{max}=1/d$. The probability of generating a degraded read is $p_d=\min(\mathrm{len}(j)/\ell_\mathrm{max}, 1)$ and the probability of generating a full-length read is $1-p_d$. We now generate a read length with the following algorithm:
+To generate reads for an isoform of length $\mathrm{len}(j)$ given a degradation rate $d$, we first compute the maximum read length $\ell_\mathrm{max}=1/d$. The probability of generating a degraded read is $p_d=\min(\mathrm{len}(j)/\ell_\mathrm{max}, 1)$ and the probability of generating a full-length read is $1-p_d$. We now generate a read length with the following algorithm:
 \begin{enumerate}
-    \item Generate $U\sim Unif(0,1)$.
-    \item If $U<p_d$, generate read length $\ell_i\sim Unif(0,\min(\mathrm{len}(j),\ell_\mathrm{max}))$.
-    \item Otherwise, generate read length $\ell_i=\mathrm{len}(j)$
+    \item Generate $U\sim \mathcal{U}(0,1)$.
+    \item If $U<p_d$, generate degraded read length $\ell_i\sim \mathcal{U}_d(0,\min(\mathrm{len}(j),\ell_\mathrm{max})\cdot10^3)$.
+    \item Otherwise, generate full read length $\ell_i=\mathrm{len}(j)$.
 \end{enumerate}
-For constant degradation, degraded reads follow a uniform distribution upper bounded by the length of the transcript isoform or the maximum read length, whichever is smaller. Once the read length $\ell_i$ is generated, we simply slice the transcript isoform sequence from the 3' end such that the resulting sequence is of length $\ell_i$. The reads simulated are thus perfect reads with 0\% error rate and no indels. 
+Here, $\mathcal{U}$ and $\mathcal{U}_d$ are the continuous and discrete uniform distributions respectively. For constant degradation, the length of degraded reads are uniformly distributed over the integers from 0 to the length of the transcript isoform or the maximum read length, whichever is smaller. Once the read length $\ell_i$ is generated, we simply slice the transcript isoform sequence from the 3' end such that the resulting sequence is of length $\ell_i$. The reads simulated are thus perfect reads with 0\% error rate and no indels. We obtain a high fraction of reads ($>$99\%) mapped to the genome and transcriptome over simulated datasets with different degradation rates. 
+% SLOW COMPILING
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{figures/app-b-1.png}
+    \caption[Simulated reads with constant degradation aligning to the genome.]{Simulated reads with constant degradation aligning to the genomic locus of the gene PLEKHN1.}
+\label{fig:app-b-1}
+\end{figure}
 
 \chapter{Proof of concavity of log-likelihood function}\label{sec:proof-log-lik}
 
-Hello world.
+Here, we show the the log-likelihood function is concave. This implies that the local maximum corresponding to the maximum likelihood estimates $\hat{\bm\theta}$ returned by the EM algorithm is a global maximum. We follow the proof used in \cite{Jiang2009} and \cite{Libo2009}.  
+
+Recall that the log-likelihood formulated in Section \ref{sec:likelihood-formulation} is given by
+\begin{equation}
+    \log p(\bm{R}\mid\bm{\theta}) = \sum_{i=1}^N \log \left[\sum_{j=1}^M \theta_j\cdot a_{ij}\cdot p(\ell_i\mid d_j, z_{ij}=1)\right]
+\end{equation}
+Since the sum of concave functions is also concave, we need only prove that each term in this sum is concave. 
+\begin{equation}
+    f(\bm\theta) = \log \left[\sum_{j=1}^M \theta_j\cdot a_{ij}\cdot p(\ell_i\mid d_j, z_{ij}=1)\right]
+\end{equation}
+Let $\mathrm{\mathbf{H}}_f$ be the Hessian matrix for $f(\bm\theta)$. The $(x,y)$ entry of $\mathrm{\mathbf{H}}_f$ is 
+\begin{equation}
+    \begin{split}
+        \left(\mathbf{H}_{f}\right)_{x, y} & =\frac{\partial^{2} f}{\partial \theta_{x} \partial \theta_{y}} \\
+        & =\frac{\partial}{\partial \theta_{x}} \frac{\partial}{\partial \theta_{y}} \log \left[\sum_{j=1}^{M} \theta_{j} \cdot a_{i j} \cdot p\left(\ell_{i} \mid d_{j}, z_{i j}=1\right)\right] \\
+        & =\frac{\partial}{\partial \theta_{x}} \frac{a_{i y} \cdot p\left(\ell_{i} \mid d_{y}, z_{i y}=1\right)}{\sum_{j} \theta_{j} \cdot a_{i j} \cdot p\left(\ell_{i} \mid d_{j}, z_{i j}=1\right)} \\
+        & =-\frac{a_{i y} \cdot p\left(\ell_{i} \mid d_{y}, z_{i y}=1\right) \cdot a_{i x} \cdot p\left(\ell_{i} \mid d_{x}, z_{i x}=1\right)}{\left(\sum_{j} \theta_{j} \cdot a_{i j} \cdot p\left(\ell_{i} \mid d_{j}, z_{i j}=1\right)\right)^{2}}
+    \end{split}
+\end{equation}
+$\mathrm{\mathbf{H}}_f$ can thus be expressed as 
+\begin{equation}
+    \mathrm{\mathbf{H}}_f = -g(\bm\theta)u'u
+\end{equation}
+where 
+\begin{equation}
+    g(\boldsymbol{\theta})=\frac{1}{\left(\sum_{j} \theta_{j} \cdot a_{i j} \cdot p\left(\ell_{i} \mid d_{j}, z_{i j}=1\right)\right)^{2}}
+\end{equation}
+and 
+\begin{equation}
+    u=\left[a_{i 1} \cdot p\left(\ell_{i} \mid d_{1}, z_{i 1}=1\right) \ldots a_{i M} \cdot p\left(\ell_{i} \mid d_{M}, z_{i M}=1\right)\right]
+\end{equation}
+Thus, for all $v$, we have 
+\begin{equation}
+    \begin{split}
+        v \mathbf{H} v^{\prime} &=v\left(-g(\boldsymbol{\theta}) u^{\prime} u\right) v^{\prime} \\
+        &=-g(\boldsymbol{\theta})\left(v u^{\prime}\right)\left(v u^{\prime}\right)^{\prime} \\
+        &=-g(\boldsymbol{\theta})\left(v u^{\prime}\right)^{2} \leq 0
+    \end{split}
+\end{equation}
+The inequality holds since $g(\bm\theta)>0$. Therefore, $\mathrm{\mathbf{H}}_f$ is negative semi-definite, and thus $f(\bm\theta)$ and $\log p(\bm{R}\mid\bm\theta)$ are concave.  
 
 \chapter{Derivations for variational distributions}\label{sec:variational-dist}
 
+From \cite{Blei2017}, the optimal mean-field variational distribution for latent variables $\left(Z_{1}, \ldots, Z_{j}\right)$ and observed variable $X$ is given by
+\begin{equation}
+    \log q_{j}^{*}\left(Z_{j}\right)=\mathbb{E}_{-j}[\log p(X, Z)]\label{eq:blei}
+\end{equation}
+\noindent Here, the expectation is taken with respect to all variables other than $Z_j$. We apply Eqn. \ref{eq:blei} to our model in Fig. \ref{fig:graphical-model-2}. The optimal variational distribution for latent variable $\boldsymbol{Z}$ is
+
 \begin{equation}
 \begin{split}
-    \log q(\bm{Z}) & = \mathbb{E}_{\bm\theta}\left[\log p(\bm{R},\bm{Z},\bm{\theta})\right] + \textrm{const.} \\
-    & = \mathbb{E}_{\bm\theta}\left[\log p(\bm{R}\mid\bm{Z})\right] + \mathbb{E}_{\bm\theta}\left[\log p(\bm{Z}\mid\bm{\theta})\right] + \textrm{const.} \\
-    & = \sum_i\sum_j z_{ij}\log\left[a_{ij}\cdot p(\ell_i\mid d_j,z_{ij}=1)\right] + \sum_i\sum_j z_{ij}\mathbb{E}_{\bm\theta}\left[\log\theta_j\right] + \textrm{const.}
+    \log q(\boldsymbol{Z}) &=\mathbb{E}_{\boldsymbol{\theta}}\left[\log p(\boldsymbol{R}, \boldsymbol{Z}, \boldsymbol{\theta})\right]+\mathrm{ const. } \\
+    &=\mathbb{E}_{\boldsymbol{\theta}}[\log p(\boldsymbol{R} \mid \boldsymbol{Z})]+\mathbb{E}_{\boldsymbol{\theta}}[\log p(\boldsymbol{Z} \mid \boldsymbol{\theta})]+\mathrm{ const. } \\
+    &=\sum_{i j} z_{i j} \cdot \log \left[a_{i j} \cdot p\left(\ell_{i} \mid d_{j}, z_{i j}=1\right)\right]+\sum_{i}\sum_{ j}\mathbb{E}_{\boldsymbol{\theta}}\left[\log \theta_{j}\right]+\mathrm{ const. } \\
+    &=\sum_{i} \sum_{j} z_{i j} \cdot \log \rho_{i j}+\mathrm{ const. }
 \end{split}
 \end{equation}
+where 
+\begin{equation}
+        \log \rho_{i j} =\log \left[a_{i j} \cdot p\left(\ell_{i} \mid d_{j}, z_{ij}=1\right)\right]+\mathbb{E}_{\boldsymbol{\theta}}\left[\log \theta_{j}\right]
+\end{equation}
+Since $\boldsymbol{\theta}$ follows a Dirichlet distribution with parameters $\boldsymbol{\alpha}=\left(\alpha_{1}, \ldots, \alpha_{M}\right)$ we have
+\begin{equation}
+    \mathbb{E}_{\boldsymbol{\theta}}\left[\log \theta_{j}\right]=\varphi\left(\alpha_{j}\right)-\varphi\left(\sum_{j} \alpha_{j}\right)
+\end{equation}
+where $\varphi(.)$ is the digamma function. Thus, we have
+\begin{equation}
+    q(\bm{Z})\propto\prod_i\prod_j\rho_{ij}^{z_{ij}}
+\end{equation}
+Normalizing this distribution, let
+\begin{equation}
+    \gamma_{i j}=\frac{\rho_{i j}}{\sum_{j} \rho_{i j}}
+\end{equation}
+Then 
+\begin{equation}
+    q(\boldsymbol{Z})=\prod_{i} \prod_{j} \gamma_{i j}^{z_{i j}}
+\end{equation}
+
+The optimal variational distribution for parameters $\boldsymbol{\theta}$ is
+
+\begin{equation}
+\begin{split}
+    \log q(\boldsymbol{\theta})&=\mathbb{E}_{\boldsymbol{Z}}[\log p(\boldsymbol{R}, \boldsymbol{Z}, \boldsymbol{\theta})]+\mathrm{const} \\
+    &= \mathbb{E}_{Z}[\log p(\boldsymbol{Z} \mid \boldsymbol{\theta})]+\mathbb{E}_{Z}[\log p(\boldsymbol{\theta})]+\mathrm{const} \\
+    &= \mathbb{E}_{Z}\left[\sum_{i} \sum_{j} Z_{i j} \cdot \log \theta_{j}\right]+\log p(\boldsymbol{\theta})+\mathrm{const} \\
+    &=\sum_{i} \sum_{j} \gamma_{i j} \cdot \log \theta_{j}+\sum_{j}\left(\alpha_{0 j}-1\right) \cdot \log \theta_{j}
+\end{split}
+\end{equation}
+We recognise this as a Dirichlet distribution with parameters $\alpha_{0 j}+\sum_{i} \gamma_{i j}$, where $\alpha_{0j}$ is the $j$\ts{th} parameter of the hyperparameter $\bm{\alpha_0}$. 
 
 \chapter{Evaluation metrics}
 
-\lipsum[32]
+In this appendix, we describe evaluation metrics used for model evaluation. Let $\bm\theta$ be the reference and $\hat{\bm\theta}$ be the estimates. 
+
+The \textbf{Spearman correlation coefficient} (SCC) is a reference-based metric that measures the strength of monotonic relationships between the reference and estimate. Let $\bm R$ be the ranks for $\bm\theta$ and $\hat{\bm R}$ be the ranks for $\hat{\bm\theta}$. The SCC is given by
+\begin{equation}
+    SCC = \frac{\textrm{cov}(\bm{R},\hat{\bm{R}})}{\textrm{sd}(\bm{R})\cdot \textrm{sd}(\hat{\bm{R}})}
+\end{equation}
+The \textbf{relative difference} (RD) is a reference-based metric that measures relative difference of an estimate against the reference. The RD is given by
+\begin{equation}
+    RD = \frac{\mid\bm\theta-\hat{\bm\theta}\mid}{\bm\theta}
+\end{equation}
+The \textbf{normalized root-mean-squared error} (NRMSE) is a reference-based metric that measures the deviation from a linear relationship between the estimate and the reference. The NRMSE is given by
+\begin{equation}
+    NRMSE = \frac{\sqrt{\frac{1}{M}\sum\left(\bm\theta-\hat{\bm\theta}\right)^2}}{\textrm{sd}\left(\hat{\bm\theta}\right)}
+\end{equation}
+The \textbf{reproducibility metric} (RM) is a reference-free metric that measures the variance across replicates. Let $\bar{\bm\theta}$ be the mean of estimates across $K$ replicates. For isoform $j$, the RM is given by
+\begin{equation}
+    RM = \sqrt{\frac{1}{K}\sum_k \left(\hat{\theta_i} - \bar{\theta_i}\right)^2}
+\end{equation}
 
 \chapter{Data and code availability}
 
-We used long-read RNA-seq data from the SG-NEx project. Data is available at \url{https://github.com/GoekeLab/sg-nex-data}. 
+In this appendix, we provide links to the data and software used in this work. 
 
-Software for generating novel isoform models was written in \texttt{python} and is available at \url{https://github.com/jleechung/noviso}.
+\paragraph{Data}
+We used long-read RNA-seq data from the SG-NEx project available at \url{https://github.com/GoekeLab/sg-nex-data}. All simulated datasets were generated with the software below. 
 
-Software for simulating degraded reads was written in \texttt{python} and is available at \url{https://github.com/jleechung/shamread}. 
-
-Software for our model for degradation-aware isoform quantification was written in \texttt{python} and is available at \url{https://github.com/jleechung/daiso}. 
+\paragraph{Code}
+Software for generating novel isoform models is available at \url{https://github.com/jleechung/noviso}. Software for simulating degraded reads is available at \url{https://github.com/jleechung/shamread}. Software for our model for degradation-aware isoform quantification is available at \url{https://github.com/jleechung/daiso}. All software is written in \texttt{python}. 

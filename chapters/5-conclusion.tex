@@ -1,10 +1,11 @@
 
 \section{Summary}
 
-In this thesis, we have characterised bias in 
-
+In this thesis, we examined degradation bias in long-read direct RNA-seq. We first characterised degradation by formalising the notion of the degradation rate, and estimated degradation rates across different human cell lines. We showed that degradation rates are consistent across isoforms, transcript features and remarkably, sequencing spike-ins. Next, we developed a bias-aware model for transcript quantification that models the probability of observing a read originating from an isoform based on a read length-isoform agreement model. We derive expectation maximization and variational Bayesian inference algorithms for inferring degradation-aware isoform abundance estimates. To evaluate our model, we perform benchmarking against existing methods for transcript quantification. On simulated datasets, our model outperforms other methods on both reference and subset isoforms. On real datasets with sequencing spike-ins, our model achieves results of comparable accuracy to those of existing methods. 
 
 \section{Further work}
+
+We highlight three areas of future work.
 
 \subsection{Gene-specific degradation}
 

@@ -263,6 +263,22 @@ language="eng"
     eprint = {https://academic.oup.com/nar/article-pdf/38/12/e131/14120852/gkq224.pdf},
 }
 
+@article{Jiang2009,
+    author = {Jiang, Hui and Wong, Wing Hung},
+    title = "{Statistical inferences for isoform expression in RNA-Seq}",
+    journal = {Bioinformatics},
+    volume = {25},
+    number = {8},
+    pages = {1026-1032},
+    year = {2009},
+    month = {02},
+    abstract = "{Summary: The development of RNA sequencing (RNA-Seq) makes it possible for us to measure transcription at an unprecedented precision and throughput. However, challenges remain in understanding the source and distribution of the reads, modeling the transcript abundance and developing efficient computational methods. In this article, we develop a method to deal with the isoform expression estimation problem. The count of reads falling into a locus on the genome annotated with multiple isoforms is modeled as a Poisson variable. The expression of each individual isoform is estimated by solving a convex optimization problem and statistical inferences about the parameters are obtained from the posterior distribution by importance sampling. Our results show that isoform expression inference in RNA-Seq is possible by employing appropriate statistical methods.Contact:whwong@stanford.eduSupplementary information:Supplementary data are available at Bioinformatics online.}",
+    issn = {1367-4803},
+    doi = {10.1093/bioinformatics/btp113},
+    url = {https://doi.org/10.1093/bioinformatics/btp113},
+    eprint = {https://academic.oup.com/bioinformatics/article-pdf/25/8/1026/16892810/btp113.pdf},
+}
+
 
 @Article{Li2010,
 author="Li, Jun
@@ -615,4 +631,38 @@ issn="1548-7105",
 doi="10.1038/nmeth.4577",
 url="https://doi.org/10.1038/nmeth.4577"
 }
+
+@article{Libo2009,
+    author = {Li, Bo and Ruotti, Victor and Stewart, Ron M. and Thomson, James A. and Dewey, Colin N.},
+    title = "{RNA-Seq gene expression estimation with read mapping uncertainty}",
+    journal = {Bioinformatics},
+    volume = {26},
+    number = {4},
+    pages = {493-500},
+    year = {2009},
+    month = {12},
+    abstract = "{Motivation: RNA-Seq is a promising new technology for accurately measuring gene expression levels. Expression estimation with RNA-Seq requires the mapping of relatively short sequencing reads to a reference genome or transcript set. Because reads are generally shorter than transcripts from which they are derived, a single read may map to multiple genes and isoforms, complicating expression analyses. Previous computational methods either discard reads that map to multiple locations or allocate them to genes heuristically.Results: We present a generative statistical model and associated inference methods that handle read mapping uncertainty in a principled manner. Through simulations parameterized by real RNA-Seq data, we show that our method is more accurate than previous methods. Our improved accuracy is the result of handling read mapping uncertainty with a statistical model and the estimation of gene expression levels as the sum of isoform expression levels. Unlike previous methods, our method is capable of modeling non-uniform read distributions. Simulations with our method indicate that a read length of 20â€“25 bases is optimal for gene-level expression estimation from mouse and maize RNA-Seq data when sequencing throughput is fixed.Availability: An initial C++ implementation of our method that was used for the results presented in this article is available at http://deweylab.biostat.wisc.edu/rsem.Contact:cdewey@biostat.wisc.eduSupplementary information:Supplementary data are available at Bioinformatics on}",
+    issn = {1367-4803},
+    doi = {10.1093/bioinformatics/btp692},
+    url = {https://doi.org/10.1093/bioinformatics/btp692},
+    eprint = {https://academic.oup.com/bioinformatics/article-pdf/26/4/493/16897170/btp692.pdf},
+}
+
+@article{Blei2017,
+author = {David M. Blei and Alp Kucukelbir and Jon D. McAuliffe},
+title = {Variational Inference: A Review for Statisticians},
+journal = {Journal of the American Statistical Association},
+volume = {112},
+number = {518},
+pages = {859-877},
+year  = {2017},
+publisher = {Taylor & Francis},
+doi = {10.1080/01621459.2017.1285773},
+URL = {https://doi.org/10.1080/01621459.2017.1285773},
+eprint = {https://doi.org/10.1080/01621459.2017.1285773}
+}
+
+
+
+
 
