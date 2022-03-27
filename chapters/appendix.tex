@@ -35,12 +35,12 @@ Because some aligners (e.g. \texttt{minimap2}) use splice site signals to map re
 
 \chapter{Count distribution analysis}\label{ap:count-dist}
 
-To identify an appropriate distribution for simulating counts that best reflects real data, we ran NanoCount and Bambu on six direct RNA-seq samples comprising sequencing of a human embryonic stem cell line (H9). Using the fitdistrplus R package (v1.1.6) \cite{Delignette-Muller2015}, we fitted discrete distributions (negative binomial and Poisson) to the counts returned by NanoCount and Bambu after filtering the counts in the top 0.001 quantile and analysed the skew and kurtosis of the fitted distribution. Since skewness and kurtosis are known not to be robust \cite{Delignette-Muller2015}, we also fit distributions to 100 bootstrap replicates. 
-\begin{figure}
+To identify an appropriate distribution for simulating counts that best reflects real data, we ran NanoCount and Bambu on six direct RNA-seq samples obtained from sequencing of a human embryonic stem cell line (H9). Using the fitdistrplus R package (v1.1.6) \cite{Delignette-Muller2015}, we fitted discrete distributions (negative binomial and Poisson) to the counts returned by NanoCount and Bambu after filtering the counts in the top 0.001 quantile and analysed the skew and kurtosis of the fitted distribution. Since skewness and kurtosis are known not to be robust \cite{Delignette-Muller2015}, we also fit distributions to 100 bootstrap replicates. In all samples, the negative binomial provided a better fit compared to the Poisson distribution (Fig. \ref{fig:app-c}). This is unsurprising, as the negative binomial allows more flexible modeling of counts with an additional parameter that allows for greater variation, while the equal mean and variance assumption of the Poisson is somewhat restrictive. In fact, the negative binomial is equivalent to a mixture of Poisson distributions with the rate parameter distributed according to a gamma distribution. 
+\begin{figure}[H]
     \centering
-    \includegraphics[width=\textwidth]{figures/ap-c.pdf}
-    \caption[Distributional analysis of RNA-seq counts]{Distributional analysis of RNA-seq counts. Each panel corresponds to one H9 sample, and each dot is a set of counts. Dark blue dots are real samples while bright orange dots are bootstrapped samples. The grey region indicates combinations of skew and kurtosis parameters for the negative binomial, while the dotted line indicates the same for the Poisson distribution. The real and bootstrap samples fall within the grey region and away from the dotted line implying that the negative binomial offers a better fit.}
-    \label{fig:my_label}
+    \includegraphics[width=0.9\textwidth]{figures/ap-c.pdf}
+    \caption[Distributional analysis of RNA-seq counts]{Distributional analysis of RNA-seq counts returned by NanoCount (results for Bambu are similar). Each panel corresponds to one H9 sample, and each dot is a set of counts. Dark blue dots are real samples while bright orange dots are bootstrapped samples. The grey region indicates combinations of skew and kurtosis parameters for the negative binomial, while the dotted line indicates the same for the Poisson distribution. The real and bootstrap samples fall within the grey region and away from the dotted line implying that the negative binomial offers a better fit compared to the Poisson.}
+    \label{fig:app-c}
 \end{figure}
 
 \chapter{Proof of concavity of log-likelihood function}\label{sec:proof-log-lik}
