@@ -3,13 +3,13 @@ In this chapter, we evaluate our quantification model and inference algorithms o
 
 \section{Read alignment}
 
-Simulated and real reads were aligned with minimap2 \cite{Minimap2018, Minimap2021}, a popular aligner for long reads. For alignment to the genome, we used the flags \texttt{-ax splice -uf -k14} recommended by minimap2 developers for ONT direct RNA-seq that take into account splicing and forward strand alignment. For alignment to the transcriptome, we use default flags \texttt{-ax map-ont -N10} for mapping ONT reads, keeping 10 secondary alignments due to similarities in transcript isoform sequences. We use the same genomic or transcriptomic alignments across the tools, depending on which is required as input.   
+Simulated and real reads were aligned with minimap2 \cite{Minimap2018, Minimap2021}, a popular aligner for long reads. For alignment to the genome, we used the flags \texttt{-ax splice -uf -k14} that take into account splicing and forward strand alignment for ONT direct RNA-seq as recommended by minimap2 developers. For alignment to the transcriptome, we use default flags \texttt{-ax map-ont -N10} for mapping ONT reads, keeping 10 secondary alignments due to similarities in transcript isoform sequences. We used the same genomic or transcriptomic alignments across the tools, depending on which is required as input.   
 
 \section{Methods for benchmarking}
 
-We benchmark our model against three existing methods for transcript quantification from long-read RNA-seq. For brevity, these methods are described in detail in Appendix \ref{ap:meth}.
+We benchmark our model against three existing methods for transcript quantification from long-read RNA-seq. For brevity, detailed descriptions of these methods are omitted here but included in Appendix \ref{ap:meth}.
 
-\paragraph{Bambu} Bambu (manuscript in review)\cite{Bambu2022} is a method for reference guided transcript discovery and quantification for long read RNA-seq data. Crucially, Bambu is one of the few existing long-read quantification methods that models degradation bias. For benchmarking, we ran Bambu (v.2.0.6) without transcript discovery. For transcript quantification, we ran Bambu with bias correction (default) and without bias correction (\texttt{degradationBias=FALSE}). We used the defaults for all other parameters.
+\paragraph{Bambu} Bambu (manuscript in review) \cite{Bambu2022} is a method for reference guided transcript discovery and quantification for long read RNA-seq data. Crucially, Bambu is one of the few existing long-read quantification methods that models degradation bias. For benchmarking, we ran Bambu (v.2.0.6) without transcript discovery. For transcript quantification, we ran Bambu with bias correction (default) and without bias correction (\texttt{degradationBias=FALSE}). We used the defaults for all other parameters.
 
 \paragraph{FLAIR} Full-Length Alternative Isoform analysis of RNA (FLAIR) \cite{Tang2020} is a method for correction, isoform definition and alternative splicing analysis of long reads. For benchmarking we ran FLAIR (v.1.5.1) with the modules \texttt{correct}, \texttt{collapse} and \texttt{quantify}. When running FLAIR on simulated data, we set \texttt{--support 1} for FLAIR \texttt{collapse}, keeping isoforms that are supported by minimally one read (default=3).  
 
@@ -23,54 +23,33 @@ The read counts for simulation follow a negative binomial distribution, which is
 
 \subsection{Comparisons between model variations}
 
+In this section, we compare the exact and empirical read length-isoform agreement models defined in Section \ref{sec:read-length-isoform-agreement} based on the isoform abundance estimates obtained. We compare these estimates against the simulated ground truth based on Spearman correlation, normalized root-mean-squared error and median relative difference. Explanations of these metrics can be found in Appendix \ref{ap:eval-metrics}.  
+
+\begin{table}[H]
+\centering
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{|l|P{2cm}|P{2cm}|P{2cm}|P{2cm}|P{2cm}|P{2cm}|}
+\cline{2-7}    \multicolumn{1}{r|}{} & \multicolumn{3}{c|}{All isoforms} & \multicolumn{3}{c|}{Subset isoforms} \bigstrut\\
+\hline
+Method & SCC   & NRMSE & MRD   & SCC   & NRMSE & MRD \bigstrut\\
+\hline
+Deg. EM (emp) & \textbf{0.852} & \textbf{0.416} & 0.016 & 0.783 & \textbf{0.446} & 0.277 \bigstrut\\
+\hline
+Deg. EM (exact) & 0.832 & 0.455 & \textbf{0.006} & \textbf{0.793} & 0.711 & \textbf{0.162} \bigstrut\\
+\hline
+\end{tabular}%
+}
+\caption[Empirical results for mean SCC and NRMSE on simulated datasets]{Mean spearman correlation coefficient (SCC) and normalized root-mean-squared error (NRMSE) across simulated datasets with different degradation rates $\mathbb{E}[d]=\{0.05,0.1,0.2,0.4,0.5\}$. Bold values in each column represent the best result for the corresponding metric.}
+\end{table}%
 
 
 \subsection{Comparisons with existing methods}
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=\textwidth]{figures/sec-4-scc-nrmse.png}
-    \caption[Empirical results for SCC and NRMSE on simulated datasets]{Spearman correlation coefficient (SCC) and normalized root-mean-squared error (NRMSE) on simulated datasets with different degradation rates $\mathbb{E}[d]=\{0.05,0.1,0.2,0.4,0.5\}$. \textbf{a.} SCC across all simulated isoforms. \textbf{b.} SCC across subset isoforms. \textbf{c.} NRMSE across all simulated isoforms. \textbf{d.} NRMSE across all subset isoforms.}
-    \label{fig:sec-4-scc-nrmse}
-\end{figure}
+%[Empirical results for SCC and NRMSE on simulated datasets]{Spearman correlation coefficient (SCC) and normalized root-mean-squared error (NRMSE) on simulated datasets with different degradation rates $\mathbb{E}[d]=\{0.05,0.1,0.2,0.4,0.5\}$. \textbf{a.} SCC across all simulated isoforms. \textbf{b.} SCC across subset isoforms. \textbf{c.} NRMSE across all simulated isoforms. \textbf{d.} NRMSE across all subset isoforms.
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.9\textwidth]{figures/sec-4-scatter-hard.png}
-    \caption[Scatter plots on subset isoforms for simulated data]{Scatter plots on subset isoforms in a simulated dataset with $\mathbb{E}[d]=0.2$ across the methods. Counts are $\log_2$ transformed with the addition of 1 pseudocount. A kernel density (KDE) is fitted to show the density of points. No KDE is fitted for flair due to the abundance of zeroes. The diagonal is indicated by the dotted line.}
-    \label{fig:sec-4-scatter-hard}
-\end{figure}
+%[Scatter plots on subset isoforms for simulated data]{Scatter plots on subset isoforms in a simulated dataset with $\mathbb{E}[d]=0.2$ across the methods. Counts are $\log_2$ transformed with the addition of 1 pseudocount. A kernel density (KDE) is fitted to show the density of points. No KDE is fitted for flair due to the abundance of zeroes. The diagonal is indicated by the dotted line.
 
-\begin{table}[htbp]
-  \centering
-    \begin{tabular}{|l|P{2cm}|P{2cm}|P{2cm}|P{2cm}|}
-\cline{2-5}    \multicolumn{1}{r|}{} & \multicolumn{2}{c|}{All isoforms} & \multicolumn{2}{c|}{Subset isoforms} \bigstrut\\
-    \hline
-    Method & SCC   & NRMSE & SCC   & NRMSE \bigstrut\\
-    \hline
-    bambu & 0.771 & 0.599 & 0.671 & 1.009 \bigstrut\\
-    \hline
-    bambu (no bias) & 0.74  & 0.636 & 0.432 & 1.165 \bigstrut\\
-    \hline
-    Deg. EM & 0.826 & 0.485 & 0.612 & 0.635 \bigstrut\\
-    \hline
-    Deg. EM (emp.) & \textbf{0.874} & \textbf{0.393} & \textbf{0.811} & \textbf{0.43} \bigstrut\\
-    \hline
-    flair & 0.697 & 0.696 & 0.153 & 1.176 \bigstrut\\
-    \hline
-    nanocount & 0.778 & 0.536 & 0.466 & 0.987 \bigstrut\\
-    \hline
-    \end{tabular}%
-    \caption[Empirical results for mean SCC and NRMSE on simulated datasets]{Mean spearman correlation coefficient (SCC) and normalized root-mean-squared error (NRMSE) across simulated datasets with different degradation rates $\mathbb{E}[d]=\{0.05,0.1,0.2,0.4,0.5\}$. Bold values in each column represent the best result for the corresponding metric.}
-  \label{tab:addlabel}%
-\end{table}%
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.7\textwidth]{figures/sec-4-deg-est.png}
-    \caption[Empirical results for degradation rate estimation on simulated datasets]{Comparison of the degradation rates estimated by bambu and our model on simulated datasets with different degradation rates $\mathbb{E}[d]=\{0.05,0.1,0.2,0.4,0.5\}$. The diagonal is indicated by the dotted line.}
-    \label{fig:sec-4-deg-est}
-\end{figure}
+%[Empirical results for degradation rate estimation on simulated datasets]{Comparison of the degradation rates estimated by bambu and our model on simulated datasets with different degradation rates $\mathbb{E}[d]=\{0.05,0.1,0.2,0.4,0.5\}$. The diagonal is indicated by the dotted line.
 
 \section{Evaluations on real data}
 

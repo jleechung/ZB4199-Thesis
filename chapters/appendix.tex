@@ -139,7 +139,7 @@ We recognise this as a Dirichlet distribution with parameters $\alpha_{0 j}+\sum
 In summary, Bambu first maps reads to the reference genome, and performs error correction on alignments with a logistic regression model for predicting the confidence of splice junction sites. Reads spanning the same junctions are summarised into read equivalence classes. After error correction, transcript discovery is performed jointly over all samples. A machine learning model is used to identify valid transcript models for transcript discovery. A score for each transcript is calculated and translated to a novel discovery rate (NDR) threshold for defining valid novel transcript models. Bambu then performs transcript quantification on the read equivalence class level by defining alignment compatibility between each class and each transcript model. We note that bambu employs a degradation bias model that assumes constant expected degradation (calibrated to 0.1-0.2) across transcripts. Based on empirical evaluations, the degradation rate is moderated to allow comparisons between samples.   
 
 
-\chapter{Evaluation metrics}
+\chapter{Evaluation metrics}\label{ap:eval-metrics}
 
 In this appendix, we describe evaluation metrics used for model evaluation. Let $\bm\theta$ be the reference and $\hat{\bm\theta}$ be the estimates. 
 
@@ -162,12 +162,10 @@ The \textbf{reproducibility metric} (RM) is a reference-free metric that measure
 
 \chapter{Data and code availability}
 
-In this appendix, we provide links to the data and software used in this work. 
-
 \paragraph{Data}
 We used long-read RNA-seq data from the SG-NEx project available at \url{https://github.com/GoekeLab/sg-nex-data}. All simulated datasets were generated with the software below. 
 
 \paragraph{Code}
-Software for generating novel isoform models is available at \url{https://github.com/jleechung/noviso}. Software for simulating degraded reads is available at \url{https://github.com/jleechung/shamread}. Software for our model for degradation-aware isoform quantification is available at \url{https://github.com/jleechung/daiso}. All software is written in \texttt{python}. 
+All software was developed in \texttt{python3}. Software for generating novel isoform models and simulating degraded reads are available at \url{https://github.com/jleechung/noviso} and \url{https://github.com/jleechung/shamread} respectively. These are not implemented as CLI tools but use a yaml file for configuring inputs. Software for our quantification model is available at \url{https://github.com/jleechung/daiso} and is implemented as a CLI tool with simple installation (via conda) and user interface, with only one required input. We display the manual page here for reference: 
 
 \VerbatimInput{figures/man.txt}
