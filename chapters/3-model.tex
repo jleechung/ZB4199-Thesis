@@ -40,7 +40,7 @@ The directed graphical model in Figure \ref{fig:graphical-model-1} illustrates t
         \edge{z}{r}; %
         \plate[inner sep=0.4cm, xshift = -0.1cm]{plate1}{(z)(r)}{$i=1,...,N$}; %
     \end{tikzpicture}
-    \caption[Graphical model for long-read RNA-seq]{Graphical model for long-read RNA-seq. Nodes are random variables, and directed edges represent the dependencies between them. Shaded nodes are observed, while unobserved nodes are latent. Variables within the plate are replicated $N$ times.}
+    \caption[Graphical model for long-read RNA-seq]{Graphical model for long-read RNA-seq. Nodes are random variables, and directed edges represent the dependencies between them. Shaded nodes are observed, while unshaded nodes are latent. Variables within the plate are replicated $N$ times.}
     \label{fig:graphical-model-1}
 \end{figure}
 \noindent The distribution over the latent variables is categorical:
@@ -96,7 +96,7 @@ The corresponding log-likelihood is
 \begin{equation}
     \log p(\bm{R}\mid\bm{\theta}) = \sum_{i=1}^N \log \left[\sum_{j=1}^M \theta_j\cdot a_{ij}\cdot p(\ell_i\mid d_j, z_{ij}=1)\right]\label{eq:log-lik}
 \end{equation}
-It is difficult to maximize Eq. \ref{eq:lik} with respect to $\bm{\theta}$ because the log acts on the sum. If we had access to the latent variables $\bm{Z}$, the likelihood will decompose. To demonstrate this, we write the complete data likelihood as
+It is difficult to maximize Eq. \ref{eq:log-lik} with respect to $\bm{\theta}$ because the log acts on the sum. If we had access to the latent variables $\bm{Z}$, the likelihood will decompose. To demonstrate this, we write the complete data likelihood as
 \begin{equation}
     p(\bm{R},\bm{Z}\mid\bm{\theta})=\prod_{i=1}^N\prod_{j=1}^M \theta_j^{z_{ij}}\cdot\left[a_{ij}\cdot p(\ell_i\mid d_j, z_{ij}=1)\right]^{z_{ij}}\label{eq:comp-lik}
 \end{equation}

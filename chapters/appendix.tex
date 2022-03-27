@@ -1,29 +1,7 @@
 
-\chapter{Generating novel isoform models}\label{ap:gen-novl-iso}
-
-In this appendix, we describe our approach for generating novel gene isoform models. We first select a set of seed reference isoforms and introduce modifications that are well known to occur via alternative isoform regulation \textit{in vivo}. These modifications include the use of alternative 5' start sites, alternative 3' end sites, alternative splice donors and acceptors, exon skipping, intron retention, and the introduction of new exons and introns. In addition, we also introduce a new modification, termed \textit{subset} isoform, that drops exons from the reference isoform from the 5' end (Fig. \ref{fig:app-a-1}). Introduction of these novel subset isoforms increases the number of multi-mapping reads, making the process of assigning these reads to the correct isoform more complex. 
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=\textwidth]{figures/app-a-1.png}
-    \caption[Subset isoform modification]{Subset isoform modification. Exons from the 5' end of the reference isoform (blue) are removed to produce a truncated isoform comprising a subset of the exons of the original isoform.}
-    \label{fig:app-a-1}
-\end{figure}
-
-Because the \texttt{minimap2} aligner uses splice site signals to map reads, we ensure that the generated novel isoform models conform to these splice site signals. We do so by performing splice site correction whenever necessary, i.e., for the alternative splice donor, alternative splice acceptor, new exon and new intron modifications (Fig. \ref{fig:app-a-2}). 
-% SLOW COMPILING
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=\textwidth]{figures/app-a-2.png}
-    \caption[Splice site correction for novel isoform models]{Splice site correction for novel isoform models for the GT-AG motif. Motifs are highlighted in red. Genomic sequence is reverse complemented where necessary.\textbf{a.} Alternative donor splice site. \textbf{b.} Alternative acceptor splice site. \textbf{c.} New exon introduction.}
-    \label{fig:app-a-2}
-\end{figure}
-
 \chapter{Simulating degraded reads}\label{ap:sim-deg-reads}
 
-In this appendix, we describe our approach for simulating reads based on constant expected degradation. We simulate reads for protein-coding isoforms and processed transcripts from GRCh38 annotation. The distribution of read counts follows a negative binomial distribution (parameterised here by the mean and rate), which is commonly used along with the Poisson distribution for modeling count data in RNA-seq. The negative binomial distribution has an added advantage of modeling overdispersion in the data, where the variance is greater than the mean. We note that the negative binomial distribution is equivalent to a mixture of Poisson distributions where the rate parameter is distributed according to a gamma distribution. 
-
-To generate reads for an isoform of length $\mathrm{len}(j)$ given a degradation rate $d$, we first compute the maximum read length $\ell_\mathrm{max}=1/d$. The probability of generating a degraded read is $p_d=\min(\mathrm{len}(j)/\ell_\mathrm{max}, 1)$ and the probability of generating a full-length read is $1-p_d$. We now generate a read length with the following algorithm:
+In this appendix, we describe our approach for simulating reads based on constant expected degradation. We simulate reads for protein-coding isoforms and processed transcripts from GRCh38 annotation. The distribution of read counts follows a negative binomial distribution (see Appendix \ref{ap:count-dist}). To generate reads for an isoform of length $\mathrm{len}(j)$ given a degradation rate $d$, we first compute the maximum read length $\ell_\mathrm{max}=1/d$. The probability of generating a degraded read is $p_d=\min(\mathrm{len}(j)/\ell_\mathrm{max}, 1)$ and the probability of generating a full-length read is $1-p_d$. We now generate a read length with the following algorithm:
 \begin{enumerate}
     \item Generate $U\sim \mathcal{U}(0,1)$.
     \item If $U<p_d$, generate degraded read length $\ell_i\sim \mathcal{U}_d(0,\min(\mathrm{len}(j),\ell_\mathrm{max})\cdot10^3)$.
@@ -38,6 +16,29 @@ Here, $\mathcal{U}$ and $\mathcal{U}_d$ are the continuous and discrete uniform 
 \label{fig:app-b-1}
 \end{figure}
 
+\chapter{Generating novel isoform models}\label{ap:gen-novl-iso}
+
+In this appendix, we describe our approach for generating novel gene isoform models. We first select a set of seed reference isoforms and introduce modifications that are well known to occur via alternative isoform regulation \textit{in vivo}. These modifications include the use of alternative 5' start sites, alternative 3' end sites, alternative splice donors and acceptors, exon skipping, intron retention, and the introduction of new exons and introns. In addition, we also introduce a new modification, termed \textit{subset} isoform, that drops exons from the reference isoform from the 5' end (Fig. \ref{fig:app-a-1}). Introduction of these novel subset isoforms increases the number of multi-mapping reads, making the process of assigning these reads to the correct isoform more complex. 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{figures/app-a-1.png}
+    \caption[Subset isoform modification]{Subset isoform modification. Exons from the 5' end of the reference isoform (blue) are removed to produce a truncated isoform comprising a subset of the exons of the original isoform.}
+    \label{fig:app-a-1}
+\end{figure}
+Because some aligners (e.g. \texttt{minimap2}) use splice site signals to map reads, we ensure that novel isoform models conform to these splice site signals. We do so by performing splice site correction whenever necessary, i.e., for the alternative splice donor and acceptor, new exon and intron modifications (Fig. \ref{fig:app-a-2}). 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{figures/app-a-2.png}
+    \caption[Splice site correction for novel isoform models]{Splice site correction for novel isoform models for the GT-AG motif highlighted in red. Genomic sequence is reverse complemented where necessary.\textbf{a.} Alternative donor. \textbf{b.} Alternative acceptor. \textbf{c.} New exon.}
+    \label{fig:app-a-2}
+\end{figure}
+
+\chapter{Count distribution analysis}\label{ap:count-dist}
+
+To identify an appropriate distribution for simulation counts, we ran NanoCount and Bambu on six direct RNA-seq samples comprising sequencing of a human embryonic stem cell line (H9). Using the fitdistrplus R package (v1.1.6) \cite{Delignette-Muller2015}, we fitted discrete distributions (Negative Binomial and Poisson) to the counts returned by NanoCount and Bambu after filtering the counts in the top 0.001 quantile and analysed the skew and kurtosis of the fitted distribution. Since skewness and kurtosis are known not to be robust \cite{Delignette-Muller2015}, we also fit distributions to 100 bootstrap replicates. 
+
+
+
 \chapter{Proof of concavity of log-likelihood function}\label{sec:proof-log-lik}
 
 Here, we show the the log-likelihood function is concave. This implies that the local maximum corresponding to the maximum likelihood estimates $\hat{\bm\theta}$ returned by the EM algorithm is a global maximum. We follow the proof used in \cite{Jiang2009} and \cite{Libo2009}.  
@@ -46,7 +47,7 @@ Recall that the log-likelihood formulated in Section \ref{sec:likelihood-formula
 \begin{equation}
     \log p(\bm{R}\mid\bm{\theta}) = \sum_{i=1}^N \log \left[\sum_{j=1}^M \theta_j\cdot a_{ij}\cdot p(\ell_i\mid d_j, z_{ij}=1)\right]
 \end{equation}
-Since the sum of concave functions is also concave, we need only prove that each term in this sum is concave. 
+Since the sum of concave functions is also concave, we need only prove that each term in this sum is concave. Let the $i$\ts{th} term be
 \begin{equation}
     f(\bm\theta) = \log \left[\sum_{j=1}^M \theta_j\cdot a_{ij}\cdot p(\ell_i\mid d_j, z_{ij}=1)\right]
 \end{equation}
@@ -88,7 +89,6 @@ From \cite{Blei2017}, the optimal mean-field variational distribution for latent
     \log q_{j}^{*}\left(Z_{j}\right)=\mathbb{E}_{-j}[\log p(X, Z)]\label{eq:blei}
 \end{equation}
 \noindent Here, the expectation is taken with respect to all variables other than $Z_j$. We apply Eqn. \ref{eq:blei} to our model in Fig. \ref{fig:graphical-model-2}. The optimal variational distribution for latent variable $\boldsymbol{Z}$ is
-
 \begin{equation}
 \begin{split}
     \log q(\boldsymbol{Z}) &=\mathbb{E}_{\boldsymbol{\theta}}\left[\log p(\boldsymbol{R}, \boldsymbol{Z}, \boldsymbol{\theta})\right]+\mathrm{ const. } \\
@@ -124,11 +124,16 @@ The optimal variational distribution for parameters $\boldsymbol{\theta}$ is
 \begin{split}
     \log q(\boldsymbol{\theta})&=\mathbb{E}_{\boldsymbol{Z}}[\log p(\boldsymbol{R}, \boldsymbol{Z}, \boldsymbol{\theta})]+\mathrm{const} \\
     &= \mathbb{E}_{Z}[\log p(\boldsymbol{Z} \mid \boldsymbol{\theta})]+\mathbb{E}_{Z}[\log p(\boldsymbol{\theta})]+\mathrm{const} \\
-    &= \mathbb{E}_{Z}\left[\sum_{i} \sum_{j} Z_{i j} \cdot \log \theta_{j}\right]+\log p(\boldsymbol{\theta})+\mathrm{const} \\
+    &= \mathbb{E}_{Z}\left[\sum_{i} \sum_{j} z_{i j} \cdot \log \theta_{j}\right]+\log p(\boldsymbol{\theta})+\mathrm{const} \\
     &=\sum_{i} \sum_{j} \gamma_{i j} \cdot \log \theta_{j}+\sum_{j}\left(\alpha_{0 j}-1\right) \cdot \log \theta_{j}
 \end{split}
 \end{equation}
 We recognise this as a Dirichlet distribution with parameters $\alpha_{0 j}+\sum_{i} \gamma_{i j}$, where $\alpha_{0j}$ is the $j$\ts{th} parameter of the hyperparameter $\bm{\alpha_0}$. 
+
+\chapter{Long-read quantification methods}\label{ap:meth}
+
+In summary, Bambu first maps reads to the reference genome, and performs error correction on alignments with a logistic regression model for predicting the confidence of splice junction sites. Reads spanning the same junctions are summarised into read equivalence classes. After error correction, transcript discovery is performed jointly over all samples. A machine learning model is used to identify valid transcript models for transcript discovery. A score for each transcript is calculated and translated to a novel discovery rate (NDR) threshold for defining valid novel transcript models. Bambu then performs transcript quantification on the read equivalence class level by defining alignment compatibility between each class and each transcript model. We note that bambu employs a degradation bias model that assumes constant expected degradation (calibrated to 0.1-0.2) across transcripts. Based on empirical evaluations, the degradation rate is moderated to allow comparisons between samples.   
+
 
 \chapter{Evaluation metrics}
 
