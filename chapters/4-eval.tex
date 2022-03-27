@@ -86,9 +86,9 @@ We now compare our model against Bambu with and without bias modeling, FLAIR and
 \hline
 Method & SCC   & NRMSE & MRD   & SCC   & NRMSE & MRD \bigstrut\\
 \hline
-Deg. EM (emp.) & \textbf{0.863} & \textbf{0.41} & 0.012 & 0.801 & \textbf{0.439} & 0.241 \bigstrut\\
-\hline
 Deg. EM (exact) & 0.845 & 0.449 & \textbf{0.002} & \textbf{0.815} & 0.699 & \textbf{0.135} \bigstrut\\
+\hline
+Deg. EM (emp.) & \textbf{0.863} & \textbf{0.41} & 0.012 & 0.801 & \textbf{0.439} & 0.241 \bigstrut\\
 \hline
 Bambu & 0.771 & 0.599 & 0.101 & 0.671 & 1.009 & 0.36 \bigstrut\\
 \hline
@@ -104,11 +104,34 @@ NanoCount & 0.759 & 0.566 & 0.105 & 0.408 & 1.056 & 0.931 \bigstrut\\
 \caption[Summary of metrics across simulated datasets for different methods]{Summary of metrics across simulated datasets for different methods. We report the mean SCC, NRMSE and MRD across the five datasets for all isoforms and subset isoforms separately. Bold values indicate the best performance for each column.}
 \end{table}%
 
+\pagebreak
 
+\begin{figure}
+    \centering
+    \includegraphics[width=0.9\textwidth]{figures/sec-4-2-scc-nrmse.png}
+    \caption[SCC, NRMSE and MRD across simulated datasets for different methods]{SCC, NRMSE and MRD across simulated datasets for different methods. Here, each point is a dataset with constant expected degradation $\mathbb{E}[d]=\{0.05,0.1,0.2,0.4,0.5\}$. \textbf{a.} SCC on all isoforms. \textbf{b.} SCC on subset isoforms. \textbf{c.} NRMSE on all isoforms. \textbf{d.} NRMSE on subset isoforms. \textbf{f.} MRD on all isoforms. \textbf{e.} MRD on subset isoforms.}
+    \label{fig:4-2-scc-nrmse}
+\end{figure}
+
+\pagebreak
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.9\textwidth]{figures/sec-4-2-scatter-hard.png}
+    \caption[Scatter plots across simulated datasets for different methods]{Scatter plots of the simulated and estimated counts log2 scale across simulated datasets with $\mathbb{E}[d]=0.2$ for all methods. \textbf{a.} Deg. EM (exact) model. \textbf{b.} Deg. EM (emp.) model. \textbf{c.} Bambu with bias modeling. \textbf{d.} Bambu with no bias modeling. \textbf{e.} FLAIR. \textbf{f.} NanoCount.}
+    \label{fig:4-2-scatter}
+\end{figure}
 
 \subsection{Runtime analysis}
 
 We measured the end-to-end runtime taken for all methods (Fig. ) excluding the read alignment step. Bambu and FLAIR were run with 12 threads. NanoCount and the current verison of our model do not implement parallelisation. Across the five datasets, NanoCount was the fastest, followed by Deg. EM (exact). Bambu and FLAIR performed similarly, though FLAIR had a much larger variance in the runtime. Even though the time complexity for both Deg. EM (exact) and Deg. EM (emp.) is $\mathcal{O}(N_A)$, where $N_A$ is the number of alignments, Deg. EM (emp.) is much slower than all other methods because calculation of the empirical read length-isoform agreement probabilities is computationally intensive. Even though the runtimes for the empirical model are longer, they are still tolerable in absolute terms, and comes with improvements in accuracy for accurately quantifying degraded reads. Nevertheless, this is one area for improvement for future iterations of our model.  
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{figures/sec-4-runtime.png}
+    \caption[Runtime across simulated datasets for different methods]{Runtime (mins) across simulated datasets for different methods. Times are log10 transformed.}
+    \label{fig:runtime}
+\end{figure}
 
 \section{Evaluations on real data}
 
