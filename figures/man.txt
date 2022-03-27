@@ -56,8 +56,8 @@ Parameters for inference:
   --return_loglik       Return the log likelihood over iterations for EM.
                         Writes values to <output>_loglik.tsv (default: True)
   --prior {symmetric,gamma_hyper}
-                        Use a symmetric prior on the parameters (default:
-                        gamma_hyper)
+                        Choice of prior - symmetric prior or a gamma
+                        hyperprior (default: gamma_hyper)
   --alpha_zero ALPHA_ZERO
                         Value of the concentration parameter for the symmetric
                         prior (default: 1)
