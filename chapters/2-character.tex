@@ -24,7 +24,7 @@ In Fig. \ref{fig:sec-2-hypo}a, the degradation rate is 0, implying that all read
 
 In the following sections, we describe our approach for estimating the degradation rate and present findings based on ONT long-read RNA-seq data from common cancer cell lines (A549, Hct116, HepG2, MCF7 and K562) and a human embryonic stem cell line (H9) sequenced as part of the SG-NEx project . 
 
-\section{Degradation rate estimation}
+\section{Degradation rate estimation}\label{sec:deg-est}
 
 We first sought to determine if patterns of degradation were consistent across transcript isoforms for a given direct RNA-seq dataset. To that end, we selected single-isoform, multi-exon genes from GRCh38 reference annotations, and further restricted the set of isoforms to those that do not intersect with any other annotated features in reference annotations. These filters reduce ambiguity in the isoform of origin of the reads we use to estimate bias; such approaches were also adopted in \cite{Roberts2011} and \cite{Love2016} for bias estimation in short-read data. Filtering yielded approximately 5,000 isoforms for bias estimation.   
 
