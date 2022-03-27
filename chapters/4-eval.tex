@@ -1,17 +1,25 @@
 
 In this chapter, we evaluate our quantification model and inference algorithms on simulated datasets with constant expected degradation rates and real direct RNA-seq datasets with sequencing spike-ins. 
 
+\section{Read alignment}
+
+Simulated and real reads were aligned with minimap2 \cite{Minimap2018, Minimap2021}, a popular aligner for long reads. For alignment to the genome, we used the flags \texttt{-ax splice -uf -k14} recommended by minimap2 developers for ONT direct RNA-seq that take into account splicing and forward strand alignment. For alignment to the transcriptome, we use default flags \texttt{-ax map-ont -N10} for mapping ONT reads, keeping 10 secondary alignments due to similarities in transcript isoform sequences. We use the same genomic or transcriptomic alignments across the tools, depending on which is required as input.   
+
 \section{Methods for benchmarking}
 
-We benchmark our model against three existing methods for transcript quantification from long-read RNA-seq. 
+We benchmark our model against three existing methods for transcript quantification from long-read RNA-seq. For brevity, these methods are described in detail in Appendix \ref{ap:meth}.
 
-\paragraph{bambu} Reference guided transcript discovery and quantification for long read RNA-seq data.
-\paragraph{FLAIR} Full-Length Alternative Isoform analysis of RNA.
-\paragraph{NanoCount} EM based transcript abundance from nanopore reads.
+\paragraph{Bambu} Bambu (manuscript in review)\cite{Bambu2022} is a method for reference guided transcript discovery and quantification for long read RNA-seq data. Crucially, Bambu is one of the few existing long-read quantification methods that models degradation bias. For benchmarking, we ran Bambu (v.2.0.6) without transcript discovery. For transcript quantification, we ran Bambu with bias correction (default) and without bias correction (\texttt{degradationBias=FALSE}). We used the defaults for all other parameters.
 
-\section{Evaluations on simulated data}
+\paragraph{FLAIR} Full-Length Alternative Isoform analysis of RNA (FLAIR) \cite{Tang2020} is a method for correction, isoform definition and alternative splicing analysis of long reads. For benchmarking we ran FLAIR (v.1.5.1) with the modules \texttt{correct}, \texttt{collapse} and \texttt{quantify}. When running FLAIR on simulated data, we set \texttt{--support 1} for FLAIR \texttt{collapse}, keeping isoforms that are supported by minimally one read (default=3).  
 
-To evaluate our model's ability to correct for degradation bias, we simulated five datasets for a range of degradation rates $\mathbb{E}[d]\in\{0.05,0.1,0.2,0.4,0.5\}$. In addition, we simulated reads for artificial novel isoforms that are modified by dropping exons from the 5' end of selected reference isoforms, termed \textit{subset} isoforms. This increases the proportion of multi-mapping reads and makes correcting for degradation bias crucial for accurate transcript quantification. See Appendices \ref{ap:gen-novl-iso} and \ref{ap:sim-deg-reads} for more details on novel isoform and degraded read simulation. 
+\paragraph{NanoCount} NanoCount \cite{Gleeson2021} is a method for quantifying isoform abundance from ONT direct RNA-seq data. Of the three methods listed here, it is the most comparable to our model as it is tailored for direct RNA-seq and uses an expectation maximization algorithm for estimating isoform abundance estimates. For benchmarking, we ran NanoCount (v.1.0.0.post6) with default parameters.
+
+\section{Evaluations on simulated data}\label{sec:eval-sim}
+
+To evaluate our model's ability to correct for degradation bias, we simulated five datasets for a range of degradation rates $\mathbb{E}[d]\in\{0.05,0.1,0.2,0.4,0.5\}$ (Appendix \ref{ap:sim-deg-reads}). In addition, we simulated reads for artificial novel isoforms that are modified by dropping exons from the 5' end of selected reference isoforms, termed \textit{subset} isoforms (Appendix \ref{ap:gen-novl-iso}, Fig. \ref{fig:app-a-1}). This increases the proportion of multi-mapping reads and makes correcting for degradation bias crucial for accurate transcript quantification. 
+
+The read counts for simulation follow a negative binomial distribution, which is often used for modeling RNA-seq counts and other count data that is over-dispersed, i.e., where the assumption of equal mean and variance is not held \cite{Cameron2013, Anders2010, Robinson2010}. We parameterise the distribution with the mean $\mu$ and a dispersion parameter $\alpha$ such that the variance is given by $\mu+\alpha\mu^2$. This is the same parameterisation used in \cite{Robinson2010}. To ensure that the negative binomial is a valid choice of distribution, we fit discrete distributions to the counts returned by existing methods on real long-read RNA-seq data, and find that the negative binomial provides a better fit to the data compared to the Poisson distribution (Appendix \ref{ap:count-dist}).   
 
 \subsection{Comparisons between model variations}
 
