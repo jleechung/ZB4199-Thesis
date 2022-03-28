@@ -41,3 +41,127 @@ The chapters of this thesis are organised as follows:
     \item In Chapter 4, we examine and characterise degradation bias in long-read \gls{rnaseq} across multiple samples and protocols, demonstrating how it can lead to erroneous quantification estimates. We develop a model that corrects for degradation bias, and demonstrate that it improves quantification estimates on data simulated with approaches in Chapter 3 based on evaluation metrics in Chapter 2. 
     \item In Chapter $n$, we summarise the ideas of the thesis and discuss potential directions of future work. 
 \end{itemize}
+
+subsection{Variational Bayesian inference}
+
+In addition to the maximum likelihood approach in section \ref{sec:em}, one can adopt a Bayesian approach to infer the posterior distribution of the parameters $\bm\theta$ given the observed data $\bm{R}$. Here, we treat $\bm\theta$ as a random variable and place a Dirichlet prior parameterised by hyperparameters $\bm\alpha_0\in\mathbb{R}^{M}$ over $\bm{\theta}$ (Eq. \ref{eq:prior}) based on conjugacy with the categorical distribution over the latent variables $\bm{Z}$  (Eq. \ref{eq:bayes-cond}). The graphical model in \ref{fig:graphical-model-2} shows the dependency between all parameters, latent and observed variables.  
+\begin{equation}\label{eq:prior}
+    p(\bm\theta\mid\bm\alpha_0)\propto \prod_{j=1}^M \theta_j^{\alpha_{0j}-1}
+\end{equation}
+\begin{equation}\label{eq:bayes-cond}
+    p(\bm{Z}\mid\bm\theta)=\prod_{j=1}^M\theta_j^{z_{ij}}
+\end{equation}
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[scale=1.25, every node/.style={transform shape}]
+        \node[const](alpha){$\bm{\alpha_0}$}; %
+        \node[latent, right=of alpha](theta){$\bm{\theta}$}; % 
+        \node[latent, right=of theta](z){$z_i$}; %
+        \node[obs, right=of z](r){$r_i$}; %
+        \edge{alpha}{theta}; %
+        \edge{theta}{z}; %
+        \edge{z}{r}; %
+        \plate[inner sep=0.4cm, xshift = -0.1cm]{plate1}{(z)(r)}{$i=1,...,N$}; %
+    \end{tikzpicture}
+    \caption[Bayesian graphical model for long-read RNA-seq]{Bayesian graphical model for long-read RNA-seq. Under this model, $\bm\theta$ is a random variable distributed according to $\textrm{Dir}(\bm{\alpha_0})$.}
+    \label{fig:graphical-model-2}
+\end{figure}
+\noindent The posterior probability of the parameters and latent variables given the observed data is 
+\begin{equation}\label{eq:post-full}
+\begin{split}
+    p(\bm{\theta},\bm{Z}\mid\bm{R}) & =\frac{p(\bm{R},\bm{Z},\bm{\theta})}{p(\bm{R})} \\
+    & = \frac{p(\bm{R}\mid\bm{Z})\cdot p(\bm{Z}\mid\bm{\theta})\cdot p(\bm{\theta})}{p(\bm{R})} \\
+    & = \frac{p(\bm{R}\mid\bm{Z})\cdot p(\bm{Z}\mid\bm{\theta})\cdot p(\bm{\theta})}{\int_\theta \sum_{\bm{Z}} p(\bm{R}\mid\bm{Z})\cdot p(\bm{Z}\mid\bm{\theta})\cdot p(\bm{\theta})\cdot d\theta}
+\end{split}
+\end{equation}
+Direct evaluation of the posterior is intractable, since evaluating the denominator of the final expression in Eq. \ref{eq:post-full} requires summation over the space of $\bm{Z}$, which is exponential ($M^N$) in size. We turn to approximate inference methods for posterior inference. In particular, we consider a variational approximation to the posterior $q(\bm{Z},\bm{\theta})$ that is mean-field, such that the variational distribution factorizes:
+\begin{equation}
+    q(\bm{Z},\bm{\theta})=q(\bm{Z})\cdot q(\bm\theta)
+\end{equation}
+Here, we present the optimal variational distributions for $\bm{Z}$ and $\bm\theta$ that minimize the KL divergence to the posterior. Full derivations are presented in Appendix \ref{sec:variational-dist} for brevity. The optimal variational distribution for $\bm{Z}$ is
+\begin{equation}\label{eq:opt-z-1}
+    q(\bm{Z})=\prod_{i=1}^N\prod_{j=1}^M \gamma_{ij}^{z_{ij}}
+\end{equation}
+Here, $\gamma_{ij}$ is defined by 
+\begin{equation}\label{eq:opt-z-2}
+    \gamma_{ij}=\frac{\rho_{ij}}{\sum_j\rho_{ij}}
+\end{equation}
+with
+\begin{equation}\label{eq:opt-z-3}
+    \log\rho_{ij}=\log\left[a_{ij}\cdot p(\ell_i\mid d_j,z_{ij}=1)\right]+\psi(\alpha_j)-\psi\left(\sum_{j=1}^M\alpha_j\right)
+\end{equation}
+where $\psi(\cdot)$ is the digamma function. 
+The optimal variational distribution for $\bm\theta$ is
+\begin{equation}\label{eq:opt-theta-1}
+    q(\bm\theta) = \mathrm{Dir}(\bm\alpha)
+\end{equation}
+where the $j$\ts{th} component of $\bm\alpha$ is given by
+\begin{equation}\label{eq:opt-theta-2}
+    \alpha_j=\alpha_{0j}+\sum_{i=1}^N\gamma_{ij}
+\end{equation}
+From Eqs. \ref{eq:opt-z-1} and \ref{eq:opt-theta-1}, we perform coordinate ascent inference by iteratively optimizing each variational distribution holding the other fixed. This results in an iterative optimization procedure analogous to the EM algorithm:
+\begin{enumerate}
+    \item Initialize hyperparameters $\alpha_j^{(0)}=\alpha_{0j}$
+    \item Update $q(\bm{Z})$: compute $\gamma_{ij}^{(t)}$  with $\alpha_j^{(t)}$ from Eqs. \ref{eq:opt-z-2} and \ref{eq:opt-z-3}
+    \item Update $q(\bm\theta)$: compute $\alpha_{j}^{(t+1)}$  with $\gamma_{ij}^{(t)}$ from Eq. \ref{eq:opt-theta-2}
+    \item Repeat steps 2 and 3 until convergence. 
+\end{enumerate}
+Upon convergence, the abundance estimate for the $j$\ts{th} isoform can be obtained by taking the expectation of $\theta_j$ under the posterior distribution:
+\begin{equation}
+    \mathbb{E}[\theta_j] = \frac{\alpha_{0j}+\sum_i\gamma_{ij}}{\sum_j\alpha_{0j}+N}
+\end{equation}
+
+One option for setting hyperparameters $\bm{\alpha_0}$ for the prior $p(\bm{\theta}\mid\bm{\alpha_0})$ is by setting all $\alpha_{0j}$ to some constant $\alpha_0$, yielding a symmetric Dirichlet prior. Small values of $\alpha_0$ result in a sparser $\bm\theta$, while larger values result in a more uniform $\bm\theta$. Another option is to place a hyperprior on $\bm{\alpha_0}$. Since $\bm{\alpha_0}>0$, we can consider
+\begin{equation}
+    \alpha_{0j}\sim\textrm{Gamma}(a,b)
+\end{equation}
+We evaluate the choice of priors on transcript quantification in the following section. 
+
+
+\chapter{Derivations for variational distributions}\label{sec:variational-dist}
+
+From \cite{Blei2017}, the optimal mean-field variational distribution for latent variables $\left(Z_{1}, \ldots, Z_{j}\right)$ and observed variable $X$ is given by
+\begin{equation}
+    \log q_{j}^{*}\left(Z_{j}\right)=\mathbb{E}_{-j}[\log p(X, Z)]\label{eq:blei}
+\end{equation}
+\noindent Here, the expectation is taken with respect to all variables other than $Z_j$. We apply Eqn. \ref{eq:blei} to our model in Fig. \ref{fig:graphical-model-2}. The optimal variational distribution for latent variable $\boldsymbol{Z}$ is
+\begin{equation}
+\begin{split}
+    \log q(\boldsymbol{Z}) &=\mathbb{E}_{\boldsymbol{\theta}}\left[\log p(\boldsymbol{R}, \boldsymbol{Z}, \boldsymbol{\theta})\right]+\mathrm{ const. } \\
+    &=\mathbb{E}_{\boldsymbol{\theta}}[\log p(\boldsymbol{R} \mid \boldsymbol{Z})]+\mathbb{E}_{\boldsymbol{\theta}}[\log p(\boldsymbol{Z} \mid \boldsymbol{\theta})]+\mathrm{ const. } \\
+    &=\sum_{i j} z_{i j} \cdot \log \left[a_{i j} \cdot p\left(\ell_{i} \mid d_{j}, z_{i j}=1\right)\right]+\sum_{i}\sum_{ j}\mathbb{E}_{\boldsymbol{\theta}}\left[\log \theta_{j}\right]+\mathrm{ const. } \\
+    &=\sum_{i} \sum_{j} z_{i j} \cdot \log \rho_{i j}+\mathrm{ const. }
+\end{split}
+\end{equation}
+where 
+\begin{equation}
+        \log \rho_{i j} =\log \left[a_{i j} \cdot p\left(\ell_{i} \mid d_{j}, z_{ij}=1\right)\right]+\mathbb{E}_{\boldsymbol{\theta}}\left[\log \theta_{j}\right]
+\end{equation}
+Since $\boldsymbol{\theta}$ follows a Dirichlet distribution with parameters $\boldsymbol{\alpha}=\left(\alpha_{1}, \ldots, \alpha_{M}\right)$ we have
+\begin{equation}
+    \mathbb{E}_{\boldsymbol{\theta}}\left[\log \theta_{j}\right]=\varphi\left(\alpha_{j}\right)-\varphi\left(\sum_{j} \alpha_{j}\right)
+\end{equation}
+where $\varphi(.)$ is the digamma function. Thus, we have
+\begin{equation}
+    q(\bm{Z})\propto\prod_i\prod_j\rho_{ij}^{z_{ij}}
+\end{equation}
+Normalizing this distribution, let
+\begin{equation}
+    \gamma_{i j}=\frac{\rho_{i j}}{\sum_{j} \rho_{i j}}
+\end{equation}
+Then 
+\begin{equation}
+    q(\boldsymbol{Z})=\prod_{i} \prod_{j} \gamma_{i j}^{z_{i j}}
+\end{equation}
+
+The optimal variational distribution for parameters $\boldsymbol{\theta}$ is
+
+\begin{equation}
+\begin{split}
+    \log q(\boldsymbol{\theta})&=\mathbb{E}_{\boldsymbol{Z}}[\log p(\boldsymbol{R}, \boldsymbol{Z}, \boldsymbol{\theta})]+\mathrm{const} \\
+    &= \mathbb{E}_{Z}[\log p(\boldsymbol{Z} \mid \boldsymbol{\theta})]+\mathbb{E}_{Z}[\log p(\boldsymbol{\theta})]+\mathrm{const} \\
+    &= \mathbb{E}_{Z}\left[\sum_{i} \sum_{j} z_{i j} \cdot \log \theta_{j}\right]+\log p(\boldsymbol{\theta})+\mathrm{const} \\
+    &=\sum_{i} \sum_{j} \gamma_{i j} \cdot \log \theta_{j}+\sum_{j}\left(\alpha_{0 j}-1\right) \cdot \log \theta_{j}
+\end{split}
+\end{equation}
+We recognise this as a Dirichlet distribution with parameters $\alpha_{0 j}+\sum_{i} \gamma_{i j}$, where $\alpha_{0j}$ is the $j$\ts{th} parameter of the hyperparameter $\bm{\alpha_0}$. 
