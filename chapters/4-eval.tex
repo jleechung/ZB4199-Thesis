@@ -134,7 +134,7 @@ Finally, we visualised estimates and fitted a kernel density estimate on the sub
 
 \subsection{Runtime analysis}
 
-We measured the end-to-end runtime taken for all methods (Fig. \ref{fig:runtime}) excluding the read alignment step. Bambu and FLAIR were run with 12 threads. NanoCount and the current verison of our model do not implement parallelisation. Across the five datasets, NanoCount was the fastest, followed by Deg. EM (exact). Bambu and FLAIR performed similarly, though FLAIR had a much larger variance in the runtime. Even though the time complexity for both Deg. EM (exact) and Deg. EM (emp.) is $\mathcal{O}(N_A)$, where $N_A$ is the number of alignments, Deg. EM (emp.) is much slower than all other methods because calculation of the empirical read length-isoform agreement probabilities is computationally intensive. Even though the runtimes for the empirical model are longer, they are still tolerable in absolute terms, and come with improvements in accuracy for accurately quantifying degraded reads. Nevertheless, this is one area for improvement for future iterations of our model.  
+We measured the end-to-end runtime taken for all methods (Fig. \ref{fig:runtime}) excluding the read alignment step. Bambu and FLAIR were run with 12 threads, while NanoCount and the current verison of our model do not implement parallelisation. Across the five datasets, NanoCount was the fastest, followed by Deg. EM (exact). Bambu and FLAIR performed similarly, though FLAIR had a much larger variance in the runtime. Even though the time complexity for both Deg. EM (exact) and Deg. EM (emp.) is $\mathcal{O}(N_A)$, where $N_A$ is the number of alignments, Deg. EM (emp.) is much slower than all other methods because calculation of the empirical read length-isoform agreement probabilities is computationally intensive. Even though the runtimes for the empirical model are longer, they are still tolerable in absolute terms, and come with improvements in accuracy for accurately quantifying degraded reads. Nevertheless, this is one area for improvement for future iterations of our model.  
 
 \begin{figure}[H]
     \centering
@@ -145,7 +145,7 @@ We measured the end-to-end runtime taken for all methods (Fig. \ref{fig:runtime}
 
 \section{Evaluations on real data}
 
-In this section, we evaluate Deg. EM (emp.), Bambu with bias modeling, and NanoCount on direct RNA-seq data with  from the SG-NEx project. In particular, we examine the performance of these methods on samples containing RNA sequencing spike-ins (Table \ref{tab-sgnex}). A subset of samples contain Spike-In RNA Variants (SIRVs) (cite https://www.lexogen.com/sirvs/), while another contain RNA sequins (cite https://www.sequinstandards.com/) (See Appendix \ref{ap-spike} for more details). The expression of these spike-ins are known and can be used as a reference.   
+In this section, we evaluate Deg. EM (emp.), Bambu with bias modeling, and NanoCount on direct RNA-seq data with  from the SG-NEx project. In particular, we examine the performance of these methods on samples containing RNA sequencing spike-ins (Table \ref{tab-sgnex}). A subset of samples contain Spike-In RNA Variants (SIRVs) \cite{Lexogen20201} while another contain RNA sequins \cite{Sequins} (See Appendix \ref{ap-spike} for more details). The expression of these spike-ins are supposedly known and can be used as a reference.   
 
 \begin{table}[htbp]
   \centering
@@ -174,30 +174,76 @@ In this section, we evaluate Deg. EM (emp.), Bambu with bias modeling, and NanoC
     H9    & 2     & 4     & SIRV-4 \bigstrut\\
     \hline
     \end{tabular}%
-  \caption[Description of SG-NEx direct RNA-seq samples.]{SG-NEx samples.}
+  \caption[Description of SG-NEx direct RNA-seq samples.]{Description of SG-NEx direct RNA-seq samples. A subset of samples is spiked-in with Sequins while another is spiked-in with SIRV-4.}
   \label{tab-sgnex}
 \end{table}%
-
-Six H9 samples (600ng mRNA + 1\% spike-in of 6ng SIRV-4) sequenced with direct RNA-seq.
 
 \subsection{Empirical results on spike-ins}
 
 First, we examine results on the RNA sequin spike-ins (n=41 transcripts). For each of the four samples, we computed the SCC, NRMSE and MRD on the abundance estimates returned by each method (Fig. \ref{fig:sequin-metrics}). Deg. EM (emp.) achieved the highest median SCC, while NanoCount perform reasonably well with a median SCC $>$ 0.7. Bambu's performance was weighed down by an outlier (Fig. \ref{fig:sequin-metrics}a). NRMSE and MRD metrics show similar trends, with Deg. EM (emp.) achieving the lowest median NRMSE and MRD (Fig. \ref{fig:sequin-metrics}b,c).
 
+We visualize the estimates and supposed concentrations of the sequins for the sample K562 replicate 5 run 1 (Fig \ref{fig:sequin-scatter}) which obtained close to median performance across the metrics for all methods. Qualitatively, Deg. EM and NanoCount achieve similar results, though in the latter, there is a slight overestimation of counts. Bambu underestimates the counts for a subset of lowly expressed sequins that results in a decrease in performance over the three metrics.  
+
 \begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{figures/sequin-metrics.png}
-    \caption[SCC, NRMSE and MRD on RNA sequins in SG-NEx data]{SCC, NRMSE and MRD on sequencing spike-ins in SG-NEx data. \textbf{a.} SCC for each of the three methods across four samples. \textbf{b.} NRMSE for each of the three methods across four samples. \textbf{c.} MRD for each of the three methods across four samples.}
+    \caption[SCC, NRMSE and MRD on RNA sequins in SG-NEx data]{SCC, NRMSE and MRD on RNA sequins in SG-NEx data. \textbf{a.} SCC, \textbf{b.} NRMSE and \textbf{c.} MRD for each of the three methods across four samples.}
     \label{fig:sequin-metrics}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{figures/sequin-scatter.png}
-    \caption[Scatter plots on RNA sequins in SG-NEx data]{Scatter plots on RNA sequins in sample K562 replicate 5 run 1 for Bambu, Deg. EM (emp.) and NanoCount.}
+    \caption[Scatter plots on RNA sequins in SG-NEx data]{Scatter plots on RNA sequins in sample K562 replicate 5 run 1 for \textbf{a.} Bambu, \textbf{b.} Deg. EM (emp.) and \textbf{c.} NanoCount. Plots for rest of the samples are qualitatively similar.}
     \label{fig:sequin-scatter}
 \end{figure}
 
-We visualize the estimates and supposed concentrations of the sequins for the sample K562 replicate 5 run 1 (Fig \ref{fig:sequin-scatter}) which obtained close to median performance across the metrics for all methods. Qualitatively, Deg. EM and NanoCount achieve similar results, though in the latter, there is a slight overestimation of counts.  
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{figures/lexogen-scatter.png}
+    \caption[Scatter plots on SIRVs in SG-NEx data]{Scatter plots on SIRVs in SG-NEx data in H9 replicate 4 run 1 for \textbf{a.} Bambu, \textbf{b.} Deg. EM (emp.) and \textbf{c.} NanoCount. Plots for rest of the samples are qualitatively similar.}
+    \label{fig:lexogen-scatter}
+\end{figure}
 
-Results on the SIRV-4 spike-ins.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{figures/lexogen.png}
+    \caption[SCC, NRMSE and MRD on SIRV-4 in SG-NEx data]{SCC, NRMSE and MRD on SIRV-4 in SG-NEx data. \textbf{a.} SCC, \textbf{b.} NRMSE and \textbf{c.} MRD for each of the three methods across six H9 samples.}
+    \label{fig:lexogen-metrics}
+\end{figure}
+
+In addition to the sequin spike-in samples, we examined the SIRV spike-ins in six H9 direct RNA-seq samples (Table \ref{tab-sgnex}). For all methods and across the samples, the abundance estimates for SIRVs did not reflect the supposed concentration (Fig. \ref{fig:lexogen-scatter}). However, the estimates obtained across the methods correlated well with each other (median of median pairwise SCC = 0.806, p-value $<$ 2.2e-16). This might suggest that the supposed SIRV concentrations do not accurately represent what is actually present in the samples, diminishing their utility as a control for RNA-seq in this context. Nevertheless, we computed the SCC, NRMSE and MRD across the six samples for each method (Fig. \ref{fig:lexogen-metrics}). The performance on all metrics is similar across the methods, but is unlikely to be informative due to reasons discussed above.   
+
+\section{Reproducibilty measures}
+
+Besides quantifying accuracy, we can also measure the reproducibility of abundance estimates for each method. We do so with the reproducibility metric (RM), which is a measure of the standard deviation of abundance estimates across replicates (Appendix \ref{ap:eval-metrics}). We use H9 samples in the SG-NEx data that were sequenced in two runs, with three replicates in each run (Table \ref{tab-sgnex}). Within each run, we calculated the RM across the replicates for each isoform called as expressed in at least one method and obtained the median reproducibiltiy metric (MRM) (Table \ref{tab-mrm}). For all methods, MRM in the first run was higher than that in the second by virute of the number of isoforms the MRM was calculated over (Run 1 = 30,720, Run 2 = 21,536). In both runs, Deg. EM (emp.) achieved the lowest MRM suggesting higher reproducibility compared to NanoCount or Bambu. 
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{|p{3cm}|p{2cm}|p{2cm}|}
+\hline
+Method & Run 1 & Run 2 \bigstrut\\
+\hline
+Deg. EM (emp.) & \textbf{0.904} & \textbf{0.812} \bigstrut\\
+\hline
+Bambu & 1.193 & 0.943 \bigstrut\\
+\hline
+NanoCount & 0.943 & 0.816 \bigstrut\\
+\hline
+\end{tabular}%
+\caption[MRM across different runs for SG-NEx data]{MRM across different runs for SG-NEx H9 samples.}
+\label{tab-mrm}%
+\end{table}%
+
+The incorporation of bias modeling in Deg. EM improves reproducibility. We can infer this by comparing the MRMs obtained by Deg. EM and NanoCount, which Deg. EM can most closely be compared to. By modeling the bias, read-to-isoform assignment is improved across replicates with potentially different degradation rates, thus stabilising variance in abundance estimates across the replicates.       
+
+\section{Comparison of estimated degradation}
+
+Lastly, we compare the estimated average degradation rates obtained by Bambu and Deg. EM (emp.). We note that we do not expect the absolute values of the degradation rates to be similar; rather, the degradation rates 
+
+\begin{figure}
+    \centering
+    \includegraphics{}
+    \caption{Caption}
+    \label{fig:my_label}
+\end{figure}
