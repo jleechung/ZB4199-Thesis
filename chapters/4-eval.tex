@@ -76,7 +76,9 @@ Based on our analyses in section \ref{sec:deg-est}, we observed that degradation
 
 \subsection{Comparisons with existing methods}
 
-We now compare our model against Bambu with and without bias modeling, FLAIR and NanoCount on the simulated datasets, comparing the estimates returned by each method with the simulated ground truth. We analyse counts for all isoforms that we included in the simulation and where the sum of counts across the methods is greater than zero. All methods perform reasonably well on the simulated data across all isoforms, achieving SCC$>$0.69 across all five simulated datasets (Table \ref{tab:summary-2}). NRMSE across the methods are comparable, but MRD for the other methods are about one order of magnitude larger than those attained by our model. However, we observe stark differences between the different methods on the subset isoforms. In particular, methods that do not model and correct for bias (Bambu (no bias), FLAIR, NanoCount) perform considerably poorer than methods that do.   
+We now compare our model against Bambu with and without bias modeling, FLAIR and NanoCount on the simulated datasets, comparing the estimates returned by each method with the simulated ground truth. We analyse counts for all isoforms that we included in the simulation and where the sum of counts across the methods was greater than zero. In addition, we make a distinction between methods that are \textit{bias-aware} (Deg. EM (exact), Deg. EM (emp.), Bambu) and methods that are \textit{bias-unaware} (Bambu (no bias), FLAIR, NanoCount). 
+
+All methods perform reasonably well on the simulated data across all isoforms, achieving SCC $>$ 0.69 across all five simulated datasets (Table \ref{tab:summary-2}). NRMSE across the methods are comparable, but MRD for the other methods are about one order of magnitude larger than those attained by our model. However, we observe stark differences between the bias-aware and bias-unaware methods on the subset isoforms. In particular, bias-unaware methods perform considerably poorer on SCC and MRD than bias-aware ones (Table \ref{tab:summary-2}).    
 
 \begin{table}[htbp]
 \centering
@@ -104,7 +106,9 @@ NanoCount & 0.759 & 0.566 & 0.105 & 0.408 & 1.056 & 0.931 \bigstrut\\
 \label{tab:summary-2}
 \end{table}%
 
-Next, we examine the performance on each dataset separately for all the methods on all and subset isoforms separately (Fig. \ref{fig:4-2-scc-nrmse}). Both Deg. EM (exact) and Deg. EM (empirical) improve the performance on SCC compared to all methods on the simulated data (Fig \ref{fig:4-2-scc-nrmse}a,b). Notably, Bambu with bias modeling improves the performance over the whole range of degradation rates compared to Bambu without bias modeling. We note also that Bambu's performance drops quickly as the degradation rate increases, as its degradation rate is calibrated to around 0.1-0.2.   
+Next, we examine the performance on each dataset separately for all the methods on all and subset isoforms separately (Fig. \ref{fig:4-2-scc-nrmse}). Both Deg. EM (exact) and Deg. EM (empirical) show better performance on all metrics compared to other methods across the datasets. We also note that Bambu with bias modeling improves the performance over Bambu without bias modeling across the whole range of degradation rates. In addition, Bambu's performance drops quickly as the degradation rate increases, as its degradation rate is purposefully calibrated or moderated to lower degradation rates. The authors note that this is to allow for comparisons across samples or replicates, as correction for different degradation rates across samples may result in technical variation which impact downstream analyses. We examine this claim based on reproducibility metrics on real data in the following section. For degradation rates commonly observed in real data (0.1-0.2), Bambu performs better compared to FLAIR and NanoCount on both SCC and NRMSE (Fig. \ref{fig:4-1-scc-nrmse}a,c). 
+
+Bias-unaware methods perform poorly over the subset isoforms across the whole range of degradation rates. Interestingly, the MRD on subset isoforms for bias-unaware methods remained consistently high and was invariant across the range of degradation rates, while for bias-aware methods, the MRD was always lower compared to bias-unaware methods and increased with the degradation rate (\ref{fig:4-2-scc-nrmse}e). This demonstrates the importance of bias correction and illustrates the difficulty of correcting for degradation bias when the degradation rate is high.     
 
 \newpage
 
@@ -125,6 +129,8 @@ Next, we examine the performance on each dataset separately for all the methods 
 \end{figure}
 
 \newpage
+
+Finally, we visualised estimates and fitted a kernel density estimate on the subset isoforms only for all methods for the dataset with simulated degradation rate of 0.2 (Fig. \ref{fig:4-2-scatter}), which we observe to be common in real data. It is obvious from the plots that bias-aware methods significantly improve over bias-unaware ones. In particular, without correcting for bias, Bambu (no bias), FLAIR and NanoCount (Fig. \ref{fig:4-2-scatter}d,e,f) severely underestimate the counts for subset isoforms to different extents, with FLAIR performing the worst.
 
 \subsection{Runtime analysis}
 
