@@ -145,13 +145,21 @@ We measured the end-to-end runtime taken for all methods (Fig. \ref{fig:runtime}
 
 \section{Evaluations on real data}
 
-In this section, we evaluate Deg. EM (emp.), Bambu with bias modeling, and NanoCount on direct RNA-seq data with  from the SG-NEx project. In particular, we examine the performance of these methods on samples containing RNA sequencing spike-ins (Table \ref{tab-sgnex}). A subset of samples contain Spike-In RNA Variants (SIRVs) (cite https://www.lexogen.com/sirvs/), while another contain Sequins (cite https://www.sequinstandards.com/) (See Appendix \ref{ap-spike} for more details). The expression of these spike-ins are known and can be used as a reference.   
+In this section, we evaluate Deg. EM (emp.), Bambu with bias modeling, and NanoCount on direct RNA-seq data with  from the SG-NEx project. In particular, we examine the performance of these methods on samples containing RNA sequencing spike-ins (Table \ref{tab-sgnex}). A subset of samples contain Spike-In RNA Variants (SIRVs) (cite https://www.lexogen.com/sirvs/), while another contain RNA sequins (cite https://www.sequinstandards.com/) (See Appendix \ref{ap-spike} for more details). The expression of these spike-ins are known and can be used as a reference.   
 
 \begin{table}[htbp]
   \centering
     \begin{tabular}{|p{2cm}|p{2cm}|p{2cm}|p{3.5cm}|}
     \hline
     Cell Line & Run & Replicate   & Spike-in \bigstrut\\
+    \hline
+    Hct116 & 1     & 3     & Sequin Mix A v1.0 \bigstrut\\
+    \hline
+    K562  & 1     & 4     & Sequin Mix A v1.0 \bigstrut\\
+    \hline
+    K562  & 1     & 5   & Sequin Mix A v1.0 \bigstrut\\
+    \hline
+    MCF7  & 1     & 4     & Sequin Mix A v1.0 \bigstrut\\
     \hline
     H9    & 1     & 2     & SIRV-4 \bigstrut\\
     \hline
@@ -165,14 +173,6 @@ In this section, we evaluate Deg. EM (emp.), Bambu with bias modeling, and NanoC
     \hline
     H9    & 2     & 4     & SIRV-4 \bigstrut\\
     \hline
-    Hct116 & 1     & 3     & Sequin Mix A v1.0 \bigstrut\\
-    \hline
-    K562  & 1     & 4     & Sequin Mix A v1.0 \bigstrut\\
-    \hline
-    K562  & 1     & 5   & Sequin Mix A v1.0 \bigstrut\\
-    \hline
-    MCF7  & 1     & 4     & Sequin Mix A v1.0 \bigstrut\\
-    \hline
     \end{tabular}%
   \caption[Description of SG-NEx direct RNA-seq samples.]{SG-NEx samples.}
   \label{tab-sgnex}
@@ -182,5 +182,11 @@ Six H9 samples (600ng mRNA + 1\% spike-in of 6ng SIRV-4) sequenced with direct R
 
 \subsection{Empirical results on spike-ins}
 
-We first examine results on the Sequin spike-ins. 
+First, we examine results on the RNA sequin spike-ins (n=41 transcripts). For each sample, we computed the SCC, NRMSE and MRD on the abundance estimates returned by each method (). 
 
+\begin{figure}
+    \centering
+    \includegraphics{figures/sequin-metrics.png}
+    \caption[SCC, NRMSE and MRD on sequencing spike-ins in SG-NEx data]{SCC, NRMSE and MRD on sequencing spike-ins in SG-NEx data. }
+    \label{fig:my_label}
+\end{figure}
