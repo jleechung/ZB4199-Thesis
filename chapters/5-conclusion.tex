@@ -11,7 +11,7 @@ To conclude, we highlight three areas of future work.
 
 Currently, our bias model fits the degradation rate per base globally, with the assumption being that for all isoforms, the degradation rate per base is the same. The validity of this assumption depends on the source of the degradation - if the degradation is mostly a product of RNA decay \textit{in vivo}, then this assumption is unlikely to hold, since differential rates of RNA decay have been extensively described in (cite mrna different decay rates). However, if the degradation is mostly an artifact of the library preparation or sequencing, then a global degradation rate may apply across the isoforms. Nevertheless, it might still be of interest to fit \textit{gene-level degradation rates}, as this would likely improve the accuracy of abundance estimates and reflect the underlying biology more faithfully. 
 
-\subsection{Unobserved degradation}
+\subsection{Unobserved degradation for short isoforms}
 
 While we characterised degradation from the data via the read length distribution of the \textit{observed} degraded reads, it is possible that through the entire process of sequencing, transcripts or reads from shorter isoforms would have been fully degraded. This would lead to an underestimation of the counts for short isoforms, and possibly warrant some form of length normalisation for the data. Developing experiments to examine degradation over the course of a sequencing experiment for modeling \textit{unobserved degraded reads} is one potential area of future work.  
 
