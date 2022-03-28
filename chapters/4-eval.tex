@@ -9,7 +9,7 @@ Simulated and real reads were aligned with minimap2 \cite{Minimap2018, Minimap20
 
 We compare two variations of our model based on the read length-isoform agreement:
 
-\paragraph{Deg. EM (exact)} We ran our model with the exact read length-isoform agreement model (Eqn. \ref{eq:read-iso-agreement}) and provided the known degradation rate to the model for inference. This is of course unrealistic, since in real data, the degradation rate is not known \textit{a prior} and there is no bound on the maximum read length (i.e., the degradation rate is not constant). Nevertheless, this serves as a useful sanity check that our approach works. 
+\paragraph{Deg. EM (exact)} We ran our model with the exact read length-isoform agreement model (Eqn. \ref{eq:read-iso-agreement}) and provided the known degradation rate to the model for inference. This is of course unrealistic, since in real data, the degradation rate is not known \textit{a priori} and there is no bound on the maximum read length (i.e., the degradation rate is not constant). Nevertheless, this serves as a useful sanity check that our approach works. 
 
 \paragraph{Deg. EM (emp.)} The second variation of our model uses the empirical read length-isoform agreement model (Eqn. ) and estimates the degradation rate per base from the data. This variation has no limitation on the maximum read length nor constraints on the degradation rate. 
 
@@ -19,7 +19,7 @@ We benchmark our model against three existing methods for transcript quantificat
 
 \paragraph{Bambu} Bambu (manuscript in review) \cite{Bambu2022} is a method for reference guided transcript discovery and quantification for long read RNA-seq data. Crucially, Bambu is one of the few existing long-read quantification methods that models degradation bias. For benchmarking, we ran Bambu (v.2.0.6) without transcript discovery. For transcript quantification, we ran Bambu with bias correction (default) and without bias correction (\texttt{degradationBias=FALSE}). We used the defaults for all other parameters.
 
-\paragraph{FLAIR} Full-Length Alternative Isoform analysis of RNA (FLAIR) \cite{Tang2020} is a method for correction, isoform definition and alternative splicing analysis of long reads. For benchmarking we ran FLAIR (v.1.5.1) with the modules \texttt{correct}, \texttt{collapse} and \texttt{quantify}. When running FLAIR on simulated data, we set \texttt{--support 1} for FLAIR \texttt{collapse}, keeping isoforms that are supported by minimally one read (default=3).  
+\paragraph{FLAIR} Full-Length Alternative Isoform analysis of RNA (FLAIR) \cite{Tang2020} is a method for correction, isoform definition and alternative splicing analysis of long reads. For benchmarking, we ran FLAIR (v.1.5.1) with the modules \texttt{correct}, \texttt{collapse} and \texttt{quantify}. When running FLAIR on simulated data, we set \texttt{--support 1} for FLAIR \texttt{collapse}, keeping isoforms that are supported by minimally one read (default=3).  
 
 \paragraph{NanoCount} NanoCount \cite{Gleeson2021} is a method for quantifying isoform abundance from ONT direct RNA-seq data. Of the three methods listed here, it is the most comparable to our model as it is tailored for direct RNA-seq and uses an expectation maximization algorithm for estimating isoform abundance estimates. For benchmarking, we ran NanoCount (v.1.0.0.post6) with default parameters.
 
@@ -58,7 +58,7 @@ Next, we examine the performance on each dataset separately by examining perform
 
 To investigate this further, we visualised estimates and fitted a kernel density estimate on the subset isoforms only for datasets with degradation rates 0.2 and 0.5 (Fig. \ref{fig:4-1-scatter}). On a dataset with relatively lower degradation rate (0.2), the exact model performs qualitatively well, with the density of points over the diagonal (Fig. \ref{fig:4-1-scatter}a), while the empirical model underestimates counts for certain isoforms (Fig. \ref{fig:4-1-scatter}b). However, for higher degradation rates (0.5), the exact model appears to aggressively overestimate counts for a subset of isoforms (Fig. \ref{fig:4-1-scatter}c) compared to the empirical model, where the counts are moderately distributed about the diagonal (Fig. \ref{fig:4-1-scatter}d). This explains the significant increase in NRMSE in the exact model for larger degradation rates compared to the empirical model (Fig. \ref{fig:4-1-scc-nrmse}) because the NRMSE penalizes large errors more strongly than moderate errors. 
 
-Based on our analyses in section \ref{sec:deg-est}, we observed that degradation rates of 0.1-0.2 from direct RNA-seq data. In this range, the two variations perform comparably, and have a high SCC with each other ($\mathbb{E}[d]$=0.1, SCC=0.957, $\mathbb{E}[d]$=0.2, SCC=0.909).  
+Based on our analyses in section \ref{sec:deg-est}, we observed that average degradation rates in real direct RNA-seq data tend to be in the range of 0.1-0.2. In this range, the two variations perform comparably, and have a high SCC with each other ($\mathbb{E}[d]$=0.1, SCC=0.957, $\mathbb{E}[d]$=0.2, SCC=0.909).  
 
 \begin{figure}[H]
     \centering
@@ -70,13 +70,13 @@ Based on our analyses in section \ref{sec:deg-est}, we observed that degradation
 \begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{figures/sec-4-1-scatter-hard.png}
-    \caption[Scatter plots across simulated datasets for model variations]{Scatter plots of the simulated and estimated counts log2 scale across simulated datasets with $\mathbb{E}[d]=0.2$ and $\mathbb{E}[d]=0.5$ for the exact and empirical model. \textbf{a.} Exact model with degradation 0.2. \textbf{b.} Empirical model with degradation 0.2. \textbf{c.} Exact model with degradation 0.5. \textbf{d.} Empirical model with degradation 0.5.}
+    \caption[Scatter plots across simulated datasets for model variations]{Scatter plots of the simulated and estimated counts on the log2 scale across simulated datasets with $\mathbb{E}[d]=0.2$ and $\mathbb{E}[d]=0.5$ for the exact and empirical model. \textbf{a.} Exact model with degradation 0.2. \textbf{b.} Empirical model with degradation 0.2. \textbf{c.} Exact model with degradation 0.5. \textbf{d.} Empirical model with degradation 0.5.}
     \label{fig:4-1-scatter}
 \end{figure}
 
 \subsection{Comparisons with existing methods}
 
-We now compare our model against Bambu with and without bias modeling, FLAIR and NanoCount on the simulated datasets, comparing the estimates returned by each method with the simulated ground truth. We analyse counts for all isoforms that we included in the simulation and where the sum of counts across the methods was greater than zero. In addition, we make a distinction between methods that are \textit{bias-aware} (Deg. EM (exact), Deg. EM (emp.), Bambu) and methods that are \textit{bias-unaware} (Bambu (no bias), FLAIR, NanoCount). 
+We now benchmark our model against Bambu with and without bias modeling, FLAIR and NanoCount by comparing the estimates returned by each method with the simulated ground truth. We analyse counts for all isoforms that we included in the simulation and where the sum of counts across the methods was greater than zero. In addition, we make a distinction between methods that are \textit{bias-aware} (Deg. EM (exact), Deg. EM (emp.), Bambu) and methods that are \textit{bias-unaware} (Bambu (no bias), FLAIR, NanoCount). 
 
 All methods perform reasonably well on the simulated data across all isoforms, achieving SCC $>$ 0.69 across all five simulated datasets (Table \ref{tab:summary-2}). NRMSE across the methods are comparable, but MRD for the other methods are about one order of magnitude larger than those attained by our model. However, we observe stark differences between the bias-aware and bias-unaware methods on the subset isoforms. In particular, bias-unaware methods perform considerably poorer on SCC and MRD than bias-aware ones (Table \ref{tab:summary-2}).    
 
@@ -124,27 +124,61 @@ Bias-unaware methods perform poorly over the subset isoforms across the whole ra
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.9\textwidth]{figures/sec-4-2-scatter-hard.png}
-    \caption[Scatter plots across simulated datasets for different methods]{Scatter plots of the simulated and estimated counts log2 scale across simulated datasets with $\mathbb{E}[d]=0.2$ for all methods. \textbf{a.} Deg. EM (exact) model. \textbf{b.} Deg. EM (emp.) model. \textbf{c.} Bambu with bias modeling. \textbf{d.} Bambu with no bias modeling. \textbf{e.} FLAIR. \textbf{f.} NanoCount.}
+    \caption[Scatter plots across simulated datasets for different methods]{Scatter plots of the simulated and estimated counts on the log2 scale across simulated datasets with $\mathbb{E}[d]=0.2$ for all methods. \textbf{a.} Deg. EM (exact) model. \textbf{b.} Deg. EM (emp.) model. \textbf{c.} Bambu with bias modeling. \textbf{d.} Bambu with no bias modeling. \textbf{e.} FLAIR. \textbf{f.} NanoCount.}
     \label{fig:4-2-scatter}
 \end{figure}
 
 \newpage
 
-Finally, we visualised estimates and fitted a kernel density estimate on the subset isoforms only for all methods for the dataset with simulated degradation rate of 0.2 (Fig. \ref{fig:4-2-scatter}), which we observe to be common in real data. It is obvious from the plots that bias-aware methods significantly improve over bias-unaware ones. In particular, without correcting for bias, Bambu (no bias), FLAIR and NanoCount (Fig. \ref{fig:4-2-scatter}d,e,f) severely underestimate the counts for subset isoforms to different extents, with FLAIR performing the worst.
+Finally, we visualised estimates and fitted a kernel density estimate on the subset isoforms for all methods on the dataset with a degradation rate of 0.2 (Fig. \ref{fig:4-2-scatter}), which we observe to be common in real data. On this dataset, bias-aware methods significantly improve over bias-unaware ones qualitatively (Fig. \ref{fig:4-2-scatter}a,b,c). In particular, without correcting for bias, Bambu (no bias), FLAIR and NanoCount (Fig. \ref{fig:4-2-scatter}d,e,f) severely underestimate the counts for subset isoforms to different extents, with FLAIR performing the worst.
 
 \subsection{Runtime analysis}
 
-We measured the end-to-end runtime taken for all methods (Fig. \ref{fig:runtime}) excluding the read alignment step. Bambu and FLAIR were run with 12 threads. NanoCount and the current verison of our model do not implement parallelisation. Across the five datasets, NanoCount was the fastest, followed by Deg. EM (exact). Bambu and FLAIR performed similarly, though FLAIR had a much larger variance in the runtime. Even though the time complexity for both Deg. EM (exact) and Deg. EM (emp.) is $\mathcal{O}(N_A)$, where $N_A$ is the number of alignments, Deg. EM (emp.) is much slower than all other methods because calculation of the empirical read length-isoform agreement probabilities is computationally intensive. Even though the runtimes for the empirical model are longer, they are still tolerable in absolute terms, and comes with improvements in accuracy for accurately quantifying degraded reads. Nevertheless, this is one area for improvement for future iterations of our model.  
+We measured the end-to-end runtime taken for all methods (Fig. \ref{fig:runtime}) excluding the read alignment step. Bambu and FLAIR were run with 12 threads. NanoCount and the current verison of our model do not implement parallelisation. Across the five datasets, NanoCount was the fastest, followed by Deg. EM (exact). Bambu and FLAIR performed similarly, though FLAIR had a much larger variance in the runtime. Even though the time complexity for both Deg. EM (exact) and Deg. EM (emp.) is $\mathcal{O}(N_A)$, where $N_A$ is the number of alignments, Deg. EM (emp.) is much slower than all other methods because calculation of the empirical read length-isoform agreement probabilities is computationally intensive. Even though the runtimes for the empirical model are longer, they are still tolerable in absolute terms, and come with improvements in accuracy for accurately quantifying degraded reads. Nevertheless, this is one area for improvement for future iterations of our model.  
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{figures/sec-4-runtime.png}
+    \includegraphics[width=0.825\textwidth]{figures/sec-4-runtime.png}
     \caption[Runtime across simulated datasets for different methods]{Runtime (mins) across simulated datasets for different methods. Times are log10 transformed.}
     \label{fig:runtime}
 \end{figure}
 
 \section{Evaluations on real data}
 
+In this section, we evaluate Deg. EM (emp.), Bambu with bias modeling, and NanoCount on direct RNA-seq data with  from the SG-NEx project. In particular, we examine the performance of these methods on samples containing RNA sequencing spike-ins (Table \ref{tab-sgnex}). A subset of samples contain Spike-In RNA Variants (SIRVs) (cite https://www.lexogen.com/sirvs/), while another contain Sequins (cite https://www.sequinstandards.com/) (See Appendix \ref{ap-spike} for more details). The expression of these spike-ins are known and can be used as a reference.   
+
+\begin{table}[htbp]
+  \centering
+    \begin{tabular}{|p{2cm}|p{2cm}|p{2cm}|p{3.5cm}|}
+    \hline
+    Cell Line & Run & Replicate   & Spike-in \bigstrut\\
+    %\hline
+    %H9    & 1     & 2     & SIRV-4 \bigstrut\\
+    %\hline
+    %H9    & 1     & 3     & SIRV-4 \bigstrut\\
+    %\hline
+    %H9    & 1     & 4     & SIRV-4 \bigstrut\\
+    %\hline
+    %H9    & 2     & 2     & SIRV-4 \bigstrut\\
+    %\hline
+    %H9    & 2     & 3     & SIRV-4 \bigstrut\\
+    %\hline
+    %H9    & 2     & 4     & SIRV-4 \bigstrut\\
+    \hline
+    Hct116 & 1     & 3     & Sequin Mix A v1.0 \bigstrut\\
+    \hline
+    K562  & 1     & 4     & Sequin Mix A v1.0 \bigstrut\\
+    \hline
+    K562  & 1     & 5   & Sequin Mix A v1.0 \bigstrut\\
+    \hline
+    MCF7  & 1     & 4     & Sequin Mix A v1.0 \bigstrut\\
+    \hline
+    \end{tabular}%
+  \caption[Description of SG-NEx direct RNA-seq samples.]{SG-NEx samples.}
+  \label{tab-sgnex}
+\end{table}%
+
 Six H9 samples (600ng mRNA + 1\% spike-in of 6ng SIRV-4) sequenced with direct RNA-seq.
 
-\subsection{Comparisons with existing methods}
+\subsection{Empirical results on spike-ins}
+
