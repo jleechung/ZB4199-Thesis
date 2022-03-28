@@ -182,11 +182,11 @@ Six H9 samples (600ng mRNA + 1\% spike-in of 6ng SIRV-4) sequenced with direct R
 
 \subsection{Empirical results on spike-ins}
 
-First, we examine results on the RNA sequin spike-ins (n=41 transcripts). For each sample, we computed the SCC, NRMSE and MRD on the abundance estimates returned by each method (). 
+First, we examine results on the RNA sequin spike-ins (n=41 transcripts). For each of the four samples, we computed the SCC, NRMSE and MRD on the abundance estimates returned by each method (Fig. \ref{fig:sequin-metrics}). Deg. EM (emp.) achieved the highest median SCC, while NanoCount perform reasonably well with a median SCC $>$ 0.7. Bambu's performance was weighed down by an outlier. NRMSE and MRD metrics show similar trends,     
 
-\begin{figure}
+\begin{figure}[H]
     \centering
-    \includegraphics{figures/sequin-metrics.png}
-    \caption[SCC, NRMSE and MRD on sequencing spike-ins in SG-NEx data]{SCC, NRMSE and MRD on sequencing spike-ins in SG-NEx data. }
-    \label{fig:my_label}
+    \includegraphics[width=\textwidth]{figures/sequin-metrics.png}
+    \caption[SCC, NRMSE and MRD on sequencing spike-ins in SG-NEx data]{SCC, NRMSE and MRD on sequencing spike-ins in SG-NEx data. \textbf{a.} SCC for each of the three methods across four samples. \textbf{b.} NRMSE for each of the three methods across four samples. \textbf{c.} MRD for each of the three methods across four samples.}
+    \label{fig:sequin-metrics}
 \end{figure}
