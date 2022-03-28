@@ -86,54 +86,6 @@ Thus, for all $v$, we have
 \end{equation}
 The inequality holds since $g(\bm\theta)>0$. Therefore, $\mathrm{\mathbf{H}}_f$ is negative semi-definite, and thus $f(\bm\theta)$ and $\log p(\bm{R}\mid\bm\theta)$ are concave.  
 
-\chapter{Derivations for variational distributions}\label{sec:variational-dist}
-
-From \cite{Blei2017}, the optimal mean-field variational distribution for latent variables $\left(Z_{1}, \ldots, Z_{j}\right)$ and observed variable $X$ is given by
-\begin{equation}
-    \log q_{j}^{*}\left(Z_{j}\right)=\mathbb{E}_{-j}[\log p(X, Z)]\label{eq:blei}
-\end{equation}
-\noindent Here, the expectation is taken with respect to all variables other than $Z_j$. We apply Eqn. \ref{eq:blei} to our model in Fig. \ref{fig:graphical-model-2}. The optimal variational distribution for latent variable $\boldsymbol{Z}$ is
-\begin{equation}
-\begin{split}
-    \log q(\boldsymbol{Z}) &=\mathbb{E}_{\boldsymbol{\theta}}\left[\log p(\boldsymbol{R}, \boldsymbol{Z}, \boldsymbol{\theta})\right]+\mathrm{ const. } \\
-    &=\mathbb{E}_{\boldsymbol{\theta}}[\log p(\boldsymbol{R} \mid \boldsymbol{Z})]+\mathbb{E}_{\boldsymbol{\theta}}[\log p(\boldsymbol{Z} \mid \boldsymbol{\theta})]+\mathrm{ const. } \\
-    &=\sum_{i j} z_{i j} \cdot \log \left[a_{i j} \cdot p\left(\ell_{i} \mid d_{j}, z_{i j}=1\right)\right]+\sum_{i}\sum_{ j}\mathbb{E}_{\boldsymbol{\theta}}\left[\log \theta_{j}\right]+\mathrm{ const. } \\
-    &=\sum_{i} \sum_{j} z_{i j} \cdot \log \rho_{i j}+\mathrm{ const. }
-\end{split}
-\end{equation}
-where 
-\begin{equation}
-        \log \rho_{i j} =\log \left[a_{i j} \cdot p\left(\ell_{i} \mid d_{j}, z_{ij}=1\right)\right]+\mathbb{E}_{\boldsymbol{\theta}}\left[\log \theta_{j}\right]
-\end{equation}
-Since $\boldsymbol{\theta}$ follows a Dirichlet distribution with parameters $\boldsymbol{\alpha}=\left(\alpha_{1}, \ldots, \alpha_{M}\right)$ we have
-\begin{equation}
-    \mathbb{E}_{\boldsymbol{\theta}}\left[\log \theta_{j}\right]=\varphi\left(\alpha_{j}\right)-\varphi\left(\sum_{j} \alpha_{j}\right)
-\end{equation}
-where $\varphi(.)$ is the digamma function. Thus, we have
-\begin{equation}
-    q(\bm{Z})\propto\prod_i\prod_j\rho_{ij}^{z_{ij}}
-\end{equation}
-Normalizing this distribution, let
-\begin{equation}
-    \gamma_{i j}=\frac{\rho_{i j}}{\sum_{j} \rho_{i j}}
-\end{equation}
-Then 
-\begin{equation}
-    q(\boldsymbol{Z})=\prod_{i} \prod_{j} \gamma_{i j}^{z_{i j}}
-\end{equation}
-
-The optimal variational distribution for parameters $\boldsymbol{\theta}$ is
-
-\begin{equation}
-\begin{split}
-    \log q(\boldsymbol{\theta})&=\mathbb{E}_{\boldsymbol{Z}}[\log p(\boldsymbol{R}, \boldsymbol{Z}, \boldsymbol{\theta})]+\mathrm{const} \\
-    &= \mathbb{E}_{Z}[\log p(\boldsymbol{Z} \mid \boldsymbol{\theta})]+\mathbb{E}_{Z}[\log p(\boldsymbol{\theta})]+\mathrm{const} \\
-    &= \mathbb{E}_{Z}\left[\sum_{i} \sum_{j} z_{i j} \cdot \log \theta_{j}\right]+\log p(\boldsymbol{\theta})+\mathrm{const} \\
-    &=\sum_{i} \sum_{j} \gamma_{i j} \cdot \log \theta_{j}+\sum_{j}\left(\alpha_{0 j}-1\right) \cdot \log \theta_{j}
-\end{split}
-\end{equation}
-We recognise this as a Dirichlet distribution with parameters $\alpha_{0 j}+\sum_{i} \gamma_{i j}$, where $\alpha_{0j}$ is the $j$\ts{th} parameter of the hyperparameter $\bm{\alpha_0}$. 
-
 \chapter{Long-read quantification methods}\label{ap:meth}
 
 In summary, Bambu first maps reads to the reference genome, and performs error correction on alignments with a logistic regression model for predicting the confidence of splice junction sites. Reads spanning the same junctions are summarised into read equivalence classes. After error correction, transcript discovery is performed jointly over all samples. A machine learning model is used to identify valid transcript models for transcript discovery. A score for each transcript is calculated and translated to a novel discovery rate (NDR) threshold for defining valid novel transcript models. Bambu then performs transcript quantification on the read equivalence class level by defining alignment compatibility between each class and each transcript model. We note that bambu employs a degradation bias model that assumes constant expected degradation (calibrated to 0.1-0.2) across transcripts. Based on empirical evaluations, the degradation rate is moderated to allow comparisons between samples.   

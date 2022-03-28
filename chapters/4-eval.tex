@@ -17,7 +17,7 @@ We compare two variations of our model based on the read length-isoform agreemen
 
 We benchmark our model against three existing methods for transcript quantification from long-read RNA-seq. For brevity, detailed descriptions of these methods are omitted here but included in Appendix \ref{ap:meth}.
 
-\paragraph{Bambu} Bambu (manuscript in review) \cite{Bambu2022} is a method for reference guided transcript discovery and quantification for long read RNA-seq data. Crucially, Bambu is one of the few existing long-read quantification methods that models degradation bias. For benchmarking, we ran Bambu (v.2.0.6) without transcript discovery. For transcript quantification, we ran Bambu with bias correction (default) and without bias correction (\texttt{degradationBias=FALSE}). We used the defaults for all other parameters.
+\paragraph{Bambu} Bambu (manuscript under review) \cite{Bambu2022} is a method for reference guided transcript discovery and quantification for long read RNA-seq data. Crucially, Bambu is one of the few existing long-read quantification methods that models degradation bias. For benchmarking, we ran Bambu (v.2.0.6) without transcript discovery. For transcript quantification, we ran Bambu with bias correction (default) and without bias correction (\texttt{degradationBias=FALSE}). We used the defaults for all other parameters.
 
 \paragraph{FLAIR} Full-Length Alternative Isoform analysis of RNA (FLAIR) \cite{Tang2020} is a method for correction, isoform definition and alternative splicing analysis of long reads. For benchmarking, we ran FLAIR (v.1.5.1) with the modules \texttt{correct}, \texttt{collapse} and \texttt{quantify}. When running FLAIR on simulated data, we set \texttt{--support 1} for FLAIR \texttt{collapse}, keeping isoforms that are supported by minimally one read (default=3).  
 
@@ -208,7 +208,7 @@ We visualize the estimates and supposed concentrations of the sequins for the sa
 \begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{figures/lexogen.png}
-    \caption[SCC, NRMSE and MRD on SIRV-4 in SG-NEx data]{SCC, NRMSE and MRD on SIRV-4 in SG-NEx data. \textbf{a.} SCC, \textbf{b.} NRMSE and \textbf{c.} MRD for each of the three methods across six H9 samples.}
+    \caption[SCC, NRMSE and MRD on SIRVs in SG-NEx data]{SCC, NRMSE and MRD on SIRV-4 in SG-NEx data. \textbf{a.} SCC, \textbf{b.} NRMSE and \textbf{c.} MRD for each of the three methods across six H9 samples.}
     \label{fig:lexogen-metrics}
 \end{figure}
 
@@ -216,7 +216,7 @@ In addition to the sequin spike-in samples, we examined the SIRV spike-ins in si
 
 \section{Reproducibilty measures}
 
-Besides quantifying accuracy, we can also measure the reproducibility of abundance estimates for each method. We do so with the reproducibility metric (RM), which is a measure of the standard deviation of abundance estimates across replicates (Appendix \ref{ap:eval-metrics}). We use H9 samples in the SG-NEx data that were sequenced in two runs, with three replicates in each run (Table \ref{tab-sgnex}). Within each run, we calculated the RM across the replicates for each isoform called as expressed in at least one method and obtained the median reproducibiltiy metric (MRM) (Table \ref{tab-mrm}). For all methods, MRM in the first run was higher than that in the second by virute of the number of isoforms the MRM was calculated over (Run 1 = 30,720, Run 2 = 21,536). In both runs, Deg. EM (emp.) achieved the lowest MRM suggesting higher reproducibility compared to NanoCount or Bambu. 
+Besides quantifying accuracy, we can also measure the reproducibility of abundance estimates for each method. We do so with the reproducibility metric (RM), which is a measure of the standard deviation of abundance estimates across replicates (Appendix \ref{ap:eval-metrics}). We use H9 samples in the SG-NEx data that were sequenced in two runs, with three replicates in each run (Table \ref{tab-sgnex}). Within each run, we calculated the RM across the replicates for each isoform called as expressed in at least one method and obtained the median reproducibiltiy metric (MRM) (Table \ref{tab-mrm}). For all methods, MRM in the first run was higher than that in the second by virtue of the number of isoforms the MRM was calculated over (Run 1 = 30,720, Run 2 = 21,536). In both runs, Deg. EM (emp.) achieved the lowest MRM suggesting higher reproducibility compared to NanoCount or Bambu. 
 
 \begin{table}[htbp]
 \centering
@@ -237,13 +237,13 @@ NanoCount & 0.943 & 0.816 \bigstrut\\
 
 The incorporation of bias modeling in Deg. EM improves reproducibility. We can infer this by comparing the MRMs obtained by Deg. EM and NanoCount, which Deg. EM can most closely be compared to. By modeling the bias, read-to-isoform assignment is improved across replicates with potentially different degradation rates, thus stabilising variance in abundance estimates across the replicates.       
 
-\section{Comparison of estimated degradation}
+\section{Comparisons of estimated degradation}
 
-Lastly, we compare the estimated average degradation rates obtained by Bambu and Deg. EM (emp.). We note that we do not expect the absolute values of the degradation rates to be similar; rather, the degradation rates 
+Lastly, we compare the estimated average degradation rates obtained by Bambu and Deg. EM (emp.) across samples from four cell lines. We note that we do not expect the absolute values of the degradation rates to be similar; rather, we expect the estimates to be linearly related. Indeed, by fitting a regressing the estimates from Bambu against Deg. EM (Fig. \ref{fig:real-deg-rate}) in a linear model, we find that the linear relationship is significant (p-value = 2.63e-05, adjusted $R^2$ = 0.890). Even though the sample size here is small, the concordance between the degradation rates estimated by Bambu and Deg. EM (emp.) on real data provides a useful sanity check for our model.
 
 \begin{figure}
     \centering
-    \includegraphics{}
-    \caption{Caption}
-    \label{fig:my_label}
+    \includegraphics[width=0.65\textwidth]{figures/real-deg-rate.png}
+    \caption[Comparison of estimated degradation rates on SG-NEx data]{Comparison of estimated degradation rates on SG-NEx data across four cell lines.}
+    \label{fig:real-deg-rate}
 \end{figure}

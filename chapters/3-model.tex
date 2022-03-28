@@ -82,6 +82,10 @@ Let the length of isoform $j$  in kb be len$(j)$. For constant expected degradat
     \end{cases}
 \end{equation}
 
+\section{Parameter inference}
+
+In this section, we derive an expectation maximization algorithm to infer the parameters $\bm{\theta}$ that maximize the likelihood of the observed data.
+
 \subsection{Likelihood formulation}\label{sec:likelihood-formulation}
 
 The marginal distribution of $r_i$ is obtained by summing the joint distribution (Eq. \ref{eq:joint-dist}) over all $M$ possible states of $z_i$. From Eqs. \ref{eq:latent-dist}, \ref{eq:cond-dist} and \ref{eq:read-iso-agreement}, we obtain
@@ -105,13 +109,9 @@ The corresponding complete data log-likelihood is
     \log p(\bm{R},\bm{Z}\mid\bm{\theta})=\sum_{i=1}^N\sum_{j=1}^M z_{ij}\cdot\log \left[\theta_j\cdot a_{ij}\cdot p(\ell_i\mid d_j, z_{ij}=1)\right]\label{eq:comp-log-lik}
 \end{equation}
 
-\section{Parameter inference}
-
-We describe two strategies to infer the parameters $\bm{\theta}$ that maximize the likelihood of the observed data: expectation maximization and variational Bayesian inference.  
-
 \subsection{Expectation maximization}\label{sec:em}
 
-The EM algorithm is a powerful method for finding maximum likelihood estimates of parameters in latent variable models. It consists of a two-stage iterative optimization procedure for maximizing the likelihood. In our setting, we seek to maximize the complete data log-likelihood with respect to $\bm{\theta}$. However, we observe only the incomplete data $\bm{R}$. Since we cannot obtain the complete data log-likelihood (Eq. \ref{eq:comp-log-lik}), we take its expectation under the posterior of the latent variables $\bm{Z}$ given some setting of the parameters $\bm{\theta}^{(t)}$: this corresponds to the E step of the EM algorithm. In the M step, we maximize this expectation with respect to the parameters $\bm{\theta}$ to obtain a new estimate of the parameters $\bm{\theta}^{(t+1)}$.   
+The EM algorithm  is a powerful method for finding maximum likelihood estimates of parameters in latent variable models, and is used in many RNA-seq quantification methods for parameter inference \cite{Li2011, Kallisto, Salmon, LIQA, Gleeson2021, Bambu2022}. It consists of a two-stage iterative optimization procedure for maximizing the likelihood. In our setting, we seek to maximize the complete data log-likelihood with respect to $\bm{\theta}$. However, we observe only the incomplete data $\bm{R}$. Since we cannot obtain the complete data log-likelihood (Eq. \ref{eq:comp-log-lik}), we take its expectation under the posterior of the latent variables $\bm{Z}$ given some setting of the parameters $\bm{\theta}^{(t)}$: this corresponds to the E step of the EM algorithm. In the M step, we maximize this expectation with respect to the parameters $\bm{\theta}$ to obtain a new estimate of the parameters $\bm{\theta}^{(t+1)}$.   
 
 We obtain the posterior of the latent variables $\bm{Z}$ from Eqs. \ref{eq:latent-dist} and \ref{eq:joint-dist}:
 \begin{equation}
@@ -154,79 +154,3 @@ An intuitive interpretation of Eq. \ref{eq:thetaj} is that the relative abundanc
     \item Repeat steps 2 and 3 until convergence.
 \end{enumerate}
 To initialize $\bm\theta$, we assign equal relative abundances to all isoforms by setting $\theta_j=1/M$ $\forall j$. We test for convergence by computing changes in the parameters or the log-likelihood in Eq. \ref{eq:log-lik} after each iteration of the algorithm. Once the change in the  parameters or log-likelihood falls below a certain threshold, we terminate the algorithm. Proof of the concavity of the log-likelihood function, and thus the optimality of the inferred parameters, can be found in the Appendix \ref{sec:proof-log-lik}. 
-
-\subsection{Variational Bayesian inference}
-
-In addition to the maximum likelihood approach in section \ref{sec:em}, one can adopt a Bayesian approach to infer the posterior distribution of the parameters $\bm\theta$ given the observed data $\bm{R}$. Here, we treat $\bm\theta$ as a random variable and place a Dirichlet prior parameterised by hyperparameters $\bm\alpha_0\in\mathbb{R}^{M}$ over $\bm{\theta}$ (Eq. \ref{eq:prior}) based on conjugacy with the categorical distribution over the latent variables $\bm{Z}$  (Eq. \ref{eq:bayes-cond}). The graphical model in \ref{fig:graphical-model-2} shows the dependency between all parameters, latent and observed variables.  
-\begin{equation}\label{eq:prior}
-    p(\bm\theta\mid\bm\alpha_0)\propto \prod_{j=1}^M \theta_j^{\alpha_{0j}-1}
-\end{equation}
-\begin{equation}\label{eq:bayes-cond}
-    p(\bm{Z}\mid\bm\theta)=\prod_{j=1}^M\theta_j^{z_{ij}}
-\end{equation}
-\begin{figure}[H]
-    \centering
-    \begin{tikzpicture}[scale=1.25, every node/.style={transform shape}]
-        \node[const](alpha){$\bm{\alpha_0}$}; %
-        \node[latent, right=of alpha](theta){$\bm{\theta}$}; % 
-        \node[latent, right=of theta](z){$z_i$}; %
-        \node[obs, right=of z](r){$r_i$}; %
-        \edge{alpha}{theta}; %
-        \edge{theta}{z}; %
-        \edge{z}{r}; %
-        \plate[inner sep=0.4cm, xshift = -0.1cm]{plate1}{(z)(r)}{$i=1,...,N$}; %
-    \end{tikzpicture}
-    \caption[Bayesian graphical model for long-read RNA-seq]{Bayesian graphical model for long-read RNA-seq. Under this model, $\bm\theta$ is a random variable distributed according to $\textrm{Dir}(\bm{\alpha_0})$.}
-    \label{fig:graphical-model-2}
-\end{figure}
-\noindent The posterior probability of the parameters and latent variables given the observed data is 
-\begin{equation}\label{eq:post-full}
-\begin{split}
-    p(\bm{\theta},\bm{Z}\mid\bm{R}) & =\frac{p(\bm{R},\bm{Z},\bm{\theta})}{p(\bm{R})} \\
-    & = \frac{p(\bm{R}\mid\bm{Z})\cdot p(\bm{Z}\mid\bm{\theta})\cdot p(\bm{\theta})}{p(\bm{R})} \\
-    & = \frac{p(\bm{R}\mid\bm{Z})\cdot p(\bm{Z}\mid\bm{\theta})\cdot p(\bm{\theta})}{\int_\theta \sum_{\bm{Z}} p(\bm{R}\mid\bm{Z})\cdot p(\bm{Z}\mid\bm{\theta})\cdot p(\bm{\theta})\cdot d\theta}
-\end{split}
-\end{equation}
-Direct evaluation of the posterior is intractable, since evaluating the denominator of the final expression in Eq. \ref{eq:post-full} requires summation over the space of $\bm{Z}$, which is exponential ($M^N$) in size. We turn to approximate inference methods for posterior inference. In particular, we consider a variational approximation to the posterior $q(\bm{Z},\bm{\theta})$ that is mean-field, such that the variational distribution factorizes:
-\begin{equation}
-    q(\bm{Z},\bm{\theta})=q(\bm{Z})\cdot q(\bm\theta)
-\end{equation}
-Here, we present the optimal variational distributions for $\bm{Z}$ and $\bm\theta$ that minimize the KL divergence to the posterior. Full derivations are presented in Appendix \ref{sec:variational-dist} for brevity. The optimal variational distribution for $\bm{Z}$ is
-\begin{equation}\label{eq:opt-z-1}
-    q(\bm{Z})=\prod_{i=1}^N\prod_{j=1}^M \gamma_{ij}^{z_{ij}}
-\end{equation}
-Here, $\gamma_{ij}$ is defined by 
-\begin{equation}\label{eq:opt-z-2}
-    \gamma_{ij}=\frac{\rho_{ij}}{\sum_j\rho_{ij}}
-\end{equation}
-with
-\begin{equation}\label{eq:opt-z-3}
-    \log\rho_{ij}=\log\left[a_{ij}\cdot p(\ell_i\mid d_j,z_{ij}=1)\right]+\psi(\alpha_j)-\psi\left(\sum_{j=1}^M\alpha_j\right)
-\end{equation}
-where $\psi(\cdot)$ is the digamma function. 
-The optimal variational distribution for $\bm\theta$ is
-\begin{equation}\label{eq:opt-theta-1}
-    q(\bm\theta) = \mathrm{Dir}(\bm\alpha)
-\end{equation}
-where the $j$\ts{th} component of $\bm\alpha$ is given by
-\begin{equation}\label{eq:opt-theta-2}
-    \alpha_j=\alpha_{0j}+\sum_{i=1}^N\gamma_{ij}
-\end{equation}
-From Eqs. \ref{eq:opt-z-1} and \ref{eq:opt-theta-1}, we perform coordinate ascent inference by iteratively optimizing each variational distribution holding the other fixed. This results in an iterative optimization procedure analogous to the EM algorithm:
-\begin{enumerate}
-    \item Initialize hyperparameters $\alpha_j^{(0)}=\alpha_{0j}$
-    \item Update $q(\bm{Z})$: compute $\gamma_{ij}^{(t)}$  with $\alpha_j^{(t)}$ from Eqs. \ref{eq:opt-z-2} and \ref{eq:opt-z-3}
-    \item Update $q(\bm\theta)$: compute $\alpha_{j}^{(t+1)}$  with $\gamma_{ij}^{(t)}$ from Eq. \ref{eq:opt-theta-2}
-    \item Repeat steps 2 and 3 until convergence. 
-\end{enumerate}
-Upon convergence, the abundance estimate for the $j$\ts{th} isoform can be obtained by taking the expectation of $\theta_j$ under the posterior distribution:
-\begin{equation}
-    \mathbb{E}[\theta_j] = \frac{\alpha_{0j}+\sum_i\gamma_{ij}}{\sum_j\alpha_{0j}+N}
-\end{equation}
-
-One option for setting hyperparameters $\bm{\alpha_0}$ for the prior $p(\bm{\theta}\mid\bm{\alpha_0})$ is by setting all $\alpha_{0j}$ to some constant $\alpha_0$, yielding a symmetric Dirichlet prior. Small values of $\alpha_0$ result in a sparser $\bm\theta$, while larger values result in a more uniform $\bm\theta$. Another option is to place a hyperprior on $\bm{\alpha_0}$. Since $\bm{\alpha_0}>0$, we can consider
-\begin{equation}
-    \alpha_{0j}\sim\textrm{Gamma}(a,b)
-\end{equation}
-We evaluate the choice of priors on transcript quantification in the following section. 
-
