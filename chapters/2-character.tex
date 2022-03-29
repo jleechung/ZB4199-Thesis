@@ -26,11 +26,11 @@ In the following sections, we first describe a coverage-based approach for chara
 
 \section{Coverage-based degradation estimation}\label{sec:deg-est}
 
-We first sought to determine if patterns of degradation were consistent across transcript isoforms for a given direct RNA-seq dataset. To that end, we selected single-isoform, multi-exon genes from GRCh38 reference annotations, and further restricted the set of isoforms to those that do not intersect with any other annotated features in reference annotations. These filters reduce ambiguity in the isoform of origin of the reads we use to estimate bias; such approaches were also adopted in \cite{Roberts2011} and \cite{Love2016} for bias estimation in short-read data. Filtering yielded approximately 5,000 isoforms for bias estimation. Next, we obtained the coverage over each isoform using the \texttt{genomecov} module from bedtools (v.2.27.1). A degradation curve can then be computed by fitting a smoothing spline to the data.  
+We first sought to determine if patterns of degradation were consistent across transcript isoforms for a given direct RNA-seq dataset. To that end, we selected single-isoform, multi-exon genes from GRCh38 reference annotations, and further restricted the set of isoforms to those that do not intersect with any other annotated features in reference annotations. We refer to these as \textbf{lone isoforms}. Estimating bias from lone isoforms reduces ambiguity in the isoform of origin of the reads we use to estimate bias; such approaches were also adopted in \cite{Roberts2011} and \cite{Love2016} for bias estimation in short-read data. Filtering yielded approximately 5,000 lone isoforms. For each of these isoforms, we obtained coverage over the isoform body using the \texttt{genomecov} module from bedtools (v.2.27.1). Next, we further apply a median coverage filter, filtering out lone isoforms with low median coverage. Finally, a degradation curve is then fitted to the data with a smoothing spline.  
 
 To validate this approach, we simulated two datasets where the expected degradation rates for all isoforms is constant ($\mathbb{E}[d]\in\{0.2,0.4\}$, see Appendix \ref{ap:sim-deg-reads} for more details on degraded read simulation). Visualising the degradation curves for each isoform, we observed noise in the form of deviation from the expected degradation curve, likely due to sampling noise in the simulation data generation process. This noise can be mitigated by computing a global degradation curve across all isoforms (red line, Fig. \ref{fig:cov-sim}). We find that the global degradation curves reflect the known degradation rates from the simulated data qualitatively (Fig. \ref{fig:cov-sim}). In addition, we assessed the global degradation curves quantitatively by computing the average gradients of each curve, and find that there is good agreement between the estimates and the expected degradation ($\mathbb{E}[d]$ = 0.2, estimated = 0.201; $\mathbb{E}[d]$ = 0.4, estimated = 0.403).
 
-We adopted this approach for characterising degradation in real direct RNA-seq data from the SG-NEx project. We 
+We adopted this approach for characterising degradation in real direct RNA-seq data from the SG-NEx project. Across the samples, we find that there are consistent patterns of degradation across the isoforms. 
 
 \begin{figure}[H]
     \centering
@@ -39,13 +39,18 @@ We adopted this approach for characterising degradation in real direct RNA-seq d
     \label{fig:cov-sim}
 \end{figure}
 
-\
-
-
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{figures/sec-2-cov-real.png}
+    \caption[Degradation curves on real datasets based on coverage]{Degradation curves on real datasets based on coverage.}
+    \label{fig:cov-real}
+\end{figure}
 
 \subsection{Degradation by isoform features}
 
 \subsection{Degradation in spike-ins}
+
+As discussed in the first chapter, the observed read truncation in ONT datasets may be a result of RNA degradation \textit{in vivo} or due to other extra-cellular factors including library preparation or sequencing artifacts. In this section, we analyse possible degradation in sequencing spike-ins, which are synthetic RNA molecules added to endogenous RNA samples before library preparation.   
 
 \section{Read length-based degradation estimation}
 
