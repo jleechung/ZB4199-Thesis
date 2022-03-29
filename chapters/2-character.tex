@@ -26,11 +26,11 @@ In the following sections, we first describe a coverage-based approach for chara
 
 \section{Coverage-based degradation estimation}\label{sec:deg-est}
 
-We first sought to determine if patterns of degradation were consistent across transcript isoforms for a given direct RNA-seq dataset. To that end, we selected single-isoform, multi-exon genes from GRCh38 reference annotations, and further restricted the set of isoforms to those that do not intersect with any other annotated features in reference annotations. We refer to these as \textbf{lone isoforms}. Estimating bias from lone isoforms reduces ambiguity in the isoform of origin of the reads we use to estimate bias; such approaches were also adopted in \cite{Roberts2011} and \cite{Love2016} for bias estimation in short-read data. Filtering yielded approximately 5,000 lone isoforms. For each of these isoforms, we obtained coverage over the isoform body using the \texttt{genomecov} module from bedtools (v.2.27.1). Next, we further apply a median coverage filter, filtering out lone isoforms with low median coverage (min median coverage = 10). Finally, a degradation curve is then fitted to the data with a smoothing spline.  
+We first sought to determine if patterns of degradation were consistent across transcript isoforms for a given direct RNA-seq dataset. To that end, we selected single-isoform, multi-exon genes from GRCh38 reference annotations, and further restricted the set of isoforms to those that do not intersect with any other annotated features in reference annotations. We refer to these as \textbf{lone isoforms}. Estimating bias from lone isoforms reduces ambiguity in the isoform of origin of the reads we use to estimate bias; such approaches were also adopted in \cite{Roberts2011} and \cite{Love2016} for bias estimation in short-read data. Filtering yielded approximately 5,000 lone isoforms. For each of these isoforms, we obtained coverage over the isoform body using the \texttt{genomecov} module from bedtools (v.2.27.1). Next, we further apply a median coverage filter, filtering out lone isoforms with low median coverage (min median coverage = 10). Finally, a degradation curve is fitted to the data with a smoothing spline.  
 
 To validate this approach, we simulated two datasets where the expected degradation rates for all isoforms is constant ($\mathbb{E}[d]\in\{0.2,0.4\}$, see Appendix \ref{ap:sim-deg-reads} for more details on degraded read simulation). Visualising the degradation curves for each isoform, we observed noise in the form of deviation from the expected degradation curve, likely due to sampling noise in the simulation data generation process. This noise can be mitigated by computing a global degradation curve across all isoforms (red line, Fig. \ref{fig:cov-sim}). We find that the global degradation curves reflect the known degradation rates from the simulated data qualitatively (Fig. \ref{fig:cov-sim}). In addition, we assessed the global degradation curves quantitatively by computing the average gradients of each curve, and found good agreement between the estimates and the expected degradation ($\mathbb{E}[d]$ = 0.2, estimated = 0.201; $\mathbb{E}[d]$ = 0.4, estimated = 0.403).
 
-We applied this approach in real direct RNA-seq data from the SG-NEx project. Within each sample, we found consistent patterns of degradation across isoforms (Fig. \ref{fig:cov-real}). However, we note that for most real datasets, filtering for lone transcripts and by median coverage yields very few isoforms for estimating degradation rates. For instance, in a HepG2 sample (Fig. \ref{fig:cov-real}), we obtained only 52 isoforms, while in a MCF7 sample (Fig. \ref{fig:cov-real}), we obtained only 57 isoforms. Across the samples, the median number of lone isoforms post-filtering was 21. We consider an improved approach for estimating the degradation rate in Section \ref{sec:rld} based on observed read length distributions. 
+We applied this approach in real direct RNA-seq data from the SG-NEx project. Within each sample, we found consistent patterns of degradation across isoforms (Fig. \ref{fig:cov-real}). However, we note that for most real datasets, filtering for lone transcripts and by median coverage yields very few isoforms remaining for estimating degradation rates. For instance, in a HepG2 sample (Fig. \ref{fig:cov-real}a), we obtained only 57 isoforms, while in a MCF7 sample (Fig. \ref{fig:cov-real}b), we obtained only 52 isoforms. 
 
 \begin{figure}[H]
     \centering
@@ -46,15 +46,17 @@ We applied this approach in real direct RNA-seq data from the SG-NEx project. Wi
     \label{fig:cov-real}
 \end{figure}
 
+Across the samples, the median number of lone isoforms post-filtering was 21. While this approach separates signal and noise by considering only lone isoforms, it may be overly restrictive. We consider an improved approach for estimating the degradation rate in Section \ref{sec:rld} based on observed read length distributions. 
+
 \subsection{Degradation by isoform features}
 
-Here, we explore whether degradation rates vary between isoforms of different features. We striate isoforms by length, median coverage and biotype. 
+Here, we explore whether degradation rates vary between isoforms of different features. In particular, We striate isoforms by their annotated length , observed median coverage (Fig. \ref{fig:cov-feature}b) and biotype (Fig. \ref{fig:cov-feature}c). On a representative sample from the MCF7 cell line, estimated degradation rates do not appear to vary significantly between isoforms of different annotated length or median coverage (Fig. \ref{fig:cov-feature}a,b). However, the converse is true for the transcript biotype. In particular, we observe higher degradation rates for processed pseudogenes (n = 7) and long non-coding RNAs (n = 3) as comapred to protein coding genes (n = 42, Fig. \ref{fig:cov-feature}c). This is somewhat unsurprising, as 
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{figures/sec-2-by-feature.png}
-    \caption[Degradation curves in MCF7 striated by features]{Degradation curves in MCF7 striated by features. }
-    \label{fig:my_label}
+    \caption[Degradation curves in MCF7 striated by features]{Degradation curves in MCF7 striated by features. \textbf{a.} Degradation curves fit for isoforms within each length quantile separately, with quantiles 0\%:320,25\%:1360,50\%:2820,75\%:5590,100\%9038. \textbf{b.}   }
+    \label{fig:cov-feature}
 \end{figure}
 
 \subsection{Degradation in spike-ins}
