@@ -59,18 +59,38 @@ Here, we explore whether degradation rates vary between isoforms of different fe
 
 \subsection{Degradation in spike-ins}
 
-As reviewed in the first chapter, the observed read truncation in ONT datasets may be a result of RNA degradation \textit{in vivo} or due to other extra-cellular factors including library preparation or sequencing artifacts. In this section, we analyse possible degradation in sequencing spike-ins, which are synthetic RNA molecules added to endogenous RNA samples before library preparation \cite{Lexogen20201}. By doing so, we attempt to elucidate the relative contributions of \textit{in vivo} RNA decay and other extraneous factors unrelated to decay.
+We now analyse possible degradation in sequencing spike-ins, which are synthetic RNA molecules added to endogenous RNA samples before library preparation \cite{Lexogen20201}. By doing so, we attempt to elucidate the relative contributions of \textit{in vivo} RNA decay and other extraneous factors unrelated to decay, such as library preparation or sequencing artifacts.
 
-We analyze SIRVs (Spike-in RNA Variants) present in a subset of SG-NEx samples. Fortunately, a subset of SIRV isoforms are non-overlapping, allowing us to easily apply coverage-based approaches for estimating the degradation. The degradation curves estimated on the SIRVs for six H9 samples show consistent patterns amongst themselves (dotted lines, Fig. \ref{fig:cov-spike}), suggesting a constant extraneous factor such as library preparation or sequencing that acts on degrading SIRV reads. 
+We analyze SIRVs (Spike-in RNA Variants) present in a subset of SG-NEx samples. Fortunately, a subset of SIRV isoforms are non-overlapping, allowing us to easily apply coverage-based approaches for estimating the degradation. The degradation curves estimated on the SIRVs for six H9 samples show consistent patterns amongst themselves (dotted lines, Fig. \ref{fig:cov-spike}), suggesting a constant extraneous factor that acts on degrading SIRV reads. 
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.9\textwidth]{figures/sec-2-cov-spike.png}
-    \caption[Degradation curves for SIRVs based on coverage]{Degradation curves for SIRVs based on coverage for six H9 samples. The number of SIRV transcripts used to fit the degradation curve is shown in parentheses.}
+    \includegraphics[width=\textwidth]{figures/sec-2-cov-spike.png}
+    \caption[Degradation curves for SIRVs based on coverage]{Degradation curves for SIRVs based on coverage for six H9 samples. The number of SIRV transcripts used to fit the degradation curve differs between samples, resulting in curves of different lengths.}
     \label{fig:cov-spike}
 \end{figure}
 
-However, when compared to degradation curves estimated on all genes from within the same sample (solid lines, Fig. \ref{fig:cov-spike}), the SIRVs show lower rates of degradation compared to those of endogenous RNAs. This might suggest that the degradation on endogenous RNAs is a combination of RNA decay \textit{in vivo} and extraneous factors such as libary preparation or sequencing artifacts.  
+However, when contrasted against degradation curves estimated on all isoforms from within the same sample (solid lines, Fig. \ref{fig:cov-spike}), the SIRVs show lower rates of degradation. This might suggest that the degradation on endogenous RNAs is a combination of RNA decay \textit{in vivo} and extraneous factors. 
 
 \section{Read length-based degradation estimation}\label{sec:rld}
 
+
+\begin{table}[htbp]
+  \centering
+    \begin{tabular}{|l|c|c|c|}
+\cline{2-4}    \multicolumn{1}{r|}{} & \multicolumn{3}{c|}{Bin size} \bigstrut\\
+    \hline
+    Simulated dataset & 100   & 200   & 500 \bigstrut\\
+    \hline
+    d = 0.1 & 0.118 & 0.113 & 0.107 \bigstrut\\
+    \hline
+    d = 0.2 & 0.207 & 0.206 & 0.204 \bigstrut\\
+    \hline
+    d = 0.4 & 0.408 & 0.409 & 0.408 \bigstrut\\
+    \hline
+    d = 0.5 & 0.513 & 0.512 & 0.511 \bigstrut\\
+    \hline
+    \end{tabular}%
+  \caption{Add caption}
+  \label{tab:addlabel}%
+\end{table}%
