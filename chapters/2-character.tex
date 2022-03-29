@@ -99,7 +99,7 @@ Based on this observation, we develop an approach for estimating degradation bas
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.85\textwidth]{figures/sec-2-length-sim.png}
-    \caption[Degradation curves on simulated datasets based on read length distribution]{Degradation curves on simulated datasets based on read length distribution. For degradation rate of 0.2, coverage drops to 0 at 5 kb (dark red), while for degradation rate of 0.4, coverage drops to 0 at 2.5 kb (light red). The degradation rates are relatively robust to bin size.}
+    \caption[Degradation curves on simulated datasets based on read length distribution]{Degradation curves on simulated datasets based on read length distribution. For degradation rate of 0.2, coverage drops to 0 at 5 kb (light red), while for degradation rate of 0.4, coverage drops to 0 at 2.5 kb (dark red). The degradation rates are relatively robust to bin size.}
     \label{fig:length-sim}
 \end{figure}
 
@@ -123,9 +123,9 @@ Based on this observation, we develop an approach for estimating degradation bas
   \label{tab:binsize}%
 \end{table}%
 
-We validate this approach on the same simulated datasets with degradation rate of 0.2 and 0.4 and test the robustness of the length bin size used. The degradation curves qualitatively reflect the expected degradation rate (Fig. \ref{fig:length-sim}) and appear robust to the bin size chosen (Table \ref{tab:binsize}). We note that in the range of bin sizes we tested, a larger bin size yielded estimates closest to the expected degradation rates. Intuitively a smaller bin size captures more variance in the degraded read length distribution, making the estimates noisier.         
+We validate this approach on the same simulated datasets with degradation rate of 0.2 and 0.4 and test the robustness of the length bin size used. The degradation curves qualitatively reflect the expected degradation rate (Fig. \ref{fig:length-sim}) and appear robust to the bin size chosen (Table \ref{tab:binsize}). We note that in the range of bin sizes we tested, a larger bin size yielded estimates closest to the expected degradation rates. Intuitively, a smaller bin size captures more variance in the degraded read length distribution, making the estimates noisier.         
 
-With this validation in hand, we estimated degradation rates for 32 direct RNA-seq samples spanning six cell lines and six sequencing runs for multiple bin sizes (Table \ref{tab:six-six}). In general, degradation rates within a cell line varied across the samples (Fig. \ref{fig:length-sgnex}a), presumably due to variations in sequencing runs (Fig. \ref{fig:length-sgnex}b).  
+With this validation in hand, we estimated degradation rates for 32 direct RNA-seq samples spanning six cell lines and six sequencing runs for multiple bin sizes (Table \ref{tab:six-six}). In general, degradation rates within a cell line varied across the samples (Fig. \ref{fig:length-sgnex}a), presumably due to variations in sequencing runs (Fig. \ref{fig:length-sgnex}b).   
 
 \begin{table}[H]
   \centering
@@ -149,6 +149,9 @@ With this validation in hand, we estimated degradation rates for 32 direct RNA-s
   \label{tab:six-six}%
 \end{table}%
 
+Examining the degradation curves for all samples within sequencing run 1, we observe that 
+
+
 
 \begin{figure}[H]
     \centering
@@ -159,8 +162,8 @@ With this validation in hand, we estimated degradation rates for 32 direct RNA-s
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\textwidth]{figures/sec-2-length
-    \caption[Degradation estimates for real datasets based on read length distribution]{Degradation estimates for real datasets based on read length distribution. \textbf{a.} Samples grouped by cell line. \textbf{b.} Samples grouped by sequencing run.}
+    \includegraphics[width=\textwidth]{figures/sec-2-length-sgnex-curves.png}
+    \caption[Degradation curves for real datasets based on read length distribution]{Degradation curves for real datasets based on read length distribution for sequencing run 1. The top panel shows all samples combined. The bottom panel splits the samples by cell lines.}
     \label{fig:length-sgnex}
 \end{figure}
 
