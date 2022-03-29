@@ -61,16 +61,16 @@ Here, we explore whether degradation rates vary between isoforms of different fe
 
 We now analyse possible degradation in sequencing spike-ins, which are synthetic RNA molecules added to endogenous RNA samples before library preparation \cite{Lexogen20201}. By doing so, we attempt to elucidate the relative contributions of \textit{in vivo} RNA decay and other extraneous factors unrelated to decay, such as library preparation or sequencing artifacts.
 
-We analyze SIRVs (Spike-in RNA Variants) present in a subset of SG-NEx samples. Fortunately, a subset of SIRV isoforms are non-overlapping, allowing us to easily apply coverage-based approaches for estimating the degradation. The degradation curves estimated on the SIRVs for six H9 samples show consistent patterns amongst themselves (dotted lines, Fig. \ref{fig:cov-spike}), suggesting a constant extraneous factor that acts on degrading SIRV reads. 
+We examine SIRVs (Spike-in RNA Variants) present in a subset of SG-NEx samples. Fortunately, a subset of SIRV isoforms are non-overlapping, allowing us to easily apply coverage-based approaches for estimating the degradation. The degradation curves estimated on the SIRVs for six H9 samples (2 runs with 3 replicates each) show consistent patterns amongst themselves (dotted lines, Fig. \ref{fig:cov-spike}), suggesting a constant extraneous factor that acts on degrading SIRV reads. This is supported by the fact that, within each run, the SIRV degradation rates exhibit strong consistency.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\textwidth]{figures/sec-2-cov-spike.png}
+    \includegraphics[width=0.9\textwidth]{figures/sec-2-cov-spike.png}
     \caption[Degradation curves for SIRVs based on coverage]{Degradation curves for SIRVs based on coverage for six H9 samples. The number of SIRV transcripts used to fit the degradation curve differs between samples, resulting in curves of different lengths.}
     \label{fig:cov-spike}
 \end{figure}
 
-However, when contrasted against degradation curves estimated on all isoforms from within the same sample (solid lines, Fig. \ref{fig:cov-spike}), the SIRVs show lower rates of degradation. This might suggest that the degradation on endogenous RNAs is a combination of RNA decay \textit{in vivo} and extraneous factors. 
+However, when contrasted against degradation curves estimated on all isoforms from within the same sample (solid lines, Fig. \ref{fig:cov-spike}), the SIRVs show lower rates of degradation. This might suggest that the degradation in endogenous RNAs is a combination of RNA decay \textit{in vivo} and extraneous factors. 
 
 \section{Read length-based degradation estimation}\label{sec:rld}
 
@@ -80,34 +80,79 @@ Recall that our objective is to estimate the degradation curve, from which we ca
 \begin{equation}
     S(x)=P(X>x)=1-F(x)
 \end{equation}
-where $F$ is the cumulative distribution function of $X$. Intuitively, the survival function gives the proportion of reads that survive after or exceed a given length $x$. We make this clear with an illustration. 
-
-
+where $F$ is the cumulative distribution function of $X$. Intuitively, the survival function gives the proportion of reads that exceed (survive after) a given length $x$. We make this clear with an illustration on a hypothetical dataset with a degradation rate of 0.2 (Fig. \ref{fig:survival}). Here, the degradation curve provides an easy way to read off the proportion of degraded reads that are at least 1 kb in length, which is $S(1)=0.8$.   
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\textwidth]{figures/sec-2-length-sim.png}
+    \includegraphics[width=0.85\textwidth]{figures/sec-2-length-example.png}
+    \caption[Equivalence between degradation curves and survival functions]{Equivalence between degradation curves and survival functions on degraded read lengths.}
+    \label{fig:survival}
+\end{figure}
+
+Based on this observation, we develop an approach for estimating degradation based on read length distributions:
+\begin{enumerate}
+    \item Bin lone isoforms by their length and sample a fixed number of isoforms from each bin. We do so to avoid capturing the isoform length distribution in the degraded read length distribution.  
+    \item Extract degraded reads based on the isoforms sampled in step 1. We define degraded reads as those whose lengths are not within the annotated full length by some threshold (in practice, we use 50 bp). 
+    \item Compute the empirical cumulative distribution function $F$ on the read lengths obtained in step 2. From here, the degradation curve can be easily computed with $1-F$. 
+\end{enumerate}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{figures/sec-2-length-sim.png}
     \caption[Degradation curves on simulated datasets based on read length distribution]{Degradation curves on simulated datasets based on read length distribution. For degradation rate of 0.2, coverage drops to 0 at 5 kb (dark red), while for degradation rate of 0.4, coverage drops to 0 at 2.5 kb (light red). The degradation rates are relatively robust to bin size.}
     \label{fig:length-sim}
 \end{figure}
 
-\begin{table}[htbp]
+\begin{table}[H]
   \centering
     \begin{tabular}{|p{3.5cm}|p{1.5cm}|p{1.5cm}|p{1.5cm}|}
 \cline{2-4}    \multicolumn{1}{r|}{} & \multicolumn{3}{c|}{Bin size} \bigstrut\\
     \hline
     Simulated dataset & 100   & 200   & 500 \bigstrut\\
     \hline
-    d = 0.1 & 0.118 & 0.113 & 0.107 \bigstrut\\
+    d = 0.1 & 0.118 & 0.113 & \textbf{0.107} \bigstrut\\
     \hline
-    d = 0.2 & 0.207 & 0.206 & 0.204 \bigstrut\\
+    d = 0.2 & 0.207 & 0.206 & \textbf{0.204} \bigstrut\\
     \hline
-    d = 0.4 & 0.408 & 0.409 & 0.408 \bigstrut\\
+    d = 0.4 & \textbf{0.408} & 0.409 & \textbf{0.408} \bigstrut\\
     \hline
-    d = 0.5 & 0.513 & 0.512 & 0.511 \bigstrut\\
+    d = 0.5 & 0.513 & 0.512 & \textbf{0.511} \bigstrut\\
     \hline
     \end{tabular}%
   \caption[Degradation estimates on simulated datasets based on read length distribution]{Degradation estimates on simulated datasets based on read length distribution. The length bin size is varied for 100, 200 and 500 bp, and the average degradation rate is computed.}
+  \label{tab:binsize}%
+\end{table}%
+
+We validate this approach on the same simulated datasets with degradation rate of 0.2 and 0.4 and test the robustness of the length bin size used. The degradation curves qualitatively reflect the expected degradation rate (Fig. \ref{fig:length-sim}) and appear robust to the bin size chosen (Table \ref{tab:binsize}). We note that in the range of bin sizes we tested, a larger bin size yielded estimates closest to the expected degradation rates. Intuitively a smaller bin size captures more variance in the degraded read length distribution, making the estimates noisier.         
+
+Next, 
+
+
+\begin{table}[htbp]
+  \centering
+  \caption{Add caption}
+    \begin{tabular}{|l|l|l|l|l|l|l|}
+\cline{2-7}    \multicolumn{1}{l|}{} & Run1  & Run2  & Run3  & Run4  & Run5  & Run6 \bigstrut\\
+    \hline
+    A549  & 4     & 0     & 0     & 0     & 0     & 0 \bigstrut\\
+    \hline
+    H9    & 4     & 3     & 0     & 0     & 0     & 0 \bigstrut\\
+    \hline
+    Hct116 & 3     & 1     & 2     & 1     & 1     & 1 \bigstrut\\
+    \hline
+    HepG2 & 3     & 1     & 1     & 0     & 0     & 0 \bigstrut\\
+    \hline
+    MCF7  & 2     & 1     & 0     & 0     & 0     & 0 \bigstrut\\
+    \hline
+    K562  & 4     & 0     & 0     & 0     & 0     & 0 \bigstrut\\
+    \hline
+    \end{tabular}%
   \label{tab:addlabel}%
 \end{table}%
 
+\begin{figure}
+    \centering
+    \includegraphics{}
+    \caption{Caption}
+    \label{fig:my_label}
+\end{figure}
