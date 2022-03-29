@@ -86,11 +86,6 @@ Thus, for all $v$, we have
 \end{equation}
 The inequality holds since $g(\bm\theta)>0$. Therefore, $\mathrm{\mathbf{H}}_f$ is negative semi-definite, and thus $f(\bm\theta)$ and $\log p(\bm{R}\mid\bm\theta)$ are concave.  
 
-\chapter{Long-read quantification methods}\label{ap:meth}
-
-In summary, Bambu first maps reads to the reference genome, and performs error correction on alignments with a logistic regression model for predicting the confidence of splice junction sites. Reads spanning the same junctions are summarised into read equivalence classes. After error correction, transcript discovery is performed jointly over all samples. A machine learning model is used to identify valid transcript models for transcript discovery. A score for each transcript is calculated and translated to a novel discovery rate (NDR) threshold for defining valid novel transcript models. Bambu then performs transcript quantification on the read equivalence class level by defining alignment compatibility between each class and each transcript model. We note that bambu employs a degradation bias model that assumes constant expected degradation (calibrated to 0.1-0.2) across transcripts. Based on empirical evaluations, the degradation rate is moderated to allow comparisons between samples.   
-
-
 \chapter{Evaluation metrics}\label{ap:eval-metrics}
 
 In this appendix, we describe evaluation metrics used for model evaluation. Let $\bm\theta$ be the reference and $\hat{\bm\theta}$ be the estimates. 
