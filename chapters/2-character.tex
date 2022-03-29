@@ -61,7 +61,7 @@ Here, we explore whether degradation rates vary between isoforms of different fe
 
 As reviewed in the first chapter, the observed read truncation in ONT datasets may be a result of RNA degradation \textit{in vivo} or due to other extra-cellular factors including library preparation or sequencing artifacts. In this section, we analyse possible degradation in sequencing spike-ins, which are synthetic RNA molecules added to endogenous RNA samples before library preparation \cite{Lexogen20201}. By doing so, we attempt to elucidate the relative contributions of \textit{in vivo} RNA decay and other extraneous factors unrelated to decay.
 
-We analyze SIRVs (Spike-in RNA Variants) present in a subset of SG-NEx samples. Fortunately, a subset of SIRV isoforms are non-overlapping, allowing us to easily apply coverage-based approaches for estimating the degradation. The degradation curves estimated on the SIRVs for six H9 samples show consistent patterns both amongst the samples and with degradation rates  suggesting that extraneous factor such as library preparation or sequencing do play a part in the observed degradation and read truncation.    
+We analyze SIRVs (Spike-in RNA Variants) present in a subset of SG-NEx samples. Fortunately, a subset of SIRV isoforms are non-overlapping, allowing us to easily apply coverage-based approaches for estimating the degradation. The degradation curves estimated on the SIRVs for six H9 samples show consistent patterns amongst themselves (dotted lines, Fig. \ref{fig:cov-spike}), suggesting a constant extraneous factor such as library preparation or sequencing that acts on degrading SIRV reads. 
 
 \begin{figure}[H]
     \centering
@@ -70,6 +70,7 @@ We analyze SIRVs (Spike-in RNA Variants) present in a subset of SG-NEx samples. 
     \label{fig:cov-spike}
 \end{figure}
 
+However, when compared to degradation curves estimated on all genes from within the same sample (solid lines, Fig. \ref{fig:cov-spike}), the SIRVs show lower rates of degradation compared to those of endogenous RNAs. This might suggest that the degradation on endogenous RNAs is a combination of RNA decay \textit{in vivo} and extraneous factors such as libary preparation or sequencing artifacts.  
 
 \section{Read length-based degradation estimation}\label{sec:rld}
 
