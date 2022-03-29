@@ -15,7 +15,7 @@ We compare two variations of our model based on the read length-isoform agreemen
 
 \section{Methods for benchmarking}
 
-We benchmark our model against three existing methods for transcript quantification from long-read RNA-seq. For brevity, detailed descriptions of these methods are omitted here but included in Appendix \ref{ap:meth}.
+We benchmark our model against three existing methods for transcript quantification from long-read RNA-seq. 
 
 \paragraph{Bambu} Bambu (manuscript under review) \cite{Bambu2022} is a method for reference guided transcript discovery and quantification for long read RNA-seq data. Crucially, Bambu is one of the few existing long-read quantification methods that models degradation bias. For benchmarking, we ran Bambu (v.2.0.6) without transcript discovery. For transcript quantification, we ran Bambu with bias correction (default) and without bias correction (\texttt{degradationBias=FALSE}). We used the defaults for all other parameters.
 
