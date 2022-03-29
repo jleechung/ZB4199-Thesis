@@ -125,14 +125,7 @@ Based on this observation, we develop an approach for estimating degradation bas
 
 We validate this approach on the same simulated datasets with degradation rate of 0.2 and 0.4 and test the robustness of the length bin size used. The degradation curves qualitatively reflect the expected degradation rate (Fig. \ref{fig:length-sim}) and appear robust to the bin size chosen (Table \ref{tab:binsize}). We note that in the range of bin sizes we tested, a larger bin size yielded estimates closest to the expected degradation rates. Intuitively a smaller bin size captures more variance in the degraded read length distribution, making the estimates noisier.         
 
-With this approach in hand, we estimated degradation rates for 32 direct RNA-seq samples spanning six cell lines and six sequencing runs for multiple bin sizes. 
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=\textwidth]{figures/sec-2-length-sgnex.png}
-    \caption[Degradation estimates for real datasets based on read length distribution]{Degradation estimates for real datasets based on read length distribution. \textbf{a.} Samples grouped by cell line. \textbf{b.} Samples grouped by sequencing run.}
-    \label{fig:my_label}
-\end{figure}
+With this validation in hand, we estimated degradation rates for 32 direct RNA-seq samples spanning six cell lines and six sequencing runs for multiple bin sizes (Table \ref{tab:six-six}). 
 
 \begin{table}[H]
   \centering
@@ -153,6 +146,15 @@ With this approach in hand, we estimated degradation rates for 32 direct RNA-seq
     K562  & 4     & 0     & 0     & 0     & 0     & 0 \bigstrut\\
     \hline
     \end{tabular}%
-  \label{tab:addlabel}%
+  \label{tab:six-six}%
 \end{table}%
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{figures/sec-2-length-sgnex.png}
+    \caption[Degradation estimates for real datasets based on read length distribution]{Degradation estimates for real datasets based on read length distribution. \textbf{a.} Samples grouped by cell line. \textbf{b.} Samples grouped by sequencing run.}
+    \label{fig:length-sgnex}
+\end{figure}
+
 
