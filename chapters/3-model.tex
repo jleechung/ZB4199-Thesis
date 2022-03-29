@@ -65,7 +65,7 @@ Combining alignment compatibility and the read length-isoform agreement model, w
 \end{equation}
 We make some remarks on equation \ref{eq:read-iso-agreement}. First, $a_{ij}$ measures how well read $i$ aligns to isoform $j$ compared to its best alignment. Note that if we do not observe an alignment between read $i$ and isoform $j$, then $\mathrm{AS}_{ij}=0$, $a_{ij}=0$, and thus $p(r_i\mid z_{ij}=1)=0$ as expected. Second, the read length-isoform agreement model captures the expected read length distribution for isoform $j$ given its degradation rate and length. In the absence of degradation, we expect that the lengths of all reads originating from isoform $j$ will be equal to the length len$(j)$ of isoform $j$, i.e., $p(\ell_i=\mathrm{len}(j)\mid d_j, z_{ij}=1)=1$ and $0$ otherwise.   
 
-\subsection{Read length-isoform agreement}\label{sec:read-length-isoform-agreement}
+\subsection{Exact read length-isoform agreement}\label{sec:read-length-isoform-agreement}
 
 We specify the read length-isoform agreement model with the assumption that the expected degradation is constant, i.e., $\mathbb{E}[d]=c\in(0,1)$. For example, if the degradation rate for all transcripts is $d_j=0.2$, then for every kb from the 3' end, we expect 20\% less reads. A constant expected degradation rate  implies that the maximum possible sequenced read length $\ell_\mathrm{max}$ is bounded, and is given by:
 \begin{equation}
@@ -81,6 +81,8 @@ Let the length of isoform $j$  in kb be len$(j)$. For constant expected degradat
         1-d_j\cdot\mathrm{len}(j) & \textrm{if } \ell_i=\mathrm{len}(j)
     \end{cases}
 \end{equation}
+
+\subsection{Empirical read length-isoform agreement}\label{sec:rlia-emp}
 
 \section{Parameter inference}
 

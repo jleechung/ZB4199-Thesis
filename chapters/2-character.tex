@@ -13,23 +13,36 @@ Let $\mathrm{ncov}$ be the normalized coverage over an isoform, and $x$ be the d
 \end{equation}
 The degradation rate of an isoform at a base $b$ with distance $x_b$ away from the 3' end is the value of this limit evaluated at $x=x_b$. 
 \end{definition}
-Intuitively, the degradation rate can be interpreted as the gradient of the plot of normalized coverage against distance from the 3' end. To illustrate this, we visualise the normalized coverage plots for a hypothetical isoform of length 2 kb with different degradation rates (Fig. \ref{fig:sec-2-hypo}).  
+Intuitively, the degradation rate can be interpreted as the gradient of the plot of normalized coverage against distance from the 3' end. We will refer to this plot as the \textbf{degradation curve}. To illustrate this, we visualise degradation curves for a hypothetical isoform of length 2 kb with different degradation rates (Fig. \ref{fig:sec-2-hypo}).  
 \begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{figures/sec-2-hypo.png}
     \caption[Normalized coverage plots for a hypothetical isoform]{Normalized coverage plots for a hypothetical isoform of length 2 kb illustrating different degradation rates. \textbf{a.} Degradation rate is 0. \textbf{b.} Degradation rate is constant (0.2). \textbf{c.} Degradation rate is variable.}
     \label{fig:sec-2-hypo}
 \end{figure}
-In Fig. \ref{fig:sec-2-hypo}a, the degradation rate is 0, implying that all reads from the isoform are full-length, with no drop in coverage over the isoform body. Conversely, in Fig. \ref{fig:sec-2-hypo}b, the degradation rate (gradient) is a constant value of 0.2 over the isoform body, implying that for every 1 kb from the 3' end, normalized coverage drops by 0.2. The last plot in Fig. \ref{fig:sec-2-hypo}c shows variable degradation over the isoform body. In particular, the degradation rate is low towards the 3' end and increases with distance from the 3' end.  
+In Fig. \ref{fig:sec-2-hypo}a, the degradation rate or gradient is 0, implying that all reads from the isoform are full-length, with no drop in coverage over the isoform body. Conversely, in Fig. \ref{fig:sec-2-hypo}b, the gradient is a constant value of 0.2 over the isoform body, implying that for every 1 kb from the 3' end, normalized coverage drops by 0.2. The last plot in Fig. \ref{fig:sec-2-hypo}c shows variable gradient over the isoform body. In particular, the gradient is low in magnitude towards the 3' end and increases with distance from the 3' end.  
 
-In the following sections, we describe our approach for estimating the degradation rate and present findings based on ONT long-read RNA-seq data from common cancer cell lines (A549, Hct116, HepG2, MCF7 and K562) and a human embryonic stem cell line (H9) sequenced as part of the SG-NEx project . 
+In the following sections, we first describe an unbiased coverage-based approach for characterising degradation in long-read direct RNA-seq data, and validate this approach with simulated data where the degradation is known. We then examine degradation in real data, characterising degradation by isoform features and in sequencing spike-ins. Finally, we develop a method for efficient read length-based degradation estimation that can be used for obtaining degradation-aware isoform abundance estimates.
 
-\section{Degradation rate estimation}\label{sec:deg-est}
+\section{Coverage-based degradation estimation}\label{sec:deg-est}
 
-We first sought to determine if patterns of degradation were consistent across transcript isoforms for a given direct RNA-seq dataset. To that end, we selected single-isoform, multi-exon genes from GRCh38 reference annotations, and further restricted the set of isoforms to those that do not intersect with any other annotated features in reference annotations. These filters reduce ambiguity in the isoform of origin of the reads we use to estimate bias; such approaches were also adopted in \cite{Roberts2011} and \cite{Love2016} for bias estimation in short-read data. Filtering yielded approximately 5,000 isoforms for bias estimation.   
+We first sought to determine if patterns of degradation were consistent across transcript isoforms for a given direct RNA-seq dataset. To that end, we selected single-isoform, multi-exon genes from GRCh38 reference annotations, and further restricted the set of isoforms to those that do not intersect with any other annotated features in reference annotations. These filters reduce ambiguity in the isoform of origin of the reads we use to estimate bias; such approaches were also adopted in \cite{Roberts2011} and \cite{Love2016} for bias estimation in short-read data. Filtering yielded approximately 5,000 isoforms for bias estimation. Next, we obtained the coverage over each isoform using the \texttt{genomecov} module from bedtools (v.2.27.1) and computed the corresponding degradation curve. 
 
-\subsection{Degradation by transcript features}
+To validate this approach, we simulated two datasets where the expected degradation rates for all isoforms is constant ($\mathbb{E}[d]\in\{0.2,0.4\}$, see Appendix \ref{ap:sim-deg-reads} for more details on degraded read simulation). With this coverage-based approach, the estimated degradation curves from all isoforms exhibit the expected trend. 
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{}
+    \caption[Degradation curves on simulation datasets based on coverage]{Degradation curves on simulation datasets based on coverage. \textbf{a.} Degradation curve for dataset with $\mathbb{E}[d]$ = 0.2. \textbf{a.} Degradation curve for dataset with $\mathbb{E}[d]$ = 0.4.}
+    \label{fig:cov-sim}
+\end{figure}
+
+Next, we 
+
+
+\subsection{Degradation by isoform features}
 
 \subsection{Degradation in spike-ins}
 
+\section{Read length-based degradation estimation}
 

@@ -3,7 +3,7 @@ In this chapter, we evaluate our quantification model and inference algorithms o
 
 \section{Read alignment}
 
-Simulated and real reads were aligned with minimap2 \cite{Minimap2018, Minimap2021}, a popular aligner for long reads. For alignment to the genome, we used the flags \texttt{-ax splice -uf -k14} that take into account splicing and forward strand alignment for ONT direct RNA-seq as recommended by minimap2 developers. For alignment to the transcriptome, we use default flags \texttt{-ax map-ont -N10} for mapping ONT reads, keeping 10 secondary alignments due to similarities in transcript isoform sequences. We used the same genomic or transcriptomic alignments across the tools, depending on which is required as input.   
+Simulated and real reads were aligned with minimap2 (v.2.17-r941) \cite{Minimap2018, Minimap2021}, a popular aligner for long reads. For alignment to the genome, we used the flags \texttt{-ax splice -uf -k14} that take into account splicing and forward strand alignment for ONT direct RNA-seq as recommended by minimap2 developers. For alignment to the transcriptome, we use default flags \texttt{-ax map-ont -N10} for mapping ONT reads, keeping 10 secondary alignments due to similarities in transcript isoform sequences. We used the same genomic or transcriptomic alignments across the tools, depending on which is required as input.   
 
 \section{Model variations}
 
@@ -145,7 +145,7 @@ We measured the end-to-end runtime taken for all methods (Fig. \ref{fig:runtime}
 
 \section{Evaluations on real data}
 
-In this section, we evaluate Deg. EM (emp.), Bambu with bias modeling, and NanoCount on direct RNA-seq data with  from the SG-NEx project. In particular, we examine the performance of these methods on samples containing RNA sequencing spike-ins (Table \ref{tab-sgnex}). A subset of samples contain Spike-In RNA Variants (SIRVs) \cite{Lexogen20201} while another contain RNA sequins \cite{Sequins} (See Appendix \ref{ap-spike} for more details). The expression of these spike-ins are supposedly known and can be used as a reference.   
+In this section, we evaluate Deg. EM (emp.), Bambu with bias modeling, and NanoCount on direct RNA-seq data from the SG-NEx project. In particular, we examine the performance of these methods on samples containing RNA sequencing spike-ins (Table \ref{tab-sgnex}). A subset of samples contains Spike-In RNA Variants (SIRVs) \cite{Lexogen20201} while another contains RNA sequins \cite{Sequins} (See Appendix \ref{ap-spike} for more details). The expression of these spike-ins are supposedly known and can be used as a reference.   
 
 \begin{table}[htbp]
   \centering
@@ -180,7 +180,7 @@ In this section, we evaluate Deg. EM (emp.), Bambu with bias modeling, and NanoC
 
 \subsection{Empirical results on spike-ins}
 
-First, we examine results on the RNA sequin spike-ins (n=41 transcripts). For each of the four samples, we computed the SCC, NRMSE and MRD on the abundance estimates returned by each method (Fig. \ref{fig:sequin-metrics}). Deg. EM (emp.) achieved the highest median SCC, while NanoCount perform reasonably well with a median SCC $>$ 0.7. Bambu's performance was weighed down by an outlier (Fig. \ref{fig:sequin-metrics}a). NRMSE and MRD metrics show similar trends, with Deg. EM (emp.) achieving the lowest median NRMSE and MRD (Fig. \ref{fig:sequin-metrics}b,c).
+First, we examine results on the RNA sequin spike-ins (n = 41 transcripts). For each of the four samples, we computed the SCC, NRMSE and MRD on the abundance estimates returned by each method (Fig. \ref{fig:sequin-metrics}). Deg. EM (emp.) achieved the highest median SCC, while NanoCount perform reasonably well with a median SCC $>$ 0.7. Bambu's performance was weighed down by an outlier (Fig. \ref{fig:sequin-metrics}a). NRMSE and MRD metrics show similar trends, with Deg. EM (emp.) achieving the lowest median NRMSE and MRD (Fig. \ref{fig:sequin-metrics}b,c).
 
 We visualize the estimates and supposed concentrations of the sequins for the sample K562 replicate 5 run 1 (Fig \ref{fig:sequin-scatter}) which obtained close to median performance across the metrics for all methods. Qualitatively, Deg. EM and NanoCount achieve similar results, though in the latter, there is a slight overestimation of counts. Bambu underestimates the counts for a subset of lowly expressed sequins that results in a decrease in performance over the three metrics.  
 
@@ -214,7 +214,7 @@ We visualize the estimates and supposed concentrations of the sequins for the sa
 
 In addition to the sequin spike-in samples, we examined the SIRV spike-ins in six H9 direct RNA-seq samples (Table \ref{tab-sgnex}). For all methods and across the samples, the abundance estimates for SIRVs did not reflect the supposed concentration (Fig. \ref{fig:lexogen-scatter}). However, the estimates obtained across the methods correlated well with each other (median of median pairwise SCC = 0.806, p-value $<$ 2.2e-16). This might suggest that the supposed SIRV concentrations do not accurately represent what is actually present in the samples, diminishing their utility as a control for RNA-seq in this context. Nevertheless, we computed the SCC, NRMSE and MRD across the six samples for each method (Fig. \ref{fig:lexogen-metrics}). The performance on all metrics is similar across the methods, but is unlikely to be informative due to reasons discussed above.   
 
-\section{Reproducibilty measures}
+\subsection{Reproducibilty measures}
 
 Besides quantifying accuracy, we can also measure the reproducibility of abundance estimates for each method. We do so with the reproducibility metric (RM), which is a measure of the standard deviation of abundance estimates across replicates (Appendix \ref{ap:eval-metrics}). We use H9 samples in the SG-NEx data that were sequenced in two runs, with three replicates in each run (Table \ref{tab-sgnex}). Within each run, we calculated the RM across the replicates for each isoform called as expressed in at least one method and obtained the median reproducibiltiy metric (MRM) (Table \ref{tab-mrm}). For all methods, MRM in the first run was higher than that in the second by virtue of the number of isoforms the MRM was calculated over (Run 1 = 30,720, Run 2 = 21,536). In both runs, Deg. EM (emp.) achieved the lowest MRM suggesting higher reproducibility compared to NanoCount or Bambu. 
 
@@ -235,11 +235,11 @@ NanoCount & 0.943 & 0.816 \bigstrut\\
 \label{tab-mrm}%
 \end{table}%
 
-The incorporation of bias modeling in Deg. EM improves reproducibility. We can infer this by comparing the MRMs obtained by Deg. EM and NanoCount, which Deg. EM can most closely be compared to. By modeling the bias, read-to-isoform assignment is improved across replicates with potentially different degradation rates, thus stabilising variance in abundance estimates across the replicates.       
+The incorporation of bias modeling in Deg. EM improves reproducibility. We can infer this by comparing the MRMs obtained by Deg. EM and NanoCount since the latter is most comparable to our Deg. EM. By modeling the bias, read-to-isoform assignment is improved across replicates with potentially different degradation rates, thus stabilising variance in abundance estimates across the replicates.       
 
-\section{Comparisons of estimated degradation}
+\subsection{Comparisons of estimated degradation}
 
-Lastly, we compare the estimated average degradation rates obtained by Bambu and Deg. EM (emp.) across samples from four cell lines. We note that we do not expect the absolute values of the degradation rates to be similar; rather, we expect the estimates to be linearly related. Indeed, by fitting a regressing the estimates from Bambu against Deg. EM (Fig. \ref{fig:real-deg-rate}) in a linear model, we find that the linear relationship is significant (p-value = 2.63e-05, adjusted $R^2$ = 0.890). Even though the sample size here is small, the concordance between the degradation rates estimated by Bambu and Deg. EM (emp.) on real data provides a useful sanity check for our model.
+Lastly, we compare the estimated average degradation rates obtained by Bambu and Deg. EM (emp.) across samples from four cell lines. We note that we do not expect the absolute values of the degradation rates to be similar; rather, we expect the estimates to be linearly related. Indeed, by regressing the degradation rate estimates from Bambu against Deg. EM (Fig. \ref{fig:real-deg-rate}) in a linear model, we find that the linear relationship is significant (p-value = 2.63e-05, adjusted $R^2$ = 0.890). Even though the sample size here is small, the concordance between the degradation rates estimated by Bambu and Deg. EM (emp.) on real data provides a useful sanity check for our model.
 
 \begin{figure}
     \centering
