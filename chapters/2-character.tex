@@ -74,10 +74,26 @@ However, when contrasted against degradation curves estimated on all isoforms fr
 
 \section{Read length-based degradation estimation}\label{sec:rld}
 
+From the coverage-based estimation of degradation in the preceding sections, we gleaned that patterns of degradation tend to be consistent across transcript isoforms for a given sample across annotated length and median coverage. This holds at least for protein coding isoforms. Based on these observations, we develop a more efficient approach for estimating the degradation rate via the observed read length distributions.
+
+Recall that our objective is to estimate the degradation curve, from which we can easily derive the degradation rate. The key observation for developing a read length-based degradation estimation approach is to note that the degradation curve is essentially the survival function on degraded read lengths. Let $X$ be a random variable denoting the length of a read. Then, its survival function is given by 
+\begin{equation}
+    S(x)=P(X>x)=1-F(x)
+\end{equation}
+where $F$ is the cumulative distribution function of $X$. Intuitively, the survival function gives the proportion of reads that survive after or exceed a given length $x$. We make this clear with an illustration. 
+
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{figures/sec-2-length-sim.png}
+    \caption[Degradation curves on simulated datasets based on read length distribution]{Degradation curves on simulated datasets based on read length distribution. For degradation rate of 0.2, coverage drops to 0 at 5 kb (dark red), while for degradation rate of 0.4, coverage drops to 0 at 2.5 kb (light red). The degradation rates are relatively robust to bin size.}
+    \label{fig:length-sim}
+\end{figure}
 
 \begin{table}[htbp]
   \centering
-    \begin{tabular}{|l|c|c|c|}
+    \begin{tabular}{|p{3.5cm}|p{1.5cm}|p{1.5cm}|p{1.5cm}|}
 \cline{2-4}    \multicolumn{1}{r|}{} & \multicolumn{3}{c|}{Bin size} \bigstrut\\
     \hline
     Simulated dataset & 100   & 200   & 500 \bigstrut\\
@@ -91,6 +107,7 @@ However, when contrasted against degradation curves estimated on all isoforms fr
     d = 0.5 & 0.513 & 0.512 & 0.511 \bigstrut\\
     \hline
     \end{tabular}%
-  \caption{Add caption}
+  \caption[Degradation estimates on simulated datasets based on read length distribution]{Degradation estimates on simulated datasets based on read length distribution. The length bin size is varied for 100, 200 and 500 bp, and the average degradation rate is computed.}
   \label{tab:addlabel}%
 \end{table}%
+
