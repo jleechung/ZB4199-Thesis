@@ -48,7 +48,7 @@ We applied this approach in real direct RNA-seq data from the SG-NEx project. Wi
 
 \subsection{Degradation by isoform features}
 
-Here, we explore whether degradation rates vary between isoforms of different features. In particular, We striate isoforms by their annotated length , observed median coverage (Fig. \ref{fig:cov-feature}b) and biotype (Fig. \ref{fig:cov-feature}c). On a representative sample from the MCF7 cell line, estimated degradation rates do not appear to vary significantly between isoforms of different annotated length or median coverage (Fig. \ref{fig:cov-feature}a,b). However, the converse is true for different transcript biotypes. In particular, we observe higher degradation rates for processed pseudogenes (n = 7) and long non-coding RNAs (n = 3) as compared to protein coding genes (n = 42, Fig. \ref{fig:cov-feature}c). While the sample size here is small, this result corroborates findings in \cite{Clark2012} and \cite{Kaiwan2021}, which identified larger variance in the stabilities of lncRNAs.   
+Here, we explore whether degradation rates vary between isoforms of different features. In particular, we striate isoforms by their annotated length (Fig. \ref{fig:cov-feature}a), observed median coverage (Fig. \ref{fig:cov-feature}b) and biotype (Fig. \ref{fig:cov-feature}c). On a representative sample from the MCF7 cell line, estimated degradation rates do not appear to vary significantly between isoforms of different annotated length or median coverage (Fig. \ref{fig:cov-feature}a,b). However, the converse is true for different transcript biotypes. In particular, we observe higher degradation rates for processed pseudogenes (n = 7) and long non-coding RNAs (n = 3) as compared to protein coding genes (n = 42, Fig. \ref{fig:cov-feature}c). While the sample size here is small, this result corroborates findings in \cite{Clark2012} and \cite{Kaiwan2021}, which identified larger variance in the stabilities of lncRNAs.   
 
 \begin{figure}[H]
     \centering
@@ -123,12 +123,19 @@ Based on this observation, we develop an approach for estimating degradation bas
   \label{tab:binsize}%
 \end{table}%
 
-We validate this approach on the same simulated datasets with degradation rate of 0.2 and 0.4 and test the robustness of the length bin size used. The degradation curves qualitatively reflect the expected degradation rate (Fig. \ref{fig:length-sim}) and appear robust to the bin size chosen (Table \ref{tab:binsize}). We note that in the range of bin sizes we tested, a larger bin size yielded estimates closest to the expected degradation rates. Intuitively, a smaller bin size captures more variance in the degraded read length distribution, making the estimates noisier.         
+We validate this approach on the same simulated datasets with degradation rates of 0.2 and 0.4 and test the robustness of the length bin size used. The degradation curves qualitatively reflect the expected degradation rate (Fig. \ref{fig:length-sim}) and appear robust to the bin size chosen (Table \ref{tab:binsize}). We note that in the range of bin sizes we tested, a larger bin size yielded estimates closest to the expected degradation rates. Intuitively, a smaller bin size captures more variance in the degraded read length distribution, making the estimates noisier.         
 
-With this validation in hand, we estimated the average degradation rates for 32 direct RNA-seq samples spanning six cell lines and six sequencing runs for multiple bin sizes (Table \ref{tab:six-six}). In general, degradation rates within a cell line varied across the samples (Fig. \ref{fig:length-sgnex}a), presumably due to variations in sequencing runs (Fig. \ref{fig:length-sgnex}b). Note that    
+With this validation in hand, we estimated the degradation curves for 32 direct RNA-seq samples spanning six cell lines and six sequencing runs (Table \ref{tab:six-six}) for multiple bin sizes. We observed similar trends in the degradation across all samples, with low rates of degradation toward the 3' end, followed by a relatively linear segment and tapering of towards the 5' end asymptotically. Within each cell line, the degradation curves were mostly consistent, with the exception of a few outlier samples for H9 and HepG2 (Fig. \ref{fig:length-sgnex-curves}).  
+
+Next, we computed a regression line based on the degradation curve and calculated its gradient as a proxy for the \textit{average degradation rate}. Here, the average degradation rate allows for relative comparisons between samples and acts as a summary statistic. In practice, we do not use these point estimates to correct for degradation bias; rather, the entire degradation curve is used to do so (Section \ref{sec:rlia-emp}).   
+
+We report the average degradation across the samples for multiple bin sizes, and group them by cell line (Fig. \ref{fig:length-sgnex}a) and sequencing run (Fig. \ref{fig:length-sgnex}b). We first observe that the estimated degradation rates are relatively robust to bin size. Next, for certain cell lines, there is high variance in estimates, presumably due to the samples being sequenced in multiple different runs (e.g. Hct116). These observations were paralleled on the level of sequencing runs. It is likely that the combination of sequencing runs and cell lines influence the observed degradation, although fitting a linear model for the average degradation rate do not produce significant results.
+
+Lastly, we computed correlations between the estimated degradation rates with raw sequencing metrics (Fig. \ref{fig:pwcor}). We observed moderate negative correlations between degradation rate and raw sequenced lengths, and weak correlation with sequencing quality. Interestingly, the strongest correlation was achieved with read length standard deviaion (SCC = -0.90), possibly due to high degradation rates resulting in a lower dynamic range of read lengths. 
 
 \begin{table}[H]
   \centering
+  \resizebox{0.6\columnwidth}{!}{%
     \begin{tabular}{|p{1.5cm}|p{1.5cm}|p{1.5cm}|p{1.5cm}|p{1.5cm}|p{1.5cm}|p{1.5cm}|}
 \cline{2-7}    \multicolumn{1}{l|}{} & Run1  & Run2  & Run3  & Run4  & Run5  & Run6 \bigstrut\\
     \hline
@@ -145,32 +152,30 @@ With this validation in hand, we estimated the average degradation rates for 32 
     K562  & 4     & 0     & 0     & 0     & 0     & 0 \bigstrut\\
     \hline
     \end{tabular}%
+    }
       \caption[Description of SG-NEx samples across cell lines and sequencing runs]{Description of SG-NEx samples across cell lines and sequencing runs}
   \label{tab:six-six}%
 \end{table}%
 
-\begin{figure}
+\begin{figure}[p]
     \centering
-    \includegraphics[width=\textwidth]{figures/pwcor.pdf}
-    \caption{Caption}
-    \label{fig:my_label}
+    \includegraphics[width=\textwidth]{figures/sec-2-length-sgnex-curves.png}
+    \caption[Degradation curves for real datasets based on read length distribution]{Degradation curves for real datasets based on read length distribution for sequencing run 1 with bin size 500. The top panel shows all samples combined. The bottom panel splits the samples by cell lines.}
+    \label{fig:length-sgnex-curves}
 \end{figure}
 
-Examining the degradation curves for all samples within sequencing run 1, we observe that 
-
-
-
-\begin{figure}[H]
+\begin{figure}[p]
     \centering
     \includegraphics[width=\textwidth]{figures/sec-2-length-sgnex.png}
     \caption[Degradation estimates for real datasets based on read length distribution]{Degradation estimates for real datasets based on read length distribution. \textbf{a.} Samples grouped by cell line. \textbf{b.} Samples grouped by sequencing run.}
     \label{fig:length-sgnex}
 \end{figure}
 
-\begin{figure}[H]
+\begin{figure}[p]
     \centering
-    \includegraphics[width=\textwidth]{figures/sec-2-length-sgnex-curves.png}
-    \caption[Degradation curves for real datasets based on read length distribution]{Degradation curves for real datasets based on read length distribution for sequencing run 1. The top panel shows all samples combined. The bottom panel splits the samples by cell lines.}
-    \label{fig:length-sgnex}
+    \includegraphics[width=\textwidth]{figures/pwcor.pdf}
+    \caption[Correlation of degradation estimates with other sequencing metrics]{Correlation of degradation estimates with other sequencing metrics. From left to right: degradation rate, median length, mean length, read length standard deviation, N50, mean quality and median quality.}
+    \label{fig:pwcor}
 \end{figure}
+
 
