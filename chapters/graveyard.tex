@@ -189,3 +189,5 @@ We recognise this as a Dirichlet distribution with parameters $\alpha_{0 j}+\sum
       \caption[Description of SG-NEx samples across cell lines and sequencing runs]{Description of SG-NEx samples across cell lines and sequencing runs}
   \label{tab:six-six}%
 \end{table}%
+
+We make two assumptions on the degradation rate $d$. First, we assume that the degradation of a transcript does not depend on the expression level or biotype of the isoform it originated from. Second, we assume that the expected degradation rate is constant, i.e, $\mathbb{E}[d]=c\in(0,1)$. Even though the second assumption is relatively strong (see Section \ref{sec:read-length-isoform-agreement}), we make this simplifying assumption to show that our model works on simulated data, and relax this assumption to allow our model to generalize to real datasets. 

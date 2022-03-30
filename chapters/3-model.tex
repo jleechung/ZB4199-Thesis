@@ -3,14 +3,11 @@ In this chapter, we specify a generative model for transcript quantification fro
 
 \section{Model assumptions}\label{sec:model-assumptions}
 
-The input to our model consists of reads obtained from sequencing transcripts with the \gls{ont} direct \gls{rnaseq} protocol aligned to the reference transcriptome. We assume there is a bijective mapping between reads and transcript, i.e., each read originates from only one transcript, and each transcript generates only one read. Reads are generated independently and identically distributed (iid) from a distribution to be specified, and the 3' end of each read aligns within some region close to the 3' end of the isoform it originated from.
-
-We make two assumptions on the degradation rate $d$. First, we assume that the degradation of a transcript does not depend on the expression level or biotype of the isoform it originated from. Second, we assume that the expected degradation rate is constant, i.e, $\mathbb{E}[d]=c\in(0,1)$. Even though the second assumption is relatively strong (see Section \ref{sec:read-length-isoform-agreement}), we make this simplifying assumption to show that our model works on simulated data, and relax this assumption to allow our model to generalize to real datasets. 
+The input to our model consists of reads obtained from sequencing transcripts with the \gls{ont} direct \gls{rnaseq} protocol aligned to the reference transcriptome. We assume there is a bijective mapping between reads and transcript, i.e., each read originates from only one transcript, and each transcript generates only one read. Reads are generated independently and identically distributed (iid) from a distribution to be specified, and the 3' end of each read aligns within some region close to the 3' end of the isoform it originated from. Finally, we assume that a global expected degradation rate per base exists, i.e., the expected degradation curves of all isoforms are the same.  
 
 \section{Generative model}\label{sec:generative-model}
 
 Our model aims to capture the generative process of the observed degraded reads from their isoforms of origin. Here, we formalize our model and derive the complete data log likelihood for maximum likelihood estimation of the model parameters. 
-
 \subsection{Notation and formulation}\label{sec:notation-and-formulation}
 
 Let $N$ be the number of observed reads and $M$ be the number of isoforms the reads were generated from. 
@@ -67,22 +64,46 @@ We make some remarks on equation \ref{eq:read-iso-agreement}. First, $a_{ij}$ me
 
 \subsection{Exact read length-isoform agreement}\label{sec:read-length-isoform-agreement}
 
-We specify the read length-isoform agreement model with the assumption that the expected degradation is constant, i.e., $\mathbb{E}[d]=c\in(0,1)$. For example, if the degradation rate for all transcripts is $d_j=0.2$, then for every kb from the 3' end, we expect 20\% less reads. A constant expected degradation rate  implies that the maximum possible sequenced read length $\ell_\mathrm{max}$ is bounded, and is given by:
+We specify the read length-isoform agreement model with the assumption that the expected degradation is constant, i.e., $\mathbb{E}[d]=c\in(0,1)$. For example, if the degradation rate for all transcripts is $d_j=0.2$, then for every kb from the 3' end, we expect 20\% less reads. A constant expected degradation rate implies that the maximum possible sequenced read length $\ell_\mathrm{max}$ is bounded, and is given by:
 \begin{equation}
     -c\cdot \ell_\mathrm{max} + 1 = 0 \implies \ell_\mathrm{max} = 1/c
 \end{equation}
 For instance, a $\mathbb{E}[d]=0.2$ implies that $\ell_\mathrm{max}=5$ kb. The assumption made here is unrealistic, given that \gls{ont} devices are capable of sequencing reads upwards of $10$ kb in length. Nevertheless, this simplifying assumption enables us to test a simpler read length-isoform agreement model on simulated datasets. We develop a more flexible model allowing for variable degradation in the following section.  
 
 Let the length of isoform $j$  in kb be len$(j)$. For constant expected degradation, we have
-\begin{equation}
+\begin{equation}\label{eq:exact-rlia}
     p(\ell_i\mid d_j, z_{ij}=1) = 
     \begin{cases}
-        \dfrac{d_j}{\mathrm{len}(j)\cdot10^3} & \textrm{if } \ell_i<\min(\mathrm{len}(j), \ell_\mathrm{max})\\
+        \dfrac{d_j}{10^3} & \textrm{if } \ell_i<\min(\mathrm{len}(j), \ell_\mathrm{max})\\
         1-d_j\cdot\mathrm{len}(j) & \textrm{if } \ell_i=\mathrm{len}(j)
     \end{cases}
 \end{equation}
 
+We explain Eq. \ref{eq:exact-rlia} beginning with the simpler case, where the read length $\ell_i$ is equal to the length of the isoform $\mathrm{len}(j)$. This implies that the read is a full-length read; the probability of observing this read is thus 1 $-$ the probability of observing a degraded read, which is $d_j\cdot\mathrm{len}(j)$ (see Section \ref{sec:rld}). When expected degradation is constant, the degraded read lengths are uniformly distributed (discretely). For an isoform of length $\mathrm{len}(j)$ in kb, there are $\mathrm{len}(j)\cdot10^3$ possible degraded read lengths. We thus divide the probability of observing a degraded read by this quantity, which yields $d_j/10^3$.  
+
 \subsection{Empirical read length-isoform agreement}\label{sec:rlia-emp}
+
+To model real data, we develop an empirical read length-isoform agreement model based on the degradation curves derived from Section \ref{sec:rld}. Let $X$ be a random variable denoting the length of degraded reads, and $F(x)=P(X\leq x)$ be the corresponding empirical cumulative distribution function on $X$. Then, we have
+
+\begin{equation}\label{eq:exact-rlia}
+    p(\ell_i\mid d_j, z_{ij}=1) = 
+    \begin{cases}
+        \dfrac{F(\ell_i+\delta) - F(\ell_i-\delta)}{F(\mathrm{len}(j))} & \textrm{if } \ell_i<\min(\mathrm{len}(j), \ell_\mathrm{max})\\
+        1-F(\mathrm{len}(j)) & \textrm{if } \ell_i=\mathrm{len}(j)
+    \end{cases}
+\end{equation}
+
+Recall again from section \ref{sec:rld} that the probability of observing a read of length $\ell_i$ or greater is $1-F(\ell_i)$. Thus, for a transcript of length $\mathrm{len}(j)$, the probability of observing a full length read is simply $1-F(\mathrm{len}(j))$. The corresponding probability of observing degraded reads is $F(\mathrm{len}(j))$. To compute the probability of observing a point given a continuous function $F$, we take limtis of $\delta\rightarrow0$ of
+\begin{equation}
+\begin{split}
+    P(X=\ell_i) &=P(X<\ell_i+\delta)-P(X<\ell_i-\delta)\\
+    &=F(\ell_i+\delta)-F(\ell_i-\delta)
+\end{split}
+\end{equation}
+We normalize this probability by the probability of observing degraded reads, arriving at the quantity
+\begin{equation}
+    \dfrac{F(\ell_i+\delta)-F(\ell_i-\delta)}{F(\mathrm{len}(j))}
+\end{equation}
 
 \section{Parameter inference}
 
