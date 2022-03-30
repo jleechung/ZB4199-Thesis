@@ -50,7 +50,7 @@ The conditional distribution of observing the read $r_i$ given $z_i$ is
 \end{equation}
 We now model the probability that read $i$ originated from isoform $j$, i.e., $p(r_i\mid z_{ij}=1)$. This probability is proportional to:
 \begin{itemize}
-    \item The alignment compatibility $a_{ij}\in(0,1)$ between read $i$ and isoform $j$, which measures the alignment score (AS) of read $i$ against isoform $j$ scaled by the best alignment score of read $i$ against all isoforms:
+    \item The alignment compatibility $a_{ij}\in(0,1)$ between read $i$ and isoform $j$, which measures the alignment score (AS, as defined in SAM specification \cite{SAM}) of read $i$ against isoform $j$ scaled by the best alignment score of read $i$ against all isoforms:
     \begin{equation}
         a_{ij} = \frac{{\textrm{AS}}_{ij}}{\max_{j'} {\textrm{AS}}_{ij'}}
     \end{equation}
@@ -83,9 +83,9 @@ We explain Eq. \ref{eq:exact-rlia} beginning with the simpler case, where the re
 
 \subsection{Empirical read length-isoform agreement}\label{sec:rlia-emp}
 
-To model real data, we develop an empirical read length-isoform agreement model based on the degradation curves derived from Section \ref{sec:rld}. Let $X$ be a random variable denoting the length of degraded reads, and $F(x)=P(X\leq x)$ be the corresponding empirical cumulative distribution function on $X$. Then, we have
+To model real data, we develop an empirical read length-isoform agreement model based on the degradation curves derived from Section \ref{sec:rld}. This model has no constraints on the degradation rate. Let $X$ be a random variable denoting the length of degraded reads, and $F(x)=P(X\leq x)$ be the corresponding empirical cumulative distribution function on $X$. Then, we have
 
-\begin{equation}\label{eq:exact-rlia}
+\begin{equation}\label{eq:emp-rlia}
     p(\ell_i\mid d_j, z_{ij}=1) = 
     \begin{cases}
         \dfrac{F(\ell_i+\delta) - F(\ell_i-\delta)}{F(\mathrm{len}(j))} & \textrm{if } \ell_i<\min(\mathrm{len}(j), \ell_\mathrm{max})\\
@@ -93,14 +93,14 @@ To model real data, we develop an empirical read length-isoform agreement model 
     \end{cases}
 \end{equation}
 
-Recall again from section \ref{sec:rld} that the probability of observing a read of length $\ell_i$ or greater is $1-F(\ell_i)$. Thus, for a transcript of length $\mathrm{len}(j)$, the probability of observing a full length read is simply $1-F(\mathrm{len}(j))$. The corresponding probability of observing degraded reads is $F(\mathrm{len}(j))$. To compute the probability of observing a point given a continuous function $F$, we take limtis of $\delta\rightarrow0$ of
+Recall again from section \ref{sec:rld} that the probability of observing a read of length $\ell_i$ or greater is $S(\ell_i)=1-F(\ell_i)$. Thus, for a transcript of length $\mathrm{len}(j)$, the probability of observing a full length read is simply $1-F(\mathrm{len}(j))$. The corresponding probability of observing degraded reads is $F(\mathrm{len}(j))$. To compute the probability of observing a point given a continuous function $F$, we take the limit of
 \begin{equation}
 \begin{split}
     P(X=\ell_i) &=P(X<\ell_i+\delta)-P(X<\ell_i-\delta)\\
     &=F(\ell_i+\delta)-F(\ell_i-\delta)
 \end{split}
 \end{equation}
-We normalize this probability by the probability of observing degraded reads, arriving at the quantity
+as $\delta\rightarrow0$. We normalize this probability by the probability of observing degraded reads, arriving at the quantity
 \begin{equation}
     \dfrac{F(\ell_i+\delta)-F(\ell_i-\delta)}{F(\mathrm{len}(j))}
 \end{equation}
