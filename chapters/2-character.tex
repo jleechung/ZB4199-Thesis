@@ -93,7 +93,7 @@ Based on this observation, we develop an approach for estimating degradation bas
 \begin{enumerate}
     \item Bin lone isoforms by their length and sample a fixed number of isoforms from each bin. We do so to avoid capturing the isoform length distribution in the degraded read length distribution.  
     \item Extract degraded reads based on the isoforms sampled in step 1. We define degraded reads as those whose lengths are not within the annotated full length by some threshold (in practice, we use 50 bp). 
-    \item Compute the empirical cumulative distribution function $F$ on the read lengths obtained in step 2. From here, the degradation curve can be easily computed with $1-F$. 
+    \item Compute the empirical cumulative distribution function $F$ on the read lengths obtained in step 2. Deriving the degradation curve $1-F$ is trivial. 
 \end{enumerate}
 
 \begin{figure}[H]
