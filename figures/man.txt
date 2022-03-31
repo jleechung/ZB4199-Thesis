@@ -8,7 +8,6 @@ Required arguments:
                         to the transcriptome
 
 Optional arguments:
-  -h, --help            Show this help message and exit
   -o OUTPUT, --output OUTPUT
                         Output prefix. The count and degradation plot files
                         will be written out to <output>_counts.tsv and
@@ -68,3 +67,7 @@ Parameters for inference:
   --return_cred         Return credible interals for parameters (default:
                         False)
   --cred_int CRED_INT   Width of credible interval (default: 0.95)
+
+General help:
+  -h, --help            Show this help message and exit
+  -v, --version         Print version
