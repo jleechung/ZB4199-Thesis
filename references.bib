@@ -817,6 +817,62 @@ journal={The SAM/BAM Format Specification Working Group}
  url={https://www.sequinstandards.com/}, 
  journal={Sequins}} 
 
+@Article{Workman2019,
+author="Workman, Rachael E.
+and Tang, Alison D.
+and Tang, Paul S.
+and Jain, Miten
+and Tyson, John R.
+and Razaghi, Roham
+and Zuzarte, Philip C.
+and Gilpatrick, Timothy
+and Payne, Alexander
+and Quick, Joshua
+and Sadowski, Norah
+and Holmes, Nadine
+and de Jesus, Jaqueline Goes
+and Jones, Karen L.
+and Soulette, Cameron M.
+and Snutch, Terrance P.
+and Loman, Nicholas
+and Paten, Benedict
+and Loose, Matthew
+and Simpson, Jared T.
+and Olsen, Hugh E.
+and Brooks, Angela N.
+and Akeson, Mark
+and Timp, Winston",
+title="Nanopore native RNA sequencing of a human poly(A) transcriptome",
+journal="Nature Methods",
+year="2019",
+month="Dec",
+day="01",
+volume="16",
+number="12",
+pages="1297--1305",
+abstract="High-throughput complementary DNA sequencing technologies have advanced our understanding of transcriptome complexity and regulation. However, these methods lose information contained in biological RNA because the copied reads are often short and modifications are not retained. We address these limitations using a native poly(A) RNA sequencing strategy developed by Oxford Nanopore Technologies. Our study generated 9.9 million aligned sequence reads for the human cell line GM12878, using thirty MinION flow cells at six institutions. These native RNA reads had a median length of 771 bases, and a maximum aligned length of over 21,000 bases. Mitochondrial poly(A) reads provided an internal measure of read-length quality. We combined these long nanopore reads with higher accuracy short-reads and annotated GM12878 promoter regions to identify 33,984 plausible RNA isoforms. We describe strategies for assessing 3{\textasciiacutex} poly(A) tail length, base modifications and transcript haplotypes.",
+issn="1548-7105",
+doi="10.1038/s41592-019-0617-2",
+url="https://doi.org/10.1038/s41592-019-0617-2"
+}
+
+
+@article{HTSGC,
+    author = {Browne, Patrick Denis and Nielsen, Tue KjÃ¦rgaard and Kot, Witold and Aggerholm, Anni and Gilbert, M Thomas P and Puetz, Lara and Rasmussen, Morten and Zervas, Athanasios and Hansen, Lars Hestbjerg},
+    title = "{GC bias affects genomic and metagenomic reconstructions, underrepresenting GC-poor organisms}",
+    journal = {GigaScience},
+    volume = {9},
+    number = {2},
+    year = {2020},
+    month = {02},
+    issn = {2047-217X},
+    doi = {10.1093/gigascience/giaa008},
+    url = {https://doi.org/10.1093/gigascience/giaa008},
+    note = {giaa008},
+    eprint = {https://academic.oup.com/gigascience/article-pdf/9/2/giaa008/32449353/giaa008.pdf},
+}
+
+
 @article{Dempster1977,
  ISSN = {00359246},
  URL = {http://www.jstor.org/stable/2984875},
@@ -831,6 +887,20 @@ journal={The SAM/BAM Format Specification Working Group}
  year = {1977}
 }
 
+ @misc{ONTGC, 
+ title={Quantitative RNA-seq: PCR-cdna, PCR-free direct cdna and direct RNA sequencing}, url={https://nanoporetech.com/resource-centre/quantitative-rna-seq-pcr-cdna-pcr-free-direct-cdna-and-direct-rna-sequencing}, 
+ journal={Oxford Nanopore Technologies}, 
+ year={2020}, 
+ month={06}} 
+ 
+ 
+@misc{Nookaew2017, 
+ title={Transcriptional landscapes analysis through direct RNA sequencing}, 
+ url={ https://nanoporetech.com/resource-centre/transcriptional-landscapes-analysis-through-direct-rna-sequencing}, 
+ journal={Nanopore Community Meeting}, 
+ year={2017}, 
+ month={12}} 
+ 
 @Article{Kallisto,
 author="Bray, Nicolas L.
 and Pimentel, Harold
@@ -938,3 +1008,37 @@ number = {4}
 }
 
 
+@article{NURD,
+    author = {Wu, Zhengpeng and Wang, Xi and Zhang, Xuegong},
+    title = "{Using non-uniform read distribution models to improve isoform expression inference in RNA-Seq}",
+    journal = {Bioinformatics},
+    volume = {27},
+    number = {4},
+    pages = {502-508},
+    year = {2010},
+    month = {12},
+    abstract = "{Motivation: RNA-Seq technology based on next-generation sequencing provides the unprecedented ability of studying transcriptomes at high resolution and accuracy, and the potential of measuring expression of multiple isoforms from the same gene at high precision. Solved by maximum likelihood estimation, isoform expression can be inferred in RNA-Seq using statistical models based on the assumption that sequenced reads are distributed uniformly along transcripts. Modification of the model is needed when considering situations where RNA-Seq data do not follow uniform distribution.Results: We proposed two curves, the global bias curve (GBC) and the local bias curves (LBCs), to describe the non-uniformity of read distributions for all genes in a transcriptome and for each gene, respectively. Incorporating the bias curves into the uniform read distribution (URD) model, we introduced non-URD (N-URD) models to infer isoform expression levels. On a series of systematic simulation studies, the proposed models outperform the original model in recovering major isoforms and the expression ratio of alternative isoforms. We also applied the new model to real RNA-Seq datasets and found that its inferences on expression ratios of alternative isoforms are more reasonable. The experiments indicate that incorporating N-URD information can improve the accuracy in modeling and inferring isoform expression in RNA-Seq.Contact:zhangxg@tsinghua.edu.cnSupplementary information:Supplementary data are available at Bioinformatics online.}",
+    issn = {1367-4803},
+    doi = {10.1093/bioinformatics/btq696},
+    url = {https://doi.org/10.1093/bioinformatics/btq696},
+    eprint = {https://academic.oup.com/bioinformatics/article-pdf/27/4/502/16903047/btq696.pdf},
+}
+
+
+
+
+
+@article{MIXMIX,
+    doi = {10.1371/journal.pcbi.1005515},
+    author = {Tuerk, Andreas AND Wiktorin, Gregor AND Güler, Serhat},
+    journal = {PLOS Computational Biology},
+    publisher = {Public Library of Science},
+    title = {Mixture models reveal multiple positional bias types in RNA-Seq data and lead to accurate transcript concentration estimates},
+    year = {2017},
+    month = {05},
+    volume = {13},
+    url = {https://doi.org/10.1371/journal.pcbi.1005515},
+    pages = {1-25},
+    number = {5},
+
+}

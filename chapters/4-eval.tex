@@ -54,7 +54,7 @@ Deg. EM (emp) & \textbf{0.852} & \textbf{0.416} & 0.016 & 0.778 & 0.448 & 0.285 
 \label{tab:summary-1}
 \end{table}%
 
-Next, we examine the performance on each dataset separately by examining performance on each metric across the datasets for all and subset isoforms (Fig. \ref{fig:4-1-scc-nrmse}). Across all isoforms, the variations perform extremely similarly. In contrast, on the subset isoforms, exact model dominates the empirical model in SCC and MRD. This is expected, as estimations with the empirical cumulative distribution function introduce noise to the estimates. Conversely, the exact model if formulated exactly to work on the data. 
+Next, we examine the performance on each dataset separately for all and subset isoforms (Fig. \ref{fig:4-1-scc-nrmse}). Across all isoforms, the variations perform extremely similarly. In contrast, on the subset isoforms, exact model dominates the empirical model in SCC and MRD. This is expected, as estimations with the empirical cumulative distribution function introduce noise to the estimates. Conversely, the exact model if formulated exactly to work on the data. 
 
 To investigate these differences further, we visualised estimates and fitted a kernel density estimate on the subset isoforms only for datasets with degradation rates 0.2 and 0.5 (Fig. \ref{fig:4-1-scatter}). On a dataset with relatively lower degradation rate (0.2), the exact model performs qualitatively well, with the density of points over the diagonal (Fig. \ref{fig:4-1-scatter}a), while the empirical model underestimates counts for certain isoforms (Fig. \ref{fig:4-1-scatter}b). We see similar results in dataset with higher degradation rates (0.5) where the variance in the estimates returned by the exact model is lower (Fig. \ref{fig:4-1-scatter}c) compared to the empirical model, where the counts are more diffuse about the diagonal (Fig. \ref{fig:4-1-scatter}d). This explains the increase in MRD in the empirical model for larger degradation rates compared to the exact model (Fig. \ref{fig:4-1-scc-nrmse}).
 
@@ -145,7 +145,7 @@ We measured the end-to-end runtime taken for all methods (Fig. \ref{fig:runtime}
 
 \section{Evaluations on real data}
 
-In this section, we evaluate Deg. EM (emp.), Bambu with bias modeling, and NanoCount on direct RNA-seq data from the SG-NEx project. In particular, we examine the performance of these methods on samples containing RNA sequencing spike-ins (Table \ref{tab-sgnex}). A subset of samples contains Spike-In RNA Variants (SIRVs) \cite{Lexogen20201} while another contains RNA sequins \cite{Sequins} (See Appendix \ref{ap-spike} for more details). The expression of these spike-ins are supposedly known and can be used as a reference.   
+In this section, we evaluate Deg. EM (emp.), Bambu with bias modeling, and NanoCount on direct RNA-seq data from the SG-NEx project. In particular, we examine the performance of these methods on samples containing RNA sequencing spike-ins (Table \ref{tab-sgnex}). A subset of samples contains Spike-In RNA Variants (SIRVs) \cite{Lexogen20201} while another contains RNA sequins \cite{Sequins}. The expression of these spike-ins are supposedly known and can be used as a reference.   
 
 \begin{table}[htbp]
   \centering
