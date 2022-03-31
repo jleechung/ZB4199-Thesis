@@ -54,7 +54,7 @@ We now model the probability that read $i$ originated from isoform $j$, i.e., $p
     \begin{equation}
         a_{ij} = \frac{{\textrm{AS}}_{ij}}{\max_{j'} {\textrm{AS}}_{ij'}}
     \end{equation}
-    \item The probability of observing a read of length $\ell_i$ given the degradation rate $d_j$ of isoform $j$, i.e., $p(\ell_i\mid d_j, \mathrm{len}(j), z_{ij}=1)$, where $\ell_i$ is the length of $r_i$. We refer to this probability as the \textit{read length-isoform agreement} model.      
+    \item The probability of observing a read of length $\ell_i$ given the degradation rate $d_j$ of isoform $j$, i.e., $p(\ell_i\mid d_j, z_{ij}=1)$, where $\ell_i$ is the length of $r_i$. We refer to this probability as the \textit{read length-isoform agreement} model.      
 \end{itemize}
 Combining alignment compatibility and the read length-isoform agreement model, we have 
 \begin{equation}
