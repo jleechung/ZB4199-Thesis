@@ -96,8 +96,8 @@ To model real data, we develop an empirical read length-isoform agreement model 
 Recall again from section \ref{sec:rld} that the probability of observing a read of length $\ell_i$ or greater is $S(\ell_i)=1-F(\ell_i)$. Thus, for a transcript of length $\mathrm{len}(j)$, the probability of observing a full length read is simply $1-F(\mathrm{len}(j))$. The corresponding probability of observing degraded reads is $F(\mathrm{len}(j))$. To compute the probability of observing a point given a empirical continuous density, we take the limit of
 \begin{equation}
 \begin{split}
-    P(X=\ell_i) &=\lim_{\delta\rightarrow0} (P(X<\ell_i+\delta)-P(X<\ell_i-\delta))\\
-    &=\lim_{\delta\rightarrow0}F(\ell_i+\delta)-F(\ell_i-\delta)
+    P(X=\ell_i) &=\lim_{\delta\rightarrow0} [P(X<\ell_i+\delta)-P(X<\ell_i-\delta)]\\
+    &=\lim_{\delta\rightarrow0}[F(\ell_i+\delta)-F(\ell_i-\delta)]
 \end{split}
 \end{equation}
 as $\delta\rightarrow0$. We normalize this probability by the probability of observing degraded reads, arriving at the quantity
