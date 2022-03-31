@@ -105,6 +105,7 @@ Based on this observation, we develop an approach for estimating degradation bas
 
 \begin{table}[H]
   \centering
+    \resizebox{0.45\columnwidth}{!}{%
     \begin{tabular}{|p{3.5cm}|p{1.5cm}|p{1.5cm}|p{1.5cm}|}
 \cline{2-4}    \multicolumn{1}{r|}{} & \multicolumn{3}{c|}{Bin size} \bigstrut\\
     \hline
@@ -119,6 +120,7 @@ Based on this observation, we develop an approach for estimating degradation bas
     d = 0.5 & 0.513 & 0.512 & \textbf{0.511} \bigstrut\\
     \hline
     \end{tabular}%
+    }
   \caption[Degradation estimates on simulated datasets based on read length distribution]{Degradation estimates on simulated datasets based on read length distribution. The length bin size is varied for 100, 200 and 500 bp, and the average degradation rate is computed.}
   \label{tab:binsize}%
 \end{table}%
@@ -131,11 +133,11 @@ Next, we computed a regression line based on the degradation curve and calculate
 
 We report the average degradation across the samples for multiple bin sizes, and group them by cell line (Fig. \ref{fig:length-sgnex}a) and sequencing run (Fig. \ref{fig:length-sgnex}b). We first observe that the estimated degradation rates are relatively robust to bin size. Next, for certain cell lines, there is high variance in estimates, presumably due to the samples being sequenced in multiple different runs (e.g. Hct116). These observations were paralleled on the level of sequencing runs. It is likely that the combination of sequencing runs and cell lines influence the observed degradation, although fitting a linear model for the average degradation rate did not produce significant results.
 
-Lastly, we computed correlations between the estimated degradation rates with raw sequencing metrics (Fig. \ref{fig:pwcor}). We observed moderate negative correlations between degradation rate and raw sequenced lengths, and weak correlation with sequencing quality. Interestingly, the strongest correlation was achieved with read length standard deviaion (SCC = -0.90). We postulate that higher degradation rates result in a smaller range of possible dynamic range of read lenghts, resulting in lower variance in lengths.
+Lastly, we computed correlations between the estimated degradation rates with raw sequencing metrics (Fig. \ref{fig:pwcor}). We observed moderate negative correlations between degradation rate and raw sequenced lengths, and weak correlation with sequencing quality. Interestingly, the strongest correlation was achieved with read length standard deviaion (SCC = -0.90). We postulate that higher degradation rates result in a smaller possible range of read lenghts, resulting in lower variance in lengths.
 
 \begin{table}[H]
   \centering
-  \resizebox{0.6\columnwidth}{!}{%
+  \resizebox{0.65\columnwidth}{!}{%
     \begin{tabular}{|p{1.5cm}|p{1.5cm}|p{1.5cm}|p{1.5cm}|p{1.5cm}|p{1.5cm}|p{1.5cm}|}
 \cline{2-7}    \multicolumn{1}{l|}{} & Run1  & Run2  & Run3  & Run4  & Run5  & Run6 \bigstrut\\
     \hline
@@ -178,4 +180,10 @@ Lastly, we computed correlations between the estimated degradation rates with ra
     \label{fig:pwcor}
 \end{figure}
 
+\section{Discussion}
 
+In this chapter, we formalized the notion of the degradation rate, and described two approaches for estimating it from long-read direct RNA-seq data. The first approach involves computing the coverage over isoforms and fitting a curve to the coverage track. Based on this approach, we find that degradation curves appear to be mostly consistent across isoforms, and is not dependent on the length of the isoform or the median coverage over the isoform. However, degradation appears to differ by the biotype of the RNA, which corroborates established knowledge. 
+
+Next, we examined the degradation rates in SIRVs and endogenous RNAs from the same samples. SIRV reads exhibited mostly constant degradation rates while endogenous RNAs exhibited variable and steeper degradation rates. This suggests that the observed degradation in endogenous RNA reads is a combination of \textit{in vivo} RNA decay, which contributes a variable component to the degradation, and extraneous \textit{in vitro} factors such as artifacts due to library preparation or sequencing, which contribute a constant component to the degradation. 
+
+Finally, we developed an efficient way of estimating degradation curves based on the degraded read length distribution which does not rely on computing coverage or fitting curves, removing noise and arbitrary parameters in the estimation process. We apply this approach on 32 samples from the SG-NEx project, finding consistent patterns of degradation across all samples. In particular, the degradation curve is flat towards the 3' end, extends into a linear segment and plateaus as distance from the 3' end increases. The low degradation rate observed at the 3' end could be a consequence of protection due to poly(A) tailing and poly(A) binding proteins \textit{in vivo} \cite{Wang2000}. It also suggests that there is a lower bound on the minimum sequence length attainable with ONT sequencing technologies. In the next chapter, we develop a model that uses the estimated degradation curves for bias-aware transcript quantification. 
