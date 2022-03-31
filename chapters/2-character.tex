@@ -28,21 +28,21 @@ In the following sections, we first describe a coverage-based approach for chara
 
 We first sought to determine if patterns of degradation were consistent across transcript isoforms for a given direct RNA-seq dataset. To that end, we selected single-isoform, multi-exon genes from GRCh38 reference annotations, and further restricted the set of isoforms to those that do not intersect with any other annotated features in reference annotations. We refer to these as \textbf{lone isoforms}. Estimating bias from lone isoforms reduces ambiguity in the isoform of origin of the reads we use to estimate bias; such approaches were also adopted in \cite{Roberts2011} and \cite{Love2016} for bias estimation in short-read data. Filtering yielded approximately 5,000 lone isoforms. For each of these isoforms, we obtained coverage over the isoform body using the \texttt{genomecov} module from bedtools (v.2.27.1). Next, we further apply a median coverage filter, filtering out lone isoforms with low median coverage (min median coverage = 10). Finally, a degradation curve is fitted to the data with a smoothing spline.  
 
-To validate this approach, we simulated two datasets where the expected degradation rates for all isoforms is constant ($\mathbb{E}[d]\in\{0.2,0.4\}$, see Appendix \ref{ap:sim-deg-reads} for more details on degraded read simulation). Visualising the degradation curves for each isoform, we observed noise in the form of deviation from the expected degradation curve, likely due to sampling noise in the simulation data generation process. This noise can be mitigated by computing a global degradation curve across all isoforms (red line, Fig. \ref{fig:cov-sim}). We find that the global degradation curves reflect the known degradation rates from the simulated data qualitatively (Fig. \ref{fig:cov-sim}). In addition, we assessed the global degradation curves quantitatively by computing the average gradients of each curve, and found good agreement between the estimates and the expected degradation ($\mathbb{E}[d]$ = 0.2, estimated = 0.201; $\mathbb{E}[d]$ = 0.4, estimated = 0.403).
+To validate this approach, we simulated two datasets where the expected degradation rates for all isoforms is constant ($\mathbb{E}[d]\in\{0.2,0.4\}$, see Appendix \ref{ap:sim-deg-reads} for more details on degraded read simulation). Visualising the degradation curves for each isoform, we observed noise in the form of deviation from the expected degradation curve (grey lines, Fig. \ref{fig:cov-sim}), likely due to sampling noise in the simulation data generation process. This noise can be mitigated by computing a global degradation curve across all isoforms (red line, Fig. \ref{fig:cov-sim}). We find that the global degradation curves reflect the known degradation rates from the simulated data qualitatively (Fig. \ref{fig:cov-sim}). In addition, we assessed the global degradation curves quantitatively by computing the average gradients of each curve, and found good agreement between the estimates and the expected degradation ($\mathbb{E}[d]$ = 0.2, estimated = 0.201; $\mathbb{E}[d]$ = 0.4, estimated = 0.403).
 
-We applied this approach in real direct RNA-seq data from the SG-NEx project. Within each sample, we found consistent patterns of degradation across isoforms (Fig. \ref{fig:cov-real}). However, we note that for most real datasets, filtering for lone transcripts and by median coverage yields very few isoforms remaining for estimating degradation rates. For instance, in a HepG2 sample (Fig. \ref{fig:cov-real}a), we obtained only 57 isoforms, while in a MCF7 sample (Fig. \ref{fig:cov-real}b), we obtained only 52 isoforms. Across the samples, the median number of lone isoforms post-filtering was 21. While this approach separates signal and noise by considering only lone isoforms, it may be overly restrictive. We consider an improved approach for estimating the degradation rate in Section \ref{sec:rld} based on observed read length distributions. 
+We applied this approach in real direct RNA-seq data from the SG-NEx project \cite{Chen2021}. Within each sample, we found consistent patterns of degradation across isoforms (Fig. \ref{fig:cov-real}). However, we note that for most real datasets, filtering for lone transcripts and by median coverage yields very few isoforms remaining for estimating degradation rates. For instance, in a HepG2 sample (Fig. \ref{fig:cov-real}a), we obtained only 57 isoforms, while in a MCF7 sample (Fig. \ref{fig:cov-real}b), we obtained only 52 isoforms. Across the samples, the median number of lone isoforms post-filtering was 21. While this approach separates signal and noise by considering only lone isoforms, it may be overly restrictive. We consider an improved approach for estimating the degradation rate in Section \ref{sec:rld} based on observed read length distributions. 
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.9\textwidth]{figures/sec-2-cov-sim.png}
-    \caption[Degradation curves on simulation datasets based on coverage]{Degradation curves on simulation datasets based on coverage. \textbf{a.} Degradation curve for dataset with $\mathbb{E}[d]$ = 0.2. Coverage drops close to 0 at 5kb with a degradation rate of 0.2. The estimated degradation rate is 0.201. \textbf{a.} Degradation curve for dataset with $\mathbb{E}[d]$ = 0.4. Coverage drops close to 0 at 2.5 kb. The estimated degradation rate is 0.403.}
+    \caption[Degradation curves on simulation datasets based on coverage]{Degradation curves on simulation datasets based on coverage. Grey translucent lines represent the coverage curves for individual isoforms. The red line represents the spline fitted across all isoforms. \textbf{a.} Degradation curve for dataset with $\mathbb{E}[d]$ = 0.2. Coverage drops close to 0 at 5kb with a degradation rate of 0.2. The estimated degradation rate is 0.201. \textbf{a.} Degradation curve for dataset with $\mathbb{E}[d]$ = 0.4. Coverage drops close to 0 at 2.5 kb. The estimated degradation rate is 0.403.}
     \label{fig:cov-sim}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.9\textwidth]{figures/sec-2-cov-real.png}
-    \caption[Degradation curves on real datasets based on coverage]{Degradation curves on real datasets based on coverage. These two datasets has the most isoforms post-filtering for degradation rate estimation. \textbf{a.} Degradation curve for a HepG2 cell line sample. \textbf{b.} Degradation curve for a MCF7 cell line sample.}
+    \caption[Degradation curves on real datasets based on coverage]{Degradation curves on real datasets based on coverage. Grey translucent lines represent the coverage curves for individual isoforms. The red line represents the spline fitted across all isoforms. These two datasets had the most number of isoforms post-filtering for degradation rate estimation (n = 57, 52). \textbf{a.} Degradation curve for a HepG2 cell line sample. \textbf{b.} Degradation curve for a MCF7 cell line sample.}
     \label{fig:cov-real}
 \end{figure}
 
@@ -61,7 +61,7 @@ Here, we explore whether degradation rates vary between isoforms of different fe
 
 We now analyse possible degradation in sequencing spike-ins, which are synthetic RNA molecules added to endogenous RNA samples before library preparation \cite{Lexogen20201}. By doing so, we attempt to elucidate the relative contributions of \textit{in vivo} RNA decay and other extra-cellular factors unrelated to decay, such as library preparation or sequencing artifacts.
 
-We examine SIRVs (Spike-in RNA Variants) present in a subset of SG-NEx samples. Fortunately, a subset of SIRV isoforms are non-overlapping, allowing us to easily apply coverage-based approaches for estimating the degradation. The degradation curves estimated on the SIRVs for six H9 samples (2 runs with 3 replicates each) show consistent patterns amongst themselves (dotted lines, Fig. \ref{fig:cov-spike}), suggesting a constant extraneous factor that acts on degrading SIRV reads. This is supported by the fact that, within each run, the SIRV degradation rates exhibit strong consistency.
+We examine SIRVs (Spike-in RNA Variants) \cite{Lexogen20201} present in a subset of SG-NEx samples. Fortunately, a subset of SIRV isoforms are non-overlapping, allowing us to easily apply coverage-based approaches for estimating the degradation. The degradation curves estimated on the SIRVs for six H9 samples (2 runs with 3 replicates each) show consistent patterns amongst themselves (dotted lines, Fig. \ref{fig:cov-spike}), suggesting a constant extraneous factor that acts on degrading SIRV reads. In fact, the degradation rate appears to be constant for each sample, and the average degradation rate is consistent across all samples (run 1: 0.121, 0.148, 0.128; run 2: 0.149, 0.124, 0.183). 
 
 \begin{figure}[H]
     \centering
@@ -70,7 +70,7 @@ We examine SIRVs (Spike-in RNA Variants) present in a subset of SG-NEx samples. 
     \label{fig:cov-spike}
 \end{figure}
 
-However, when contrasted against degradation curves estimated on all isoforms from within the same sample (solid lines, Fig. \ref{fig:cov-spike}), the SIRVs show lower rates of degradation. This might suggest that the degradation in endogenous RNAs is a combination of RNA decay \textit{in vivo} and extraneous \textit{in vitro} factors. 
+When contrasted against degradation curves estimated on all isoforms from within the same sample (solid lines, Fig. \ref{fig:cov-spike}), the SIRVs show lower rates of degradation. This might suggest that the degradation in endogenous RNAs is a combination of RNA decay \textit{in vivo} and extraneous \textit{in vitro} factors. 
 
 \section{Read length-based degradation estimation}\label{sec:rld}
 
@@ -129,9 +129,9 @@ With this validation in hand, we estimated the degradation curves for 32 direct 
 
 Next, we computed a regression line based on the degradation curve and calculated its gradient as a proxy for the \textit{average degradation rate}. Here, the average degradation rate allows for relative comparisons between samples and acts as a summary statistic. In practice, we do not use these point estimates to correct for degradation bias; rather, the entire degradation curve is used to do so (Section \ref{sec:rlia-emp}).   
 
-We report the average degradation across the samples for multiple bin sizes, and group them by cell line (Fig. \ref{fig:length-sgnex}a) and sequencing run (Fig. \ref{fig:length-sgnex}b). We first observe that the estimated degradation rates are relatively robust to bin size. Next, for certain cell lines, there is high variance in estimates, presumably due to the samples being sequenced in multiple different runs (e.g. Hct116). These observations were paralleled on the level of sequencing runs. It is likely that the combination of sequencing runs and cell lines influence the observed degradation, although fitting a linear model for the average degradation rate do not produce significant results.
+We report the average degradation across the samples for multiple bin sizes, and group them by cell line (Fig. \ref{fig:length-sgnex}a) and sequencing run (Fig. \ref{fig:length-sgnex}b). We first observe that the estimated degradation rates are relatively robust to bin size. Next, for certain cell lines, there is high variance in estimates, presumably due to the samples being sequenced in multiple different runs (e.g. Hct116). These observations were paralleled on the level of sequencing runs. It is likely that the combination of sequencing runs and cell lines influence the observed degradation, although fitting a linear model for the average degradation rate did not produce significant results.
 
-Lastly, we computed correlations between the estimated degradation rates with raw sequencing metrics (Fig. \ref{fig:pwcor}). We observed moderate negative correlations between degradation rate and raw sequenced lengths, and weak correlation with sequencing quality. Interestingly, the strongest correlation was achieved with read length standard deviaion (SCC = -0.90), possibly due to high degradation rates resulting in a lower dynamic range of read lengths. 
+Lastly, we computed correlations between the estimated degradation rates with raw sequencing metrics (Fig. \ref{fig:pwcor}). We observed moderate negative correlations between degradation rate and raw sequenced lengths, and weak correlation with sequencing quality. Interestingly, the strongest correlation was achieved with read length standard deviaion (SCC = -0.90). We postulate that higher degradation rates result in a smaller range of possible dynamic range of read lenghts, resulting in lower variance in lengths.
 
 \begin{table}[H]
   \centering
@@ -160,14 +160,14 @@ Lastly, we computed correlations between the estimated degradation rates with ra
 \begin{figure}[p]
     \centering
     \includegraphics[width=\textwidth]{figures/sec-2-length-sgnex-curves.png}
-    \caption[Degradation curves for real datasets based on read length distribution]{Degradation curves for real datasets based on read length distribution for sequencing run 1 with bin size 500. The top panel shows all samples combined. The bottom panel splits the samples by cell lines.}
+    \caption[Degradation curves for real datasets based on read length distribution]{Degradation curves for real datasets based on read length distribution for sequencing run 1 with bin size 500. The top panel shows all samples combined. The bottom panel splits the samples by cell lines. In general, the degradation curves show consistent patterns, with low rates of degradation toward the 3' end, followed by a linear segment and a tapering off as distance from the 3' end increases.}
     \label{fig:length-sgnex-curves}
 \end{figure}
 
 \begin{figure}[p]
     \centering
     \includegraphics[width=\textwidth]{figures/sec-2-length-sgnex.png}
-    \caption[Degradation estimates for real datasets based on read length distribution]{Degradation estimates for real datasets based on read length distribution. \textbf{a.} Samples grouped by cell line. \textbf{b.} Samples grouped by sequencing run.}
+    \caption[Degradation estimates for real datasets based on read length distribution]{Degradation estimates for real datasets based on read length distribution. The average degradation rate is robust to eh bin size chosen. \textbf{a.} Samples grouped by cell line. \textbf{b.} Samples grouped by sequencing run.}
     \label{fig:length-sgnex}
 \end{figure}
 

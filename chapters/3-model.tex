@@ -3,7 +3,7 @@ In this chapter, we specify a generative model for transcript quantification fro
 
 \section{Model assumptions}\label{sec:model-assumptions}
 
-The input to our model consists of reads obtained from sequencing transcripts with the \gls{ont} direct \gls{rnaseq} protocol aligned to the reference transcriptome. We assume there is a bijective mapping between reads and transcript, i.e., each read originates from only one transcript, and each transcript generates only one read. Reads are generated independently and identically distributed (iid) from a distribution to be specified, and the 3' end of each read aligns within some region close to the 3' end of the isoform it originated from. Finally, we assume that a global expected degradation rate per base exists, i.e., the expected degradation curves of all isoforms are the same.  
+The input to our model consists of reads obtained from sequencing transcripts with the \gls{ont} direct \gls{rnaseq} protocol aligned to the reference transcriptome. We assume there is a bijective mapping between reads and transcript, i.e., each read originates from only one transcript, and each transcript generates only one read. Reads are generated independently and identically distributed (iid) from a distribution to be specified, and the 3' end of each read aligns within some region close to the 3' end of the isoform it originated from. Finally, we assume that a global expected degradation rate per base exists, i.e., the expected degradation curves of all isoforms are the same. This claim is supported by findings from the previous chapter. 
 
 \section{Generative model}\label{sec:generative-model}
 
@@ -88,19 +88,19 @@ To model real data, we develop an empirical read length-isoform agreement model 
 \begin{equation}\label{eq:emp-rlia}
     p(\ell_i\mid d_j, z_{ij}=1) = 
     \begin{cases}
-        \dfrac{\lim_{\delta\rightarrow0}(F(\ell_i+\delta) - F(\ell_i-\delta))}{F(\mathrm{len}(j))} & \textrm{if } \ell_i<\min(\mathrm{len}(j), \ell_\mathrm{max})\\
+        \lim\limits_{\delta\rightarrow0}\dfrac{F(\ell_i+\delta) - F(\ell_i-\delta)}{F(\mathrm{len}(j))} & \textrm{if } \ell_i<\min(\mathrm{len}(j), \ell_\mathrm{max})\\
         1-F(\mathrm{len}(j)) & \textrm{if } \ell_i=\mathrm{len}(j)
     \end{cases}
 \end{equation}
 
-Recall again from section \ref{sec:rld} that the probability of observing a read of length $\ell_i$ or greater is $S(\ell_i)=1-F(\ell_i)$. Thus, for a transcript of length $\mathrm{len}(j)$, the probability of observing a full length read is simply $1-F(\mathrm{len}(j))$. The corresponding probability of observing degraded reads is $F(\mathrm{len}(j))$. To compute the probability of observing a point given a empirical continuous density, we take the limit of
+Recall again from section \ref{sec:rld} that the probability of observing a read of length $\ell_i$ or greater is $S(\ell_i)=1-F(\ell_i)$. Thus, for a transcript of length $\mathrm{len}(j)$, the probability of observing a full length read is simply $1-F(\mathrm{len}(j))$. The corresponding probability of observing degraded reads is $F(\mathrm{len}(j))$. To compute the probability of observing a point given a empirical continuous density, we take limits:
 \begin{equation}
 \begin{split}
     P(X=\ell_i) &=\lim_{\delta\rightarrow0} [P(X<\ell_i+\delta)-P(X<\ell_i-\delta)]\\
     &=\lim_{\delta\rightarrow0}[F(\ell_i+\delta)-F(\ell_i-\delta)]
 \end{split}
 \end{equation}
-as $\delta\rightarrow0$. We normalize this probability by the probability of observing degraded reads, arriving at the quantity
+We normalize this quantity by the probability of observing degraded reads, arriving at the quantity
 \begin{equation}
     \lim_{\delta\rightarrow0}\dfrac{F(\ell_i+\delta)-F(\ell_i-\delta)}{F(\mathrm{len}(j))}
 \end{equation}
