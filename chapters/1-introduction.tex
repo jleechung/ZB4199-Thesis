@@ -15,7 +15,11 @@ Short-read RNA-seq technologies enable deep sequencing of highly accurate short 
 
 Biases in short-read RNA-seq have been extensively studied \cite{Hansen2010, Li2010, Li2011, Zhengpeng2010, Roberts2011, Benjamini2012, Lahens2014, Love2016}, and can often be traced back to specific steps in the protocol described above. For instance, \cite{Hansen2010} showed that priming with random hexamer primers induces bias in the nucleotide composition of the reads and results in non-uniform representation of reads across the length of the transcript. In addition, size selection of fragments results in an over-representation of fragments of a certain length, while \gls{rna} degradation and \gls{mrna} selection can lead to over-representation of fragments that are located towards either the beginning or end of the transcript \cite{Roberts2011, Lahens2014, Love2016}. \gls{pcr} amplification before sequencing also introduces bias by preferential amplification of fragments with certain GC content \cite{Benjamini2012, Love2016}. The combination of these biases affect quantification estimates, and if not corrected for, leads to erroneous estimates \cite{Roberts2011, Love2016}. 
 
-Existing methods to address these biases can be categorised into two broad classes. The first class of methods involve innovations in library preparation methods to reduce bias from their source of origin \cite{Vandijk2014}. For instance, an amplification-free RNA-seq protocol was proposed in \cite{Mamanova2010} to reduce amplification bias, while thermostable polymerases that exhibit relatively lower GC bias were identified in \cite{Quail2012}. We focus on the second class of methods that involve modeling and correcting for the bias \textit{in silico}. In particular, here we focus on the approaches in the literature that are most relevant to our aim. 
+Existing methods to address these biases can be categorised into two broad classes. The first class of methods involve innovations in library preparation methods to reduce bias from their source of origin \cite{Vandijk2014}. For instance, an amplification-free RNA-seq protocol was proposed in \cite{Mamanova2010} to reduce amplification bias, while thermostable polymerases that exhibit relatively lower GC bias were identified in \cite{Quail2012}. We focus on the second class of methods that involve modeling and correcting for the bias \textit{in silico}. In particular, we focus on the approaches in the literature that are most relevant to our aim. 
+
+% Single-isoform genes
+In modeling bias, one needs to estimate parameters describing the bias from the data. The first approach adopted by many short-read RNA-seq methods for modeling bias is to use single isoform genes for estimating bias parameters. For instance, 
+Cufflinks corrects for fragment length bias by estimating fragment length distributions based on a set of single isoform gene \cite{Roberts2011}, while alpine  estimates bias offsets and coefficients from single isoform genes for fragment length, read start sequence preference and GC content \cite{Love2016}. This approach ensures that the bias terms are computed from a subset of the data with the least ambiguity in assignment to the correct isoform. Furthermore, due to the complexity in real data, non-parametric density estimation is often used to model certain features. Again, both Cufflinks and alpine use kernel density estimates to fit an empirical fragment length distribution to correct for positional bias, i.e., the enrichment of fragments at the start or end of the transcripts. RSEM uses an empirical distribution to model the position of reads within fragments \cite{Li2011}. Other complex parametric approaches have been used, such as a mixture of Gaussian in \cite{MIXMIX}, but appear less popular possibly due to parametric constraints. Last and perhaps most relevant is the use of curves to characterise and model for bias. In \cite{NURD}, coverage over single isoform genes is used to compute global and local bias curves which are then used to describe the non-uniformity of read distributions across all genes and for each gene respectively. We consider all these approaches when characterising bias and modeling for it in the following chapters. 
 
 \subsection{Long-read technologies}
 
@@ -25,6 +29,8 @@ Two of the most widely used platforms for long-read sequencing include Pacific B
 
 We briefly describe the similarities and differences between the three ONT protocols, with a focus on direct RNA-seq. In direct RNA-seq (Fig. \ref{fig:sec-1-drna}), native poly(A) RNA molecules are enriched and directly sequenced from the 3' end. An optional reverse transcription step stabilizes the RNA strand by reducing intramoleulcar secondary structure of the RNA, resulting in better sequencing output \cite{Garalde2018}. In direct cDNA and PCR-cDNA protocols, poly(A) RNA is reverse transcribed followed by second strand synthesis to produce double stranded cDNA. Strand-switching is used to increase the proportion of full-length cDNAs. In PCR-cDNA, double stranded cDNAs are amplified prior to sequencing, giving higher throughput. Across all three protocols, GC bias was evaluated to be minimal in the data, including data from the PCR-cDNA protocol, provided that the number of PCR cycles was capped \cite{ONT}. 
 
+Compared to cDNA protocols, direct RNA-seq mitigates any form of bias or errors due to PCR or reverse transcription \cite{Garalde2018, Depledge2019} which is important for obtaining accurate and reliable isoform abundance estimates. Despite this, a recent evaluation of ONT direct RNA-seq showed that although direct RNA-seq yielded significantly longer reads compared to short-read RNA-seq, the proportion of reads corresponding to full-length transcripts remained low due to read truncation \cite{Soneson2019}. Assigning direct RNA-seq reads to their isoform of origins remains highly nontrivial, in large part due to the number of secondary alignments for each read \cite{Soneson2019}. In the following section, we review some possible explanations for the observed read truncation.   
+
 \begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{figures/sec-1-drna.png}
@@ -32,21 +38,17 @@ We briefly describe the similarities and differences between the three ONT proto
     \label{fig:sec-1-drna}
 \end{figure}
 
-Compared to cDNA protocols, direct RNA-seq mitigates any form of bias or errors due to PCR or reverse transcription \cite{Garalde2018, Depledge2019} which is important for obtaining accurate and reliable isoform abundance estimates. Despite this, a recent evaluation of ONT direct RNA-seq showed that although direct RNA-seq yielded significantly longer reads compared to short-read RNA-seq, the proportion of reads corresponding to full-length transcripts remained low due to read truncation \cite{Soneson2019}. Assigning direct RNA-seq reads to their isoform of origins remains highly nontrivial, in large part due to the number of secondary alignments for each read \cite{Soneson2019}. In the following section, we review some possible explanations for the observed read truncation.   
-
 \subsection{Biases in long-read RNA-seq}
 
-Factors that influence transcript degradation can be broadly classified as being intra-cellular or extra-cellular. 
+We now discuss biases in long-read ONT data with a particular focus on degradation bias observed in the direct RNA protocol.
+
+\paragraph{GC bias} According to ONT, datasets sequenced with all three protocols (direct RNA, direct cDNA, PCR cDNA) exhibit virtually no GC bias \cite{ONTGC}, with low correlations between the GC content and read count for each gene. This was corroborated by studies finding that compared to other high throughput sequencing methods such as short-read RNA-seq or PacBio sequencing, there was no relative coverage biases across regions of different GC content \cite{Nookaew2017, HTSGC}. 
+
+\paragraph{Degradation bias} Here, we consider sources of degradation bias observed in long-read direct RNA-seq, where the reads are degraded or truncated \cite{Soneson2019, Workman2019}. Factors that influence transcript degradation can be broadly classified as being intra-cellular or extra-cellular. 
 
 \paragraph{Intra-cellular degradation} Degradation of transcripts can occur within the cell due to the action of both exo- and endoribonucleases. Exoribonuclease cleavage from the 5’ or 3’ ends of the transcript. Co-transcriptional processes such as 5’-capping or 3’-polyadenylation help to stabilise the transcript for translation initiation. The removal of these modifications can initiate transcript degradation. Exoribonuclease-mediated degradation can occur in both the 5’-3’ or 3’-5’ directions. Endoribonuclease cleavage within the body of the transcript (this occurs to a lesser extent). Cleavage within the transcript body exposes unprotected 5’ and 3’ ends of the distal and proximal segments of the cleaved transcript, which then expose these segments to degradation by exoribonucleases. 
 
 \paragraph{Extra-cellular degradation} Steps in the library preparation and sequencing can also affect the degradation of transcripts. Fragmentation of transcripts from library preparation. Truncation of transcripts from the 5’ end due to artifacts of nanopore sequencing (e.g. pore blocking). Since polyA+ transcripts are sequenced from the 3’ end, sequencing artifacts result in truncation from the 5’ end.
-
-%https://pubmed.ncbi.nlm.nih.gov/12902380/
-%https://pubmed.ncbi.nlm.nih.gov/21516085/
-%https://www.nature.com/articles/nrm2104
-%https://bmcbiol.biomedcentral.com/articles/10.1186/1741-7007-12-42
-%https://www-nature-com.libproxy1.nus.edu.sg/articles/s41592-019-0617-2#Abs1
 
 \section{Organisation}
 
