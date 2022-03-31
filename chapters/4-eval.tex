@@ -247,3 +247,9 @@ Lastly, we compare the estimated average degradation rates obtained by Bambu and
     \caption[Comparison of estimated degradation rates on SG-NEx data]{Comparison of estimated degradation rates on SG-NEx data across four cell lines.}
     \label{fig:real-deg-rate}
 \end{figure}
+
+\section{Discussion}
+
+In this chapter, we evaluated our model and inference algorithm (Deg. EM) on simulated datasets with known constant degradation rates and real datasets with sequencing spike-ins from the SG-NEx project. First, we compared the exact and empirical variations of our model, finding that they perform comparably in the range of realistic degradation rates. 
+
+Next, we benchmarked Deg. EM against Bambu, Bambu without bias, FLAIR and NanoCount. We showed on simulated datasets that Deg. EM achieves the best performance on SCC, NRMSE and MRD compared to existing methods. In particular, methods that do not model for bias perform poorly on subset isoforms. The results obtained on real datasets with spike-ins were similar, with Deg. EM showing comparable, if not slightly better performance compared to NanoCout and Bambu. We also found that the variance in estimates obtained by Deg. EM was lower compared to those of other methods across replicates, showing that modeling degradation can help increase reproducibility \textit{in silico}.   

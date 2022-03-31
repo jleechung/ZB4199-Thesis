@@ -113,7 +113,7 @@ The \textbf{normalized root-mean-squared error} (NRMSE) is a reference-based met
 \begin{equation}
     NRMSE = \frac{\sqrt{\frac{1}{M}\sum\left(\bm\theta-\hat{\bm\theta}\right)^2}}{\textrm{sd}\left(\hat{\bm\theta}\right)}
 \end{equation}
-The \textbf{reproducibility metric} (RM) is a reference-free metric that measures the variance across replicates. Let $\bar{\bm\theta}$ be the mean of estimates across $K$ replicates. For isoform $j$, the RM is given by
+The \textbf{reproducibility metric} (RM) is a reference-free metric that measures the variance across replicates. Let $\bar{\bm\theta}$ be the mean of estimates across $K$ replicates. For isoform $i$, the RM is given by
 \begin{equation}
     RM = \sqrt{\frac{1}{K}\sum_k \left(\hat{\theta_i} - \bar{\theta_i}\right)^2}
 \end{equation}
@@ -124,6 +124,6 @@ The \textbf{reproducibility metric} (RM) is a reference-free metric that measure
 We used long-read RNA-seq data from the SG-NEx project available at \url{https://github.com/GoekeLab/sg-nex-data}. All simulated datasets were generated with the software below. 
 
 \paragraph{Code}
-All software was developed in \texttt{python3}. Software for generating novel isoform models and simulating degraded reads are available at \url{https://github.com/jleechung/noviso} and \url{https://github.com/jleechung/shamread} respectively. These are not implemented as CLI tools but use a yaml file for configuring inputs. Software for our quantification model is available at \url{https://github.com/jleechung/daiso} and is implemented as a CLI tool with simple installation (via conda) and user interface, with only one required input. We display the manual page here for reference: 
+All software was developed in \texttt{python3}. Software for generating novel isoform models and simulating degraded reads are available at \url{https://github.com/jleechung/noviso} and \url{https://github.com/jleechung/shamread} respectively. These are not implemented as CLI tools but use a yaml file for configuring inputs. Software for our quantification model is available at \url{https://github.com/jleechung/daiso} and is implemented as a CLI tool with simple installation and user interface, with only one required input. We display the manual page here for reference: 
 
 \VerbatimInput{figures/man.txt}

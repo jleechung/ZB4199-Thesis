@@ -21,11 +21,7 @@ One attractive benefit of longer reads from ONT sequencing is the potential to d
 
 \subsection{Read position-isoform agreement}
 
-To model bias, we introduced the read length-isoform agreement, which models the probability of observing a read of a certain length originating from an isoform and its degradation rate. Our current model applies however only to direct RNA-seq, as we assume that the 3' end of all reads align within a close proximity to the annotated 3' end of the isoform. However, it is well known that annotations at both the 5' and 3' end are not clearly well-defined and unreliable. In addition, for direct cDNA and PCR-cDNA protocols, a fraction of reads may not align at the 3' end, resulting in an underestimation of the count. To mitigate these issues and generalise our model to cDNA protocols, we can consider a \textit{read position-isoform agreement} that models the probability of observing a read at a certain start/end position within the sequence of an isoform. 
-
-\begin{figure}
-    \centering
-    \includegraphics{figures/position}
-    \caption{Caption}
-    \label{fig:my_label}
-\end{figure}
+To model bias, we introduced the read length-isoform agreement, which models the probability of observing a read of a certain length originating from an isoform and its degradation rate. Our current model applies however only to direct RNA-seq, as we assume that the 3' end of all reads align within a close proximity to the annotated 3' end of the isoform. However, it is well known that annotations at both the 5' and 3' end are not clearly well-defined and unreliable. In addition, for direct cDNA and PCR-cDNA protocols, a fraction of reads may not align at the 3' end, resulting in an underestimation of the count. To mitigate these issues and generalise our model to cDNA protocols, we can consider a \textit{read position-isoform agreement} that models the probability of observing a read with a certain relative end position $e_i\in(0,1)$ within the body of an isoform. Extending our current model (Eq. \ref{eq:read-iso-agreement}), we have:
+\begin{equation}
+    p(r_i\mid z_{ij}=1) = a_{ij}\cdot p(\ell_i\mid d_j, z_{ij}=1)\cdot p(e_i\mid \ell_i,z_{ij}=1)
+\end{equation}
