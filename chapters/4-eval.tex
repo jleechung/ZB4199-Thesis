@@ -9,7 +9,7 @@ Simulated and real reads were aligned with minimap2 (v.2.17-r941) \cite{Minimap2
 
 We compare two variations of our model based on the read length-isoform agreement:
 
-\paragraph{Deg. EM (exact)} We ran our model with the exact read length-isoform agreement model (Eqn. \ref{eq:read-iso-agreement}) and provided the known degradation rate to the model for inference. This is of course unrealistic, since in real data, the degradation rate is not known \textit{a priori} and there is no bound on the maximum read length (i.e., the degradation rate is not constant). Nevertheless, this serves as a useful sanity check that our approach works. 
+\paragraph{Deg. EM (exact)} We ran our model with the exact read length-isoform agreement model (Eqn. \ref{eq:exact-rlia}) and provided the known degradation rate to the model for inference. This is of course unrealistic, since in real data, the degradation rate is not known \textit{a priori} and there is no bound on the maximum read length (i.e., the degradation rate is not constant). Nevertheless, this serves as a useful sanity check that our approach works. 
 
 \paragraph{Deg. EM (emp.)} The second variation of our model uses the empirical read length-isoform agreement model (Eqn. \ref{eq:emp-rlia}) and estimates the degradation rate per base from the data. This variation has no limitation on the maximum read length nor constraints on the degradation rate. 
 
@@ -54,7 +54,7 @@ Deg. EM (emp) & \textbf{0.849} & \textbf{0.427} & 0.016 & 0.801 & 0.434 & 0.191 
 \label{tab:summary-1}
 \end{table}%
 
-Next, we examine the performance on each dataset separately for all and subset isoforms (Fig. \ref{fig:4-1-scc-nrmse}). Across all isoforms, the variations perform extremely similarly. In contrast, on the subset isoforms, the exact model dominates the empirical model in SCC and MRD. This is expected, as estimations with the empirical cumulative distribution function introduce noise to the estimates. Conversely, the exact model is formulated exactly to work on the data. 
+Next, we examine the performance on each dataset separately for all and subset isoforms (Fig. \ref{fig:4-1-scc-nrmse}). Across all isoforms, the variations perform extremely similarly. In contrast, on the subset isoforms, the exact model dominates the empirical model in MRD. This is expected, as estimations with the empirical cumulative distribution function introduce noise to the estimates. Conversely, the exact model is formulated exactly to work on the data. 
 
 To investigate these differences further, we visualised estimates and fitted a kernel density estimate on the subset isoforms only for datasets with degradation rates 0.2 and 0.5 (Fig. \ref{fig:4-1-scatter}). On a dataset with relatively lower degradation rate (0.2), the exact model performs qualitatively well, with the density of points over the diagonal (Fig. \ref{fig:4-1-scatter}a), while the empirical model underestimates counts for certain isoforms (Fig. \ref{fig:4-1-scatter}b). We see similar results in datasets with higher degradation rates (0.5) where the variance in the estimates returned by the exact model is lower (Fig. \ref{fig:4-1-scatter}c) compared to the empirical model, where the counts are more diffuse about the diagonal (Fig. \ref{fig:4-1-scatter}d). This deviation from the diagonal also explains the increase in MRD in the empirical model for larger degradation rates compared to the exact model (Fig. \ref{fig:4-1-scc-nrmse}).
 
@@ -212,7 +212,7 @@ We visualize the estimates and supposed concentrations of the sequins for the sa
     \label{fig:lexogen-metrics}
 \end{figure}
 
-In addition to the sequin spike-in samples, we examined the SIRV spike-ins in six H9 direct RNA-seq samples (Table \ref{tab-sgnex}). For all methods and across the samples, the abundance estimates for SIRVs did not reflect the supposed concentration (Fig. \ref{fig:lexogen-scatter}). However, the estimates obtained across the methods correlated well with each other (median of median pairwise SCC = 0.806, p-value $<$ 2.2e-16). This might suggest that the supposed SIRV concentrations do not accurately represent what is actually present in the samples, diminishing their utility as a control for RNA-seq in this context. Nevertheless, we computed the SCC, NRMSE and MRD across the six samples for each method (Fig. \ref{fig:lexogen-metrics}). The performance on all metrics is similar across the methods, but is unlikely to be informative due to reasons discussed above.   
+In addition to the sequin spike-in samples, we examined the SIRV spike-ins in six H9 direct RNA-seq samples (Table \ref{tab-sgnex}). For all methods and across the samples, the abundance estimates for SIRVs did not reflect the supposed concentration (Fig. \ref{fig:lexogen-scatter}). However, the estimates obtained across the methods correlated well with each other (median of median pairwise SCC = 0.809, p-value $<$ 2.2e-16). This might suggest that the supposed SIRV concentrations do not accurately represent what is actually present in the samples, diminishing their utility as a control for RNA-seq in this context. Nevertheless, we computed the SCC, NRMSE and MRD across the six samples for each method (Fig. \ref{fig:lexogen-metrics}). The performance on all metrics is similar across the methods, but is unlikely to be informative due to reasons discussed above.   
 
 \subsection{Reproducibilty measures}
 
@@ -224,7 +224,7 @@ Besides quantifying accuracy, we can also measure the reproducibility of abundan
 \hline
 Method & Run 1 & Run 2 \bigstrut\\
 \hline
-Deg. EM (emp.) & \textbf{0.904} & \textbf{0.812} \bigstrut\\
+Deg. EM (emp.) & \textbf{0.886} & \textbf{0.772} \bigstrut\\
 \hline
 Bambu & 1.193 & 0.943 \bigstrut\\
 \hline
@@ -252,4 +252,4 @@ Lastly, we compare the estimated average degradation rates obtained by Bambu and
 
 In this chapter, we evaluated our model and inference algorithm (Deg. EM) on simulated datasets with known constant degradation rates and real datasets with sequencing spike-ins from the SG-NEx project. First, we compared the exact and empirical variations of our model, finding that they perform comparably in the range of realistic degradation rates. 
 
-Next, we benchmarked Deg. EM against Bambu, Bambu without bias, FLAIR and NanoCount. We showed on simulated datasets that Deg. EM achieves the best performance on SCC, NRMSE and MRD compared to existing methods. In particular, methods that do not model for bias perform poorly on subset isoforms. The results obtained on real datasets with spike-ins were similar, with Deg. EM showing comparable, if not slightly better performance compared to NanoCout and Bambu. We also found that the variance in estimates obtained by Deg. EM was lower compared to those of other methods across replicates, showing that modeling degradation can help increase reproducibility \textit{in silico}.   
+Next, we benchmarked Deg. EM against Bambu, Bambu without bias, FLAIR and NanoCount. We showed on simulated datasets that Deg. EM achieves the best performance on SCC, NRMSE and MRD compared to existing methods. In particular, methods that do not model for bias perform poorly on subset isoforms. The results obtained on real datasets with spike-ins were similar, with Deg. EM showing comparable, if not slightly better performance compared to NanoCount and Bambu. We also found that the variance in estimates obtained by Deg. EM was lower compared to those of other methods across replicates, showing that modeling degradation can help increase reproducibility \textit{in silico}.   

@@ -88,22 +88,23 @@ To model real data, we develop an empirical read length-isoform agreement model 
 \begin{equation}\label{eq:emp-rlia}
     p(\ell_i\mid d_j, z_{ij}=1) = 
     \begin{cases}
-        \lim\limits_{\delta\rightarrow0}\dfrac{F(\ell_i+\delta) - F(\ell_i-\delta)}{F(\mathrm{len}(j))} & \textrm{if } \ell_i<\min(\mathrm{len}(j), \ell_\mathrm{max})\\
+        \lim\limits_{\delta\rightarrow0}[F(\ell_i+\delta) - F(\ell_i-\delta)] & \textrm{if } \ell_i<\min(\mathrm{len}(j), \ell_\mathrm{max})\\
         1-F(\mathrm{len}(j)) & \textrm{if } \ell_i=\mathrm{len}(j)
     \end{cases}
 \end{equation}
 
-Recall again from section \ref{sec:rld} that the probability of observing a read of length $\ell_i$ or greater is $S(\ell_i)=1-F(\ell_i)$. Thus, for a transcript of length $\mathrm{len}(j)$, the probability of observing a full length read is simply $1-F(\mathrm{len}(j))$. The corresponding probability of observing degraded reads is $F(\mathrm{len}(j))$. To compute the probability of observing a point given a empirical continuous density, we take limits:
+Recall again from section \ref{sec:rld} that the probability of observing a read of length $\ell_i$ or greater is $S(\ell_i)=1-F(\ell_i)$. Thus, for a transcript of length $\mathrm{len}(j)$, the probability of observing a full length read is simply $1-F(\mathrm{len}(j))$. The corresponding probability of observing degraded reads is $F(\mathrm{len}(j))$. To compute the probability of observing a point read length given a empirical continuous density, we take limits:
 \begin{equation}
 \begin{split}
     P(X=\ell_i) &=\lim_{\delta\rightarrow0} [P(X<\ell_i+\delta)-P(X<\ell_i-\delta)]\\
     &=\lim_{\delta\rightarrow0}[F(\ell_i+\delta)-F(\ell_i-\delta)]
 \end{split}
 \end{equation}
-We normalize this quantity by the probability of observing degraded reads, arriving at the quantity
-\begin{equation}
+Since the length of isoform $j$ is $\textrm{len}(j)$, we normalize this quantity by considering probabilities only up to $\textrm{len}(j)$:
+\begin{equation}\label{eq:single}
     \lim_{\delta\rightarrow0}\dfrac{F(\ell_i+\delta)-F(\ell_i-\delta)}{F(\mathrm{len}(j))}
 \end{equation}
+Finally, we multiply the above expression by the probability of observing degraded reads $F(\mathrm{len}(j))$, arriving at the quantity in Eq. \ref{eq:emp-rlia}. 
 
 \section{Parameter inference}
 
