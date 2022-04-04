@@ -46,7 +46,7 @@ Method & SCC   & NRMSE & MRD   & SCC   & NRMSE & MRD \bigstrut\\
 \hline
 Deg. EM (exact) & 0.848 & 0.429 & \textbf{0.015} & \textbf{0.813} & \textbf{0.44} & \textbf{0.127} \bigstrut\\
 \hline
-Deg. EM (emp) & \textbf{0.852} & \textbf{0.416} & 0.016 & 0.778 & 0.448 & 0.285 \bigstrut\\
+Deg. EM (emp) & \textbf{0.849} & \textbf{0.427} & 0.016 & 0.801 & 0.434 & 0.191 \bigstrut\\
 \hline
 \end{tabular}%
 }
@@ -58,7 +58,7 @@ Next, we examine the performance on each dataset separately for all and subset i
 
 To investigate these differences further, we visualised estimates and fitted a kernel density estimate on the subset isoforms only for datasets with degradation rates 0.2 and 0.5 (Fig. \ref{fig:4-1-scatter}). On a dataset with relatively lower degradation rate (0.2), the exact model performs qualitatively well, with the density of points over the diagonal (Fig. \ref{fig:4-1-scatter}a), while the empirical model underestimates counts for certain isoforms (Fig. \ref{fig:4-1-scatter}b). We see similar results in datasets with higher degradation rates (0.5) where the variance in the estimates returned by the exact model is lower (Fig. \ref{fig:4-1-scatter}c) compared to the empirical model, where the counts are more diffuse about the diagonal (Fig. \ref{fig:4-1-scatter}d). This deviation from the diagonal also explains the increase in MRD in the empirical model for larger degradation rates compared to the exact model (Fig. \ref{fig:4-1-scc-nrmse}).
 
-Based on our analyses in section \ref{sec:deg-est}, we observed that average degradation rates in real direct RNA-seq data tend to be in the range of 0.1-0.2. In this range, the two variations perform comparably, and have a high SCC with each other ($\mathbb{E}[d]$=0.1, SCC=0.962, $\mathbb{E}[d]$=0.2, SCC=0.962).  
+Based on our analyses in section \ref{sec:deg-est}, we observed that average degradation rates in real direct RNA-seq data tend to be in the range of 0.1-0.2. In this range, the two variations perform comparably, and have a high SCC with each other ($\mathbb{E}[d]$=0.1, SCC=0.975, $\mathbb{E}[d]$=0.2, SCC=0.979).  
 
 \begin{figure}[H]
     \centering
@@ -90,7 +90,7 @@ Method & SCC   & NRMSE & MRD   & SCC   & NRMSE & MRD \bigstrut\\
 \hline
 Deg. EM (exact) & 0.86 & 0.423 & \textbf{0.011} & \textbf{0.834} & \textbf{0.431} & \textbf{0.104} \bigstrut\\
 \hline
-Deg. EM (emp.) & \textbf{0.863} & \textbf{0.41} & 0.012 & 0.801 & 0.439 & 0.241 \bigstrut\\
+Deg. EM (emp.) & \textbf{0.861} & \textbf{0.421} & 0.012 & 0.826 & 0.424 & 0.154 \bigstrut\\
 \hline
 Bambu & 0.771 & 0.599 & 0.101 & 0.671 & 1.009 & 0.36 \bigstrut\\
 \hline
